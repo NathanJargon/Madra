@@ -72,6 +72,11 @@ function HomeScreen({ navigation }) {
     }, []);
     
     const handleSignUp = async (email, password) => {
+      if (username.length > 10) {
+        alert('Username cannot be more than 10 characters.');
+        return;
+      }
+
       try {
         const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;

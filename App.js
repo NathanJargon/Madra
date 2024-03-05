@@ -172,7 +172,7 @@ function App() {
 
   return (
       <NavigationContainer>
-        <RootStack.Navigator initialRouteName="Auth" screenOptions={{ headerShown: false }}>
+        <RootStack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
           <RootStack.Screen name="Auth" component={AuthStackScreen} />
           <RootStack.Screen name="Main" component={MainStackScreen} />
         </RootStack.Navigator>
