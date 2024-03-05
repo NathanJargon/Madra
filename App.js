@@ -10,11 +10,12 @@ const height = Dimensions.get('window').height;
 import HomeScreen from './screens/HomeScreen';
 import Dashboard from './screens/Dashboard';
 import FontLoader from './screens/FontLoader';
-import Search from './screens/Search';
+import Map from './screens/Map';
 import Features from './screens/Features';
 import Settings from './screens/Settings';
 import LoadingScreen from './screens/LoadingScreen';
 import Splash from './screens/Splash';
+import Profile from './screens/Profile';
 
 // Create the stack navigators
 const AuthStack = createStackNavigator();
@@ -58,7 +59,7 @@ function AuthStackScreen() {
 
 function CustomTabBar({ state, descriptors, navigation }) {
   return (
-    <ImageBackground source={require('./assets/appBackground.png')} style={{ flexDirection: 'row', height: height * 0.08, }}>
+    <ImageBackground source={require('./assets/bg1.png')} style={{ flexDirection: 'row', height: height * 0.08, }}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -124,15 +125,6 @@ function MainStackScreen() {
         }}
       />
       <Tab.Screen 
-        name="Search" 
-        component={Search} 
-        options={{ 
-          tabBarIcon: ({ focused }) => {
-            return <Image source={focused ? require('./assets/icons/search-color.png') : require('./assets/icons/search.png')} style={{ width: width * 0.07, height: height * 0.07, resizeMode: 'contain' }} />;
-          },
-        }}
-      />
-      <Tab.Screen 
         name="Features" 
         component={Features} 
         options={{ 
@@ -150,6 +142,24 @@ function MainStackScreen() {
           },
         }}
       />
+      <Tab.Screen 
+        name="Map" 
+        component={Map} 
+        options={{ 
+          tabBarIcon: ({ focused }) => {
+            return <Image source={focused ? require('./assets/icons/marker-color.png') : require('./assets/icons/marker.png')} style={{ width: width * 0.07, height: height * 0.07, resizeMode: 'contain' }} />;
+          },
+        }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={Profile} 
+        options={{ 
+          tabBarIcon: ({ focused }) => {
+            return <Image source={focused ? require('./assets/icons/user-color.png') : require('./assets/icons/user.png')} style={{ width: width * 0.07, height: height * 0.07, resizeMode: 'contain' }} />;
+          },
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -162,7 +172,7 @@ function App() {
 
   return (
       <NavigationContainer>
-        <RootStack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
+        <RootStack.Navigator initialRouteName="Auth" screenOptions={{ headerShown: false }}>
           <RootStack.Screen name="Auth" component={AuthStackScreen} />
           <RootStack.Screen name="Main" component={MainStackScreen} />
         </RootStack.Navigator>

@@ -146,25 +146,25 @@ function HomeScreen({ navigation }) {
       if (buttonDisabled) {
         return;
       }
-
+    
       if (!email || !password) {
         alert('Both fields are required.');
         return;
       }
-
+    
       setButtonDisabled(true);
       setIsLoading(true);
-
+    
       try {
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
-
+    
         if (user.emailVerified) {
           navigation.reset({
             index: 0,
             routes: [{ name: 'Main' }],
           });
-
+    
           setIsAuthenticated(true);
         } else {
           alert('Please verify your email before logging in.');
@@ -176,10 +176,16 @@ function HomeScreen({ navigation }) {
         console.error('Error while logging in:', error);
         console.log('Error code:', error.code); // Print out the error code
         console.log('Error message:', error.message); // Print out the error message
+    
+        if (error.code === 'auth/user-not-found') {
+          alert('The email does not exist. Please check and try again.');
+        } else if (error.code === 'auth/wrong-password') {
+          alert('The password is incorrect. Please check and try again.');
+        }
       }
-
+    
       setIsLoading(false);
-
+    
       setTimeout(() => {
         setButtonDisabled(false);
       }, 1000); // Disable button for 1 second

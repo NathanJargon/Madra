@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "402249856162",
+    "firebase_url": "https://madra-7a862-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "madra-7a862",
+    "storage_bucket": "madra-7a862.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:402249856162:android:3bb61bb494169fe71b13fb",
+        "android_client_info": {
+          "package_name": "com.synochrina.Madra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkit5aNPmxjW56k9r7pwmSDEYsdW62d7I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

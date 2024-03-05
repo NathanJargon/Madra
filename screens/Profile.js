@@ -4,9 +4,9 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackg
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Dashboard() {
+export default function Profile() {
   return (
-    <ImageBackground source={require('../assets/dashboard.png')} style={styles.backgroundImage}>
+    <ImageBackground source={require('../assets/bg.png')} style={styles.backgroundImage}>
       {/* Other components go here */}
     </ImageBackground>
   );

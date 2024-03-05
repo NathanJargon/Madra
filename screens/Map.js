@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackg
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Search() {
+export default function Map() {
   return (
     <ImageBackground source={require('../assets/bg.png')} style={styles.backgroundImage}>
       {/* Other components go here */}

@@ -6,7 +6,7 @@ const { width, height } = Dimensions.get('window');
 const LoadingScreen = () => (
   <View style={styles.container}>
     <ImageBackground source={require('../assets/bg1.png')} style={styles.background}>
-      <Image source={require('../assets/icons/loading.png')} style={styles.loading} />
+      <Image source={require('../assets/icons/logo.png')} style={styles.loading} />
     </ImageBackground>
   </View>
 );
