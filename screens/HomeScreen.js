@@ -26,6 +26,28 @@ function HomeScreen({ navigation }) {
     const [bgImage, setBgImage] = useState(require('../assets/bgoutside1.png'));
     const [phoneNumber, setPhoneNumber] = useState(null);
 
+    useEffect(() => {
+      const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+        if (user && !user.emailVerified) {
+          // Delete the user's information from Firebase Authentication
+          await user.delete();
+
+          // Delete the user's information from the SQLite database
+          db.transaction(tx => {
+            tx.executeSql(
+              'DELETE FROM Users WHERE email = ?',
+              [user.email],
+              () => console.log('User deleted successfully from SQLite database'),
+              (_, error) => console.error('Error while deleting user from SQLite database:', error)
+            );
+          });
+        }
+      });
+
+      // Cleanup function
+      return () => unsubscribe();
+    }, []);
+
     const handleSignUpButtonPress = () => {
       if (email === '' || password === '') {
         alert('Email and password cannot be empty.');
@@ -53,16 +75,38 @@ function HomeScreen({ navigation }) {
       try {
         const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
-    
+
         if (user) {
           await user.sendEmailVerification();
-    
+
+          // Schedule the deletion of the user's information after 5 minutes
+          const timeoutId = setTimeout(async () => {
+            if (!user.emailVerified) {
+              // Delete the user's information if their email is not verified
+              await firebase.auth().currentUser.delete();
+
+              // Delete the user's information from the SQLite database
+              db.transaction(tx => {
+                tx.executeSql(
+                  'DELETE FROM Users WHERE email = ?',
+                  [email],
+                  () => console.log('User deleted successfully from SQLite database'),
+                  (_, error) => console.error('Error while deleting user from SQLite database:', error)
+                );
+              });
+
+              alert('Your account has been deleted because you did not verify your email within 5 minutes.');
+            }
+          }, 600000); // 5 minutes
+
           if (user.emailVerified) {
             setIsAuthenticated(true);
+            // Clear the timeout if the user verifies their email
+            clearTimeout(timeoutId);
           } else {
-            alert('SIGNED UP!\n\nA verification email has been sent to your email. Verify before logging in.');
+            alert('Verify in 10 minutes!\n\nA verification email has been sent to your email. Verify before logging in and do not close the app.');
             setBottomContent('login');
-    
+
             db.transaction(tx => {
               tx.executeSql(
                 'INSERT INTO Users (gender, fullName, username, email, password, birthday, imageUri, phoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
@@ -85,10 +129,14 @@ function HomeScreen({ navigation }) {
         console.error('Error while signing up:', error);
         console.log('Error code:', error.code);
         console.log('Error message:', error.message);
+
+        if (error.code === 'auth/email-already-in-use') {
+          alert('The email address is already in use by another account.');
+        }
       }
-    
+
       setIsLoading(false);
-    
+
       setTimeout(() => {
         setButtonDisabled(false);
       }, 1000);
@@ -98,37 +146,40 @@ function HomeScreen({ navigation }) {
       if (buttonDisabled) {
         return;
       }
-    
+
       if (!email || !password) {
         alert('Both fields are required.');
         return;
       }
-    
+
       setButtonDisabled(true);
-      setIsLoading(true); 
-    
+      setIsLoading(true);
+
       try {
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
-    
+
         if (user.emailVerified) {
           navigation.reset({
             index: 0,
             routes: [{ name: 'Main' }],
           });
-    
+
           setIsAuthenticated(true);
         } else {
           alert('Please verify your email before logging in.');
+          setIsLoading(false);
+          setButtonDisabled(false);
+          return;
         }
       } catch (error) {
         console.error('Error while logging in:', error);
         console.log('Error code:', error.code); // Print out the error code
         console.log('Error message:', error.message); // Print out the error message
       }
-    
-      setIsLoading(false); 
-    
+
+      setIsLoading(false);
+
       setTimeout(() => {
         setButtonDisabled(false);
       }, 1000); // Disable button for 1 second

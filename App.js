@@ -162,7 +162,7 @@ function App() {
 
   return (
       <NavigationContainer>
-        <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        <RootStack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
           <RootStack.Screen name="Auth" component={AuthStackScreen} />
           <RootStack.Screen name="Main" component={MainStackScreen} />
         </RootStack.Navigator>
