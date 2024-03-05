@@ -21,10 +21,18 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.synochrina.Madra",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "googleApiKey": "AIzaSyAyYrujSoH2OcmWCxXlup_KSKE9coSDgnE",
+      "eas": {
+        "projectId": "62a0baca-2d5f-42f3-a7f1-cbc7c8f5e731"
+      }
     }
   }
 }
