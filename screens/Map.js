@@ -6,7 +6,7 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function Map() {
   return (
-    <ImageBackground source={require('../assets/bg.png')} style={styles.backgroundImage}>
+    <ImageBackground source={require('../assets/bg1.png')} style={styles.backgroundImage}>
       {/* Other components go here */}
     </ImageBackground>
   );

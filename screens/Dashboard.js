@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, TextInput } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, TextInput } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -28,13 +28,16 @@ export default function Dashboard() {
           <Image source={require('../assets/image3.png')} style={styles.boxImage} />
         </View>
         <View style={styles.transparentBox}>
-          <View style={styles.innerBox}>
-            <Image source={require('../assets/icons/logo.png')} style={styles.innerBoxImage} />
-            <Text style={styles.innerBoxText}>YOU HAVE A MADRIFICATION!</Text>
+            <ScrollView>
+                <View style={styles.innerBox}>
+                  <Image source={require('../assets/icons/round-logo.png')} style={styles.innerBoxImage} />
+                  <Text style={styles.innerBoxText}>YOU HAVE A MADRIFICATION!</Text>
+                  <View style={styles.bottomLine} />
+                </View>
+            </ScrollView>
           </View>
         <View style={styles.clearAllBox}>
           <Text style={styles.clearAllText}>CLEAR ALL</Text>
-        </View>
         </View>
       </ImageBackground>
       <Image source={require('../assets/icons/notif.png')} style={styles.fixedImage} />
@@ -46,7 +49,7 @@ const styles = StyleSheet.create({
     clearAllBox: { // Modify this style
       position: 'absolute', // Position it absolutely
       bottom: 10, // At the bottom of the parent
-      height: windowHeight / 25, // Adjust as needed
+      height: windowHeight / 22, // Adjust as needed
       width: windowWidth / 4, // Adjust as needed
       backgroundColor: '#FFFFFF', // Solid white
       borderRadius: 20,
@@ -63,9 +66,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Arrange children in a row
     justifyContent: 'center', // Center the contents along the main axis
     alignItems: 'center', // Center the contents along the cross axis
-    backgroundColor: '#FFFFFF', // Solid white
-    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Solid white
+    borderRadius: 50,
+    height: windowHeight * 0.15,
     marginBottom: windowHeight * 0.01,
+  },
+  bottomLine: {
+    position: 'absolute',
+    bottom: windowHeight * 0.01,
+    borderBottomColor: '#318E99', // Change the color as needed
+    borderBottomWidth: 2,
+    width: '40%', // Adjust the width as needed
+    alignSelf: 'center', // Center the line
   },
     innerBoxImage: { // Add this style
       width: windowWidth / 15, // Adjust as needed
@@ -78,9 +90,9 @@ const styles = StyleSheet.create({
       color: '#318E99', // Adjust as needed
     },
   transparentBox: { // Add this style
-    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Semi-transparent white
+    backgroundColor: 'rgba(255, 255, 255, 0)', // Semi-transparent white
     width: windowWidth / 1.1, // Adjust as needed
-    height: windowHeight / 3.5, // Adjust as needed
+    height: windowHeight / 2.8, // Adjust as needed
     borderRadius: 20,
     padding: 10,
     marginTop: windowHeight * 0.01,
@@ -89,38 +101,39 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#0C6B5F',
     borderRadius: 20,
     padding: 10,
-    marginTop: windowHeight * 0.01,
+    marginTop: windowHeight * 0.03,
     overflow: 'hidden',
   },
   boxImage: { // Add this style
-    width: windowWidth / 4, // Adjust as needed
-    height: windowHeight / 4, // Adjust as needed
-    resizeMode: 'contain',
-    marginRight: windowHeight * 0.02,
+    width: windowWidth / 5, // Adjust as needed
+    height: windowHeight / 8, // Adjust as needed
+    resizeMode: 'cover',
+    margin: windowWidth * 0.035,
   },
   inputContainer: {
     flexDirection: 'row', // Arrange children in a row
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    padding: 10,
+    padding: 5,
   },
   sendIcon: { // Add this style
-    width: windowWidth / 20, // Adjust as needed
-    height: windowHeight / 20, // Adjust as needed
+    width: windowWidth / 30, // Adjust as needed
+    height: windowHeight / 30, // Adjust as needed
     resizeMode: 'contain',
-    marginLeft: 10, // Adjust as needed
+    marginLeft: windowWidth * 0.02, // Adjust as needed
   },
   input: {
     width: windowWidth - 120, // Adjust as needed
-    height: windowHeight / 22, // Adjust as needed
+    height: windowHeight / 30, // Adjust as needed
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     textAlign: 'left',
-    padding: 10,
+    padding: 5,
+    fontSize: windowWidth * 0.025,
   },
   fixedImage: {
     position: 'absolute', // Position it absolutely
@@ -164,10 +177,12 @@ const styles = StyleSheet.create({
   profileLogo: {
     width: windowWidth / 4, // Adjust as needed
     height: windowHeight / 4, // Adjust as needed
-    marginLeft: windowWidth * 0.08,
+    marginLeft: windowWidth * 0.13,
+    marginTop: windowHeight * 0.04,
     resizeMode: 'contain',
   },
   rightText: {
+    marginTop: windowHeight * 0.07,
     marginRight: windowWidth * 0.15,
     fontSize: windowWidth * 0.075, // Adjust as needed
     color: '#000', // Adjust as needed

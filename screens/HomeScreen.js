@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
   },
 bottomContainer: {
   width: windowWidth,
-  borderTopLeftRadius: 50,
+  borderTopLeftRadius: 100,
   borderTopRightRadius: 0,
   overflow: 'hidden',
   justifyContent: 'center',
@@ -585,9 +585,9 @@ bottomContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: 'white',
-    borderTopWidth: 25, // Add this line to set the border width
-    borderLeftWidth: 20,
-    borderRightWidth: 20,
+    borderTopWidth: 15, // Add this line to set the border width
+    borderLeftWidth: 15,
+    borderRightWidth: 15,
   },
   label: {
     color: 'white',
