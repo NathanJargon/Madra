@@ -25,9 +25,52 @@ export default function Settings() {
         </View>
         <View style={styles.boxRow}>
           <View style={styles.box2}>
-            <View style={styles.innerBox} />
-            <View style={styles.innerBox} />
-            <View style={styles.innerBox} />
+            <View style={styles.innerBox1}>
+              <Text style={styles.innerBoxHeader}>OPTIONS</Text>
+              <Text style={styles.innerBoxSmallText}>Madrification</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, }}>Customizable Alerts</Text>
+              <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Push Notification</Text>
+              <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+            </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Earthquake Details</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Localize Alerts</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+              </View>
+            </View>
+            <View style={styles.innerBox2}>
+              <Text style={styles.innerBoxHeader}>ACCOUNT</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Personal Information</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Country</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Language</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+              </View>
+            </View>
+            <View style={styles.innerBox3}>
+              <Text style={styles.innerBoxHeader}>GENERAL</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>About</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Privacy and Policy</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+              </View>
+            </View>
           </View>
         </View>
       </ImageBackground>
@@ -41,6 +84,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
+    innerBoxImage: {
+      width: windowWidth * 0.03, // Adjust as needed
+      height: windowHeight * 0.03, // Adjust as needed
+      resizeMode: 'contain',
+      marginLeft: windowWidth * 0.02, // Add some margin to the left
+    },
   centeredText: {
     fontSize: windowWidth * 0.1, // adjust as needed
     color: '#000', // adjust as needed
@@ -85,24 +134,53 @@ const styles = StyleSheet.create({
     fontSize: windowWidth * 0.025, // Adjust as needed
     color: '#000', // Adjust as needed
   },
-  box2: {
-    flexDirection: 'column', // Change this
-    width: windowWidth * .9, // Adjust the width as needed
-    height: windowHeight * 0.525, // Adjust the height as needed
-    backgroundColor: 'white', // Change the color as needed
-    borderRadius: 20,
-    justifyContent: 'space-around', // Add this
-    alignItems: 'center',
-    padding: 10,
-  },
-  innerBox: {
-    width: windowWidth * 0.8, // Adjust as needed
-    height: windowHeight * 0.15, // Adjust as needed
-    backgroundColor: '#ddd', // Change the color as needed
-    borderRadius: 10, // Adjust as needed
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    box2: {
+      flexDirection: 'column', // Keep this
+      width: windowWidth * .9, // Adjust the width as needed
+      height: windowHeight * 0.525, // Adjust the height as needed
+      backgroundColor: 'white', // Change the color as needed
+      borderRadius: 20,
+      justifyContent: 'center', // Center items vertically
+      alignItems: 'center', // Center items horizontally
+      padding: 10,
+    },
+    innerBox1: {
+      flexDirection: 'column', // Change this
+      width: windowWidth * 0.8, // Adjust as needed
+      height: windowHeight * 0.2, // Adjust as needed
+      backgroundColor: 'rgba(255, 255, 255, 0)', // Change the color as needed
+      borderRadius: 10, // Adjust as needed
+      justifyContent: 'flex-start', // Align items to the start
+      alignItems: 'flex-start', // Align items to the left
+      padding: 10, // Add some padding
+    },
+    innerBox2: {
+      flexDirection: 'column', // Change this
+      width: windowWidth * 0.8, // Adjust as needed
+      height: windowHeight * 0.15, // Adjust as needed
+      backgroundColor: 'rgba(255, 255, 255, 0)', // Change the color as needed
+      borderRadius: 10, // Adjust as needed
+      justifyContent: 'flex-start', // Align items to the start
+      alignItems: 'flex-start', // Align items to the left
+      padding: 10, // Add some padding
+    },
+    innerBox3: {
+      flexDirection: 'column', // Change this
+      width: windowWidth * 0.8, // Adjust as needed
+      height: windowHeight * 0.13, // Adjust as needed
+      backgroundColor: 'rgba(255, 255, 255, 0)', // Change the color as needed
+      borderRadius: 10, // Adjust as needed
+      justifyContent: 'flex-start', // Align items to the start
+      alignItems: 'flex-start', // Align items to the left
+      padding: 10, // Add some padding
+    },
+
+    // Add a new style for the header
+    innerBoxHeader: {
+      fontSize: windowWidth * 0.035, // Adjust as needed
+      color: '#000', // Adjust as needed
+      marginBottom: windowWidth * 0.02, // Add some margin to the bottom
+    },
   backgroundImage: {
     flex: 1,
     width: windowWidth,
@@ -114,6 +192,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'white', // Change the color as needed
     overflow: 'hidden',
   },
+    innerBoxText: {
+      fontSize: windowWidth * 0.045, // Adjust as needed
+      color: '#000', // Adjust as needed
+      textAlign: 'center', // Center the text
+      marginLeft: windowWidth * 0.2,
+    },
+    innerBoxSmallText: {
+      fontSize: windowWidth * 0.045, // Adjust as needed
+      color: '#000', // Adjust as needed
+      textAlign: 'center', // Center the text
+      marginLeft: windowWidth * 0.075,
+    },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'center',
