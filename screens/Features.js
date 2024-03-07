@@ -18,14 +18,14 @@ export default function Features() {
           <View style={styles.boxRow}>
             <View style={styles.boxWrapper}>
               <View style={styles.box}>
-                <Image source={require('../assets/appBackground.png')} style={styles.boxImage} />
+                <Image source={require('../assets/featureMap.png')} style={styles.boxImage} />
                 <Text style={styles.boxTitle}>HAZARD MAPPING</Text>
                 <TouchableOpacity style={styles.proceedButton}>
                   <Text style={styles.proceedButtonText}>PROCEED</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.box}>
-                <Image source={require('../assets/icons/analytics-color.png')} style={styles.boxImage} />
+                <Image source={require('../assets/featureLearn.png')} style={styles.boxImage} />
                 <Text style={styles.boxTitle}>EDUCATIONAL HUB</Text>
                 <TouchableOpacity style={styles.proceedButton}>
                   <Text style={styles.proceedButtonText}>PROCEED</Text>
@@ -36,14 +36,14 @@ export default function Features() {
           <View style={styles.boxRow}>
             <View style={styles.boxWrapper}>
               <View style={styles.box}>
-                <Image source={require('../assets/icons/analytics-color.png')} style={styles.boxImage} />
+                <Image source={require('../assets/featureQuiz.png')} style={styles.boxImage} />
                 <Text style={styles.boxTitle}>MADRAMANIA</Text>
                 <TouchableOpacity style={styles.proceedButton}>
                   <Text style={styles.proceedButtonText}>PROCEED</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.box}>
-                <Image source={require('../assets/icons/analytics-color.png')} style={styles.boxImage} />
+                <Image source={require('../assets/featureUpdate.png')} style={styles.boxImage} />
                 <Text style={styles.boxTitle}>EARTHQUAKE UPDATES</Text>
                 <TouchableOpacity style={styles.proceedButton}>
                   <Text style={styles.proceedButtonText}>PROCEED</Text>

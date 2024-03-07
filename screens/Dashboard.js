@@ -108,10 +108,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   boxImage: { // Add this style
-    width: windowWidth / 5, // Adjust as needed
-    height: windowHeight / 8, // Adjust as needed
+    width: windowWidth / 4, // Adjust as needed
+    height: windowHeight / 5.5, // Adjust as needed
     resizeMode: 'cover',
-    margin: windowWidth * 0.035,
+    margin: windowWidth * 0.015,
+    borderRadius: 20,
   },
   inputContainer: {
     flexDirection: 'row', // Arrange children in a row
@@ -177,12 +178,12 @@ const styles = StyleSheet.create({
   profileLogo: {
     width: windowWidth / 4, // Adjust as needed
     height: windowHeight / 4, // Adjust as needed
-    marginLeft: windowWidth * 0.13,
-    marginTop: windowHeight * 0.04,
+    marginLeft: windowWidth * 0.075,
+    marginTop: windowHeight * 0.001,
     resizeMode: 'contain',
   },
   rightText: {
-    marginTop: windowHeight * 0.07,
+    marginTop: windowHeight * 0.05,
     marginRight: windowWidth * 0.15,
     fontSize: windowWidth * 0.075, // Adjust as needed
     color: '#000', // Adjust as needed
