@@ -27,7 +27,10 @@ export default function Settings() {
           <View style={styles.box2}>
             <View style={styles.innerBox1}>
               <Text style={styles.innerBoxHeader}>OPTIONS</Text>
-              <Text style={styles.innerBoxSmallText}>Madrification</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.innerBoxSmallText, { flex: 1, fontSize: windowWidth * 0.05,  marginLeft: windowWidth * 0.1, }}>Madrification</Text>
+              <Image source={require('../assets/icons/off-button.png')} style={styles.innerBoxSwitch} />
+            </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, }}>Customizable Alerts</Text>
               <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
@@ -90,8 +93,15 @@ const styles = StyleSheet.create({
       resizeMode: 'contain',
       marginLeft: windowWidth * 0.02, // Add some margin to the left
     },
+    innerBoxSwitch: {
+      width: windowWidth * 0.1, // Adjust as needed
+      height: windowHeight * 0.04, // Adjust as needed
+      resizeMode: 'contain',
+      marginLeft: windowWidth * 0.02, // Add some margin to the left
+    },
   centeredText: {
-    fontSize: windowWidth * 0.1, // adjust as needed
+    fontSize: windowWidth * 0.09, // adjust as needed
+    fontWeight: 'bold',
     color: '#000', // adjust as needed
   },
   boxRow: {
@@ -99,12 +109,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    marginTop: windowHeight * 0.02,
+    marginTop: windowHeight * 0.03,
   },
   box1: {
     flexDirection: 'row', // Keep this as 'row'
     width: windowWidth * 0.9, // Adjust the width as needed
-    height: windowHeight * 0.2, // Adjust the height as needed
+    height: windowHeight * 0.15, // Adjust the height as needed
     backgroundColor: 'white', // Change the color as needed
     borderRadius: 20,
     justifyContent: 'center',
@@ -118,7 +128,7 @@ const styles = StyleSheet.create({
   },
   boxImage: {
     width: windowWidth * 0.4, // Adjust as needed
-    height: windowHeight * 0.15, // Adjust as needed
+    height: windowHeight * 0.13, // Adjust as needed
     resizeMode: 'contain', // Or 'cover'
   },
   boxText1: {
@@ -178,7 +188,7 @@ const styles = StyleSheet.create({
     // Add a new style for the header
     innerBoxHeader: {
       fontSize: windowWidth * 0.035, // Adjust as needed
-      color: '#000', // Adjust as needed
+      color: '#318E99', // Adjust as needed
       marginBottom: windowWidth * 0.02, // Add some margin to the bottom
     },
   backgroundImage: {
@@ -188,7 +198,7 @@ const styles = StyleSheet.create({
   },
   headerBox: {
     width: '100%', // Full width
-    height: windowHeight * 0.125, // Adjust the height as needed
+    height: windowHeight * 0.14, // Adjust the height as needed
     backgroundColor: 'white', // Change the color as needed
     overflow: 'hidden',
   },

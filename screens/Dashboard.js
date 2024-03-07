@@ -13,7 +13,7 @@ export default function Dashboard() {
         </ImageBackground>
         <View styles={styles.textContainer}>
           <Text style={styles.rightText}>HI CHARLOTTE!</Text>
-          <Text style={styles.rightSmallText}>MADRA: YOUR PARTNER FOR LIFE</Text>
+          <Text style={styles.rightSmallText}>NADRA: YOUR PARTNER FOR LIFE</Text>
         </View>
       </View>
       <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
@@ -162,10 +162,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Center the contents vertically
   },
   profileLogoBackground: {
-    width: 170, // Adjust as needed
-    height: 170, // Adjust as needed
+    width: 180, // Adjust as needed
+    height: 180, // Adjust as needed
     marginBottom: windowHeight * 0.05,
-    marginRight: windowWidth * 0.05,
+    marginRight: windowWidth * 0.005,
     resizeMode: 'contain',
   },
   leftImage: {
@@ -178,8 +178,8 @@ const styles = StyleSheet.create({
   profileLogo: {
     width: windowWidth / 4, // Adjust as needed
     height: windowHeight / 4, // Adjust as needed
-    marginLeft: windowWidth * 0.075,
-    marginTop: windowHeight * 0.001,
+    marginLeft: windowWidth * 0.1,
+    marginTop: windowHeight * 0.01,
     resizeMode: 'contain',
   },
   rightText: {
