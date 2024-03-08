@@ -4,10 +4,10 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackg
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function FirstAid() {
+export default function DRRM() {
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
+      <ImageBackground source={require('../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
         <View style={styles.boxContainer}>
           <View style={styles.rectangleBox}>
             <Text style={styles.boxTitle}>LESSON: FIRST AID</Text>

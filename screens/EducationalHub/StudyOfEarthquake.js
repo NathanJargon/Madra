@@ -1,41 +1,26 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
-import MadramaniaQuiz from './MadramaniaQuiz';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Madramania() {
-  const [selectedLesson, setSelectedLesson] = useState(null);
-
-  const handlePress = (lesson) => {
-    setSelectedLesson(lesson);
-  };
-
+export default function StudyOfEarthquake() {
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
+      <ImageBackground source={require('../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
         <View style={styles.boxContainer}>
-          {selectedLesson === null && (
-            <>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('FirstAid')}>
-                <Text style={styles.boxTitle}>LESSON: FIRST AID</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('DosAndDonts')}>
-                <Text style={styles.boxTitle}>LESSON: DO’S AND DONT’S</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('SafetyProtocols')}>
-                <Text style={styles.boxTitle}>LESSON: SAFETY PROTOCOLS</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('StudyOfEarthquake')}>
-                <Text style={styles.boxTitle}>LESSON: EARTHQUAKE</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('StudyOfEarthquake')}>
-                <Text style={styles.boxTitle}>LESSON: DISASTER RISK REDUCTION MANAGEMENT (DRRM)</Text>
-              </TouchableOpacity>
-            </>
-          )}
-          {selectedLesson !== null && <MadramaniaQuiz lesson={selectedLesson} />}
+          <View style={styles.rectangleBox}>
+            <Text style={styles.boxTitle}>LESSON: FIRST AID</Text>
+          </View>
+          <View style={styles.rectangleBox}>
+            <Text style={styles.boxTitle}>LESSON: DO’S AND DONT’S</Text>
+          </View>
+          <View style={styles.rectangleBox}>
+            <Text style={styles.boxTitle}>LESSON: SAFETY PROTOCOLS</Text>
+          </View>
+          <View style={styles.rectangleBox}>
+            <Text style={styles.boxTitle}>LESSON: STUDY OF EARTHQUAKE</Text>
+          </View>
         </View>
       </ImageBackground>
     </View>
@@ -83,15 +68,9 @@ boxContainer: {
     fontWeight: 'bold',
     textAlign: 'left',
   },
-    boxSmallTitle: {
-     fontSize: windowWidth * 0.03,
-     textAlign: 'center',
-     fontWeight: 'bold',
-   },
   proceedButton: {
     width: '80%',
-    height: '7%',
-    marginBottom: windowHeight * 0.01,
+    height: '20%',
     backgroundColor: '#318E99',
     borderRadius: 20,
     justifyContent: 'center',
@@ -148,8 +127,4 @@ boxContainer: {
       marginBottom: 10,
       width: windowWidth * 0.75, // Set the width to 80% of the window width
     },
-  centeredText: {
-    textAlign: 'center',
-    fontSize: windowWidth * 0.035, // Adjust the font size as needed
-  },
 });

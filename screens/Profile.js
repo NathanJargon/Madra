@@ -1,18 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
+import { initDB } from './Database';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Profile() {
+export default function Profile({ navigation }) {
+  const [username, setUsername] = useState('USER');
+  const [email, setEmail] = useState('user@gmail.com');
+
+  useEffect(() => {
+    const db = initDB();
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT username, email FROM Users',
+        [],
+        (_, { rows }) => {
+          if (rows.length > 0) {
+            setUsername(rows.item(0).username);
+            setEmail(rows.item(0).email);
+          }
+        },
+        (_, error) => console.log('Error fetching data:', error)
+      );
+    });
+  }, []);
   return (
     <ImageBackground source={require('../assets/bg1.png')} style={styles.backgroundImage}>
       <View style={styles.centerBox}>
         <Image source={require('../assets/icons/setting.png')} style={styles.settingsIcon} />
         <Image source={require('../assets/icons/edit.png')} style={styles.editIcon} />
         <View style={styles.infoContainer}>
-          <Text style={styles.nameText}>BEATRICE BAYLON</Text>
-          <Text style={styles.emailText}>beatrice_baylon.gmail.com</Text>
+          <Text style={styles.nameText}>{username}</Text>
+          <Text style={styles.emailText}>{email}</Text>
           <View style={styles.line} />
             <View style={styles.rowContainer}>
               <Image source={require('../assets/icons/edit.png')} style={styles.sideImage} />
@@ -38,11 +58,13 @@ export default function Profile() {
               <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
             </View>
           <View style={styles.line} />
-            <View style={styles.rowContainer}>
-              <Image source={require('../assets/icons/logout.png')} style={styles.sideImage} />
-              <Text style={styles.centerText}>LOG OUT</Text>
-              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
-            </View>
+            <TouchableOpacity onPress={() => navigation.navigate('Auth')}>
+              <View style={styles.rowContainer}>
+                <Image source={require('../assets/icons/logout.png')} style={styles.sideImage} />
+                <Text style={styles.centerText}>LOG OUT</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+              </View>
+            </TouchableOpacity>
         </View>
       </View>
       <View style={styles.circleBox} />
@@ -133,5 +155,6 @@ const styles = StyleSheet.create({
   centerText: {
     fontSize: windowWidth * 0.04, // Adjust as needed
     textAlign: 'center',
+    fontWeight: 'bold',
   },
 });

@@ -1,10 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, TextInput } from 'react-native';
+import { initDB } from './Database';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function Dashboard() {
+  const [username, setUsername] = useState('USER');
+
+  useEffect(() => {
+    const db = initDB();
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT username FROM Users',
+        [],
+        (_, { rows }) => {
+          if (rows.length > 0) {
+            setUsername(rows.item(0).username);
+          }
+        },
+        (_, error) => console.log('Error fetching data:', error)
+      );
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.imageTextContainer}>
@@ -12,14 +31,14 @@ export default function Dashboard() {
           <Image source={require('../assets/icons/profilelogo.png')} style={styles.profileLogo} />
         </ImageBackground>
         <View styles={styles.textContainer}>
-          <Text style={styles.rightText}>HI CHARLOTTE!</Text>
-          <Text style={styles.rightSmallText}>NADRA: YOUR PARTNER FOR LIFE</Text>
+          <Text style={styles.rightText}>HI {username}!</Text>
+          <Text style={styles.rightSmallText}>MADRA: YOUR PARTNER FOR LIFE</Text>
         </View>
       </View>
       <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
         <View style={styles.inputContainer}>
           <Image source={require('../assets/icons/search.png')} style={styles.sendIcon} />
-              <TextInput style={styles.input} placeholder="NADRA IS HERE TO HELP" />
+              <TextInput style={styles.input} placeholder="MADRA IS HERE TO HELP" />
           <Image source={require('../assets/icons/send.png')} style={styles.sendIcon} />
         </View>
         <View style={styles.imageBox}>
@@ -152,28 +171,22 @@ const styles = StyleSheet.create({
   textContainer: {
     flexDirection: 'column', // Arrange children in a column
     justifyContent: 'center', // Center the contents horizontally
-    alignItems: 'center', // Center the contents vertically
+    alignItems: 'left', // Center the contents vertically
   },
-  imageTextContainer: {
-    flexDirection: 'row', // Arrange children in a row
-    position: 'absolute', // Position it absolutely
-    bottom: windowHeight / 1.4, // Position it above the bottomContainer
-    justifyContent: 'center', // Center the contents horizontally
-    alignItems: 'center', // Center the contents vertically
-  },
+imageTextContainer: {
+  flexDirection: 'row', // Arrange children in a row
+  position: 'absolute', // Position it absolutely
+  bottom: windowHeight / 1.4, // Position it above the bottomContainer
+  right: windowWidth / 15,
+  justifyContent: 'space-start', // Maximize the space between the children
+  alignItems: 'center', // Center the contents vertically
+  width: '100%', // Take up the full width of the parent
+},
   profileLogoBackground: {
     width: 180, // Adjust as needed
     height: 180, // Adjust as needed
     marginBottom: windowHeight * 0.05,
-    marginRight: windowWidth * 0.005,
     resizeMode: 'contain',
-  },
-  leftImage: {
-    width: windowWidth / 3, // Adjust as needed
-    height: windowHeight / 5, // Adjust as needed
-    resizeMode: 'contain',
-    justifyContent: 'center', // Center the contents vertically
-    alignItems: 'center', // Center the contents horizontally
   },
   profileLogo: {
     width: windowWidth / 4, // Adjust as needed
@@ -184,13 +197,14 @@ const styles = StyleSheet.create({
   },
   rightText: {
     marginTop: windowHeight * 0.05,
-    marginRight: windowWidth * 0.15,
+    marginLeft: windowWidth * 0.15,
     fontSize: windowWidth * 0.075, // Adjust as needed
     color: '#000', // Adjust as needed
+    textAlign: 'center',
   },
   rightSmallText: {
-    marginLeft: windowWidth * 0.075,
     fontSize: windowWidth * 0.025, // Adjust as needed
+    marginLeft: windowWidth * 0.15,
     color: '#000', // Adjust as needed
   },
   bottomContainer: {

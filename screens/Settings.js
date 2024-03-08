@@ -5,80 +5,87 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function Settings() {
-  return (
-    <View style={styles.container}>
-      <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
-        <View style={styles.headerBox}>
-          <View style={styles.headerContent}>
-            <Text style={styles.centeredText}>SETTINGS</Text>
-          </View>
-        </View>
-        <View style={styles.boxRow}>
-          <View style={styles.box1}>
-            <Image source={require('../assets/icons/profilelogo.png')} style={styles.boxImage} />
-            <View style={styles.textContainer}>
-              <Text style={styles.boxText1}>BEATRICE BAYLON</Text>
-              <Text style={styles.boxText2}>beatric_baylon@gmail.com</Text>
-              <Text style={styles.boxText3}>09263456857</Text>
+return (
+      <View style={styles.container}>
+        <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
+          <View style={styles.headerBox}>
+            <View style={styles.headerContent}>
+              <Text style={styles.centeredText}>SETTINGS</Text>
             </View>
           </View>
-        </View>
-        <View style={styles.boxRow}>
-          <View style={styles.box2}>
-            <View style={styles.innerBox1}>
-              <Text style={styles.innerBoxHeader}>OPTIONS</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.innerBoxSmallText, { flex: 1, fontSize: windowWidth * 0.05,  marginLeft: windowWidth * 0.1, }}>Madrification</Text>
-              <Image source={require('../assets/icons/off-button.png')} style={styles.innerBoxSwitch} />
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, }}>Customizable Alerts</Text>
-              <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Push Notification</Text>
-              <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-            </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Earthquake Details</Text>
-                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+          <View style={styles.boxRow}>
+            <ImageBackground source={require('../assets/settingsTop.png')} style={styles.box1}>
+              <Image source={require('../assets/icons/profilelogo.png')} style={styles.boxImage} />
+              <View style={styles.textContainer}>
+                <Text style={styles.boxText1}>BEATRICE BAYLON</Text>
+                <Text style={styles.boxText2}>beatric_baylon@gmail.com</Text>
+                <Text style={styles.boxText3}>09263456857</Text>
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Localize Alerts</Text>
-                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-              </View>
-            </View>
-            <View style={styles.innerBox2}>
-              <Text style={styles.innerBoxHeader}>ACCOUNT</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Personal Information</Text>
-                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Country</Text>
-                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Language</Text>
-                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-              </View>
-            </View>
-            <View style={styles.innerBox3}>
-              <Text style={styles.innerBoxHeader}>GENERAL</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>About</Text>
-                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13,}}>Privacy and Policy</Text>
-                <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-              </View>
-            </View>
+            </ImageBackground>
           </View>
-        </View>
-      </ImageBackground>
-    </View>
-  );
+          <View style={styles.boxRow}>
+            <ImageBackground source={require('../assets/bg1.png')} style={styles.box2}>
+              <View style={styles.innerBox1}>
+                <Text style={styles.innerBoxHeader}>OPTIONS</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={styles.innerBoxSmallText, { flex: 1, fontSize: windowWidth * 0.05,  marginLeft: windowWidth * 0.1, color: 'white', fontWeight: 'bold', }}>Madrification</Text>
+                  <Image source={require('../assets/icons/off-button.png')} style={styles.innerBoxSwitch} />
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, color: 'white', fontWeight: 'bold', }}>Customizable Alerts</Text>
+                  <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, color: 'white', fontWeight: 'bold',  }}>Push Notification</Text>
+                  <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, color: 'white',  fontWeight: 'bold', }}>Earthquake Details</Text>
+                    <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, color: 'white',  fontWeight: 'bold', }}>Localize Alerts</Text>
+                    <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                  </View>
+                </View>
+                    <View style={styles.innerBox2}>
+                      <Text style={styles.innerBoxHeader}>ACCOUNT</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Image source={require('../assets/icons/user.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'  }} />
+                        <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white',  fontWeight: 'bold', }}>Personal Information</Text>
+                        <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                      </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <Image source={require('../assets/icons/flag.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
+                          <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white', fontWeight: 'bold' }}>Country</Text>
+                          <Text style={{ color: 'white', marginRight: 5, fontWeight: 'bold' }}>PH</Text>
+                          <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <Image source={require('../assets/icons/internet.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
+                          <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white', fontWeight: 'bold' }}>Language</Text>
+                          <Text style={{ color: 'white', marginRight: 5, fontWeight: 'bold' }}>ENG</Text>
+                          <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                        </View>
+                    </View>
+                    <View style={styles.innerBox3}>
+                      <Text style={styles.innerBoxHeader}>GENERAL</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Image source={require('../assets/icons/information-button.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
+                        <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white',  fontWeight: 'bold', }}>About</Text>
+                        <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                      </View>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Image source={require('../assets/icons/lock.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
+                        <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white', fontWeight: 'bold',  }}>Privacy and Policy</Text>
+                        <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                      </View>
+                    </View>
+            </ImageBackground>
+          </View>
+        </ImageBackground>
+      </View>
+    );
 }
 
 
@@ -102,7 +109,7 @@ const styles = StyleSheet.create({
   centeredText: {
     fontSize: windowWidth * 0.09, // adjust as needed
     fontWeight: 'bold',
-    color: '#000', // adjust as needed
+    color: '#62B7AF', // adjust as needed
   },
   boxRow: {
     flexDirection: 'row',
@@ -120,6 +127,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
+  borderWidth: 5,
+  borderColor: 'white',
+    overflow: 'hidden',
   },
   textContainer: {
     flexDirection: 'column', // Add this
@@ -153,6 +163,9 @@ const styles = StyleSheet.create({
       justifyContent: 'center', // Center items vertically
       alignItems: 'center', // Center items horizontally
       padding: 10,
+      borderWidth: 5,
+      borderColor: 'white',
+      overflow: 'hidden',
     },
     innerBox1: {
       flexDirection: 'column', // Change this
@@ -188,7 +201,8 @@ const styles = StyleSheet.create({
     // Add a new style for the header
     innerBoxHeader: {
       fontSize: windowWidth * 0.035, // Adjust as needed
-      color: '#318E99', // Adjust as needed
+      color: '#32DBC5', // Adjust as needed
+      fontWeight: 'bold', // Add some weight
       marginBottom: windowWidth * 0.02, // Add some margin to the bottom
     },
   backgroundImage: {

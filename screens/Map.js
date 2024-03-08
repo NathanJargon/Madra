@@ -1,11 +1,38 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, PermissionsAndroid } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function Map() {
   const [showBox, setShowBox] = useState(true);
+
+    const requestLocationPermission = async () => {
+      try {
+        const granted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+        if (granted) {
+          console.log("You can use the location");
+        } else {
+          const result = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              title: "Location Permission",
+              message: "MADRA needs access to your location",
+              buttonNeutral: "Ask Me Later",
+              buttonNegative: "Cancel",
+              buttonPositive: "OK"
+            }
+          );
+          if (result === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log("You can use the location");
+          } else {
+            console.log("Location permission denied");
+          }
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    };
 
   return (
     <View style={styles.container}>
@@ -15,7 +42,7 @@ export default function Map() {
             <Image source={require('../assets/icons/place.png')} style={styles.image} />
             <Text style={styles.text}>ALLOW LOCATION</Text>
             <Text style={styles.subtext}>MADRA needs access to your location</Text>
-            <TouchableOpacity style={styles.button1} onPress={() => setShowBox(false)}>
+            <TouchableOpacity style={styles.button1} onPress={() => {setShowBox(false); requestLocationPermission();}}>
               <Text style={styles.buttonText1}>ALLOW</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button2} onPress={() => setShowBox(false)}>
