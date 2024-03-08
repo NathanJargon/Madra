@@ -14,6 +14,35 @@ export default function Profile() {
           <Text style={styles.nameText}>BEATRICE BAYLON</Text>
           <Text style={styles.emailText}>beatrice_baylon.gmail.com</Text>
           <View style={styles.line} />
+            <View style={styles.rowContainer}>
+              <Image source={require('../assets/icons/edit.png')} style={styles.sideImage} />
+              <Text style={styles.centerText}>PROFILE NAME</Text>
+              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+            </View>
+          <View style={styles.line} />
+            <View style={styles.rowContainer}>
+              <Image source={require('../assets/icons/padlock.png')} style={styles.sideImage} />
+              <Text style={styles.centerText}>PASSWORD</Text>
+              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+            </View>
+          <View style={styles.line} />
+            <View style={styles.rowContainer}>
+              <Image source={require('../assets/icons/address.png')} style={styles.sideImage} />
+              <Text style={styles.centerText}>EMAIL ADDRESS</Text>
+              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+            </View>
+          <View style={styles.line} />
+            <View style={styles.rowContainer}>
+              <Image source={require('../assets/icons/phone-call.png')} style={styles.sideImage} />
+              <Text style={styles.centerText}>PHONE NUMBER</Text>
+              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+            </View>
+          <View style={styles.line} />
+            <View style={styles.rowContainer}>
+              <Image source={require('../assets/icons/logout.png')} style={styles.sideImage} />
+              <Text style={styles.centerText}>LOG OUT</Text>
+              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+            </View>
         </View>
       </View>
       <View style={styles.circleBox} />
@@ -72,7 +101,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   infoContainer: {
-    marginTop: "-60%", // Adjust as needed
+  marginTop: '15%',
     alignItems: 'center',
   },
   nameText: {
@@ -89,5 +118,20 @@ const styles = StyleSheet.create({
     width: windowWidth * .65, // Adjust as needed
     height: 4, // Adjust as needed
     backgroundColor: "rgba(0, 0, 0, 0.1)", // Adjust as needed
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: windowWidth * 0.65, // Adjust as needed
+  },
+  sideImage: {
+    width: windowWidth * 0.05, // Adjust as needed
+    height: windowHeight * 0.06, // Adjust as needed
+    resizeMode: 'contain',
+  },
+  centerText: {
+    fontSize: windowWidth * 0.04, // Adjust as needed
+    textAlign: 'center',
   },
 });

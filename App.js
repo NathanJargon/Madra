@@ -17,11 +17,58 @@ import LoadingScreen from './screens/LoadingScreen';
 import Splash from './screens/Splash';
 import Profile from './screens/Profile';
 
+// Features
+import HazardMapping from './screens/HazardMapping';
+import EducationalHub from './screens/EducationalHub';
+import Madramania from './screens/Madramania';
+import EarthquakeUpdates from './screens/EarthquakeUpdates';
+
 // Create the stack navigators
 const AuthStack = createStackNavigator();
 const MainStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
+const FeatureStack = createStackNavigator();
+
+function FeatureStackScreen() {
+  return (
+    <FeatureStack.Navigator>
+      <FeatureStack.Screen
+        name="HazardMapping"
+        component={HazardMapping}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
+        }}
+      />
+        <FeatureStack.Screen
+        name="EducationalHub"
+        component={EducationalHub}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
+        }}
+        />
+        <FeatureStack.Screen
+        name="Madramania"
+        component={Madramania}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
+        }}
+        />
+        <FeatureStack.Screen
+        name="EarthquakeUpdates"
+        component={EarthquakeUpdates}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
+        }}
+        />
+    </FeatureStack.Navigator>
+  );
+}
+
 
 function AuthStackScreen() {
   return (
@@ -124,10 +171,10 @@ function MainStackScreen() {
           },
         }}
       />
-      <Tab.Screen 
-        name="Features" 
-        component={Features} 
-        options={{ 
+      <Tab.Screen
+        name="Features"
+        component={Features}
+        options={{
           tabBarIcon: ({ focused }) => {
             return <Image source={focused ? require('./assets/icons/open-menu-color.png') : require('./assets/icons/open-menu.png')} style={{ width: width * 0.07, height: height * 0.07, resizeMode: 'contain' }} />;
           },
@@ -175,6 +222,7 @@ function App() {
         <RootStack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
           <RootStack.Screen name="Auth" component={AuthStackScreen} />
           <RootStack.Screen name="Main" component={MainStackScreen} />
+          <RootStack.Screen name="Feature" component={FeatureStackScreen} />
         </RootStack.Navigator>
       </NavigationContainer>
   );

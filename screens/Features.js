@@ -1,62 +1,120 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
+import HazardMapping from './HazardMapping';
+import EducationalHub from './EducationalHub';
+import Madramania from './Madramania';
+import EarthquakeUpdates from './EarthquakeUpdates';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Features() {
+export default function Features({ navigation }) {
+  const [showHazardMapping, setShowHazardMapping] = useState(false);
+  const [showEducationalHub, setShowEducationalHub] = useState(false);
+  const [showMadramania, setShowMadramania] = useState(false);
+  const [showEarthquakeUpdates, setShowEarthquakeUpdates] = useState(false);
+
+  const handleHazardMappingPress = () => {
+    setShowHazardMapping(true);
+  };
+
+  const handleEducationalHubPress = () => {
+    setShowEducationalHub(true);
+  };
+
+  const handleMadramaniaPress = () => {
+    setShowMadramania(true);
+  };
+
+  const handleEarthquakeUpdatesPress = () => {
+    setShowEarthquakeUpdates(true);
+  };
+
+  const handleBackPress = () => {
+    if (showHazardMapping || showEducationalHub || showMadramania || showEarthquakeUpdates) {
+      setShowHazardMapping(false);
+      setShowEducationalHub(false);
+      setShowMadramania(false);
+      setShowEarthquakeUpdates(false);
+    } else {
+      navigation.navigate('Home');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
         <View style={styles.headerBox}>
           <View style={styles.headerContent}>
-            <Image source={require('../assets/icons/back.png')} style={styles.backArrow} />
-            <Text style={styles.headerText}>MADRA FEATURES</Text>
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={handleBackPress}>
+              <Image
+                source={require('../assets/icons/back.png')}
+                style={styles.backArrow}
+              />
+              <Text style={styles.headerText}>
+                {showHazardMapping ? 'HAZARD MAPPING' : showEducationalHub ? 'EDUCATIONAL HUB' : showMadramania ? 'MADRAMANIA' : showEarthquakeUpdates ? 'EARTHQUAKE UPDATES' : 'MADRA FEATURES'}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.boxContainer}>
-          <View style={styles.boxRow}>
-            <View style={styles.boxWrapper}>
-              <View style={styles.box}>
-                <Image source={require('../assets/featureMap.png')} style={styles.boxImage} />
-                <Text style={styles.boxTitle}>HAZARD MAPPING</Text>
-                <TouchableOpacity style={styles.proceedButton}>
-                  <Text style={styles.proceedButtonText}>PROCEED</Text>
-                </TouchableOpacity>
+        {!showHazardMapping && !showEducationalHub && !showMadramania && !showEarthquakeUpdates ? (
+          <View style={styles.boxContainer}>
+            <View style={styles.boxRow}>
+              <View style={styles.boxWrapper}>
+                <View style={styles.box}>
+                  <Image source={require('../assets/featureMap.png')} style={styles.boxImage} />
+                  <Text style={styles.boxTitle}>HAZARD MAPPING</Text>
+                  <TouchableOpacity
+                    style={styles.proceedButton}
+                    onPress={handleHazardMappingPress}
+                  >
+                    <Text style={styles.proceedButtonText}>PROCEED</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.box}>
+                  <Image source={require('../assets/featureLearn.png')} style={styles.boxImage} />
+                  <Text style={styles.boxTitle}>EDUCATIONAL HUB</Text>
+                  <TouchableOpacity
+                    style={styles.proceedButton}
+                    onPress={handleEducationalHubPress}
+                  >
+                    <Text style={styles.proceedButtonText}>PROCEED</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View style={styles.box}>
-                <Image source={require('../assets/featureLearn.png')} style={styles.boxImage} />
-                <Text style={styles.boxTitle}>EDUCATIONAL HUB</Text>
-                <TouchableOpacity style={styles.proceedButton}>
-                  <Text style={styles.proceedButtonText}>PROCEED</Text>
-                </TouchableOpacity>
+            </View>
+            <View style={styles.boxRow}>
+              <View style={styles.boxWrapper}>
+                <View style={styles.box}>
+                  <Image source={require('../assets/featureQuiz.png')} style={styles.boxImage} />
+                  <Text style={styles.boxTitle}>MADRAMANIA</Text>
+                  <TouchableOpacity
+                    style={styles.proceedButton}
+                    onPress={handleMadramaniaPress}
+                  >
+                    <Text style={styles.proceedButtonText}>PROCEED</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.box}>
+                  <Image source={require('../assets/featureUpdate.png')} style={styles.boxImage} />
+                  <Text style={styles.boxTitle}>EARTHQUAKE UPDATES</Text>
+                  <TouchableOpacity
+                    style={styles.proceedButton}
+                    onPress={handleEarthquakeUpdatesPress}
+                  >
+                    <Text style={styles.proceedButtonText}>PROCEED</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
-          <View style={styles.boxRow}>
-            <View style={styles.boxWrapper}>
-              <View style={styles.box}>
-                <Image source={require('../assets/featureQuiz.png')} style={styles.boxImage} />
-                <Text style={styles.boxTitle}>MADRAMANIA</Text>
-                <TouchableOpacity style={styles.proceedButton}>
-                  <Text style={styles.proceedButtonText}>PROCEED</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.box}>
-                <Image source={require('../assets/featureUpdate.png')} style={styles.boxImage} />
-                <Text style={styles.boxTitle}>EARTHQUAKE UPDATES</Text>
-                <TouchableOpacity style={styles.proceedButton}>
-                  <Text style={styles.proceedButtonText}>PROCEED</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
+        ) : (
+          showHazardMapping ? <HazardMapping /> : showEducationalHub ? <EducationalHub /> : showMadramania ? <Madramania /> : <EarthquakeUpdates />
+        )}
       </ImageBackground>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -131,13 +189,13 @@ boxContainer: {
     borderLeftWidth: 1,
     borderRightWidth: 1,
   },
-  headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    flex: 1,
-    padding: 30,
-  },
+    headerContent: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      flex: 1,
+      padding: 30,
+    },
   backArrow: {
     width: windowWidth * 0.05,
     height: windowHeight * 0.05,
