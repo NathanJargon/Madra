@@ -1,10 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
+import { initDB } from './Database';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Settings() {
+export default function Settings({ navigation }) {
+  const [fullName, setFullName] = useState('USER');
+  const [email, setEmail] = useState('user@gmail.com');
+  const [phoneNumber, setPhoneNumber] = useState('09123456789');
+
+  useEffect(() => {
+    const db = initDB();
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT fullName, email, phoneNumber FROM Users',
+        [],
+        (_, { rows }) => {
+          if (rows.length > 0) {
+            setUsername(rows.item(0).username);
+            setEmail(rows.item(0).email);
+          }
+        },
+        (_, error) => console.log('Error fetching data:', error)
+      );
+    });
+  }, []);
+
 return (
       <View style={styles.container}>
         <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
@@ -17,9 +39,9 @@ return (
             <ImageBackground source={require('../assets/settingsTop.png')} style={styles.box1}>
               <Image source={require('../assets/icons/profilelogo.png')} style={styles.boxImage} />
               <View style={styles.textContainer}>
-                <Text style={styles.boxText1}>BEATRICE BAYLON</Text>
-                <Text style={styles.boxText2}>beatric_baylon@gmail.com</Text>
-                <Text style={styles.boxText3}>09263456857</Text>
+                  <Text style={styles.boxText1}>{fullName}</Text>
+                  <Text style={styles.boxText2}>{email}</Text>
+                  <Text style={styles.boxText3}>{phoneNumber}</Text>
               </View>
             </ImageBackground>
           </View>
@@ -50,11 +72,13 @@ return (
                 </View>
                     <View style={styles.innerBox2}>
                       <Text style={styles.innerBoxHeader}>ACCOUNT</Text>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Image source={require('../assets/icons/user.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'  }} />
-                        <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white',  fontWeight: 'bold', }}>Personal Information</Text>
-                        <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-                      </View>
+                      <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Image source={require('../assets/icons/user.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'  }} />
+                          <Text style={[styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white',  fontWeight: 'bold' }]}>Personal Information</Text>
+                          <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.18, }]} />
+                        </View>
+                      </TouchableOpacity>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                           <Image source={require('../assets/icons/flag.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
                           <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white', fontWeight: 'bold' }}>Country</Text>

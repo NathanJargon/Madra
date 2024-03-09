@@ -190,21 +190,20 @@ imageTextContainer: {
   },
   profileLogo: {
     width: windowWidth / 4, // Adjust as needed
-    height: windowHeight / 4, // Adjust as needed
-    marginLeft: windowWidth * 0.1,
-    marginTop: windowHeight * 0.01,
+    height: windowHeight / 2.8, // Adjust as needed
+    marginLeft: windowWidth * 0.125,
     resizeMode: 'contain',
   },
   rightText: {
     marginTop: windowHeight * 0.05,
-    marginLeft: windowWidth * 0.15,
+    marginLeft: windowWidth * 0.07,
     fontSize: windowWidth * 0.075, // Adjust as needed
     color: '#000', // Adjust as needed
     textAlign: 'center',
   },
   rightSmallText: {
     fontSize: windowWidth * 0.025, // Adjust as needed
-    marginLeft: windowWidth * 0.15,
+    marginLeft: windowWidth * 0.07,
     color: '#000', // Adjust as needed
   },
   bottomContainer: {

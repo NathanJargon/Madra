@@ -6,14 +6,14 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function Profile({ navigation }) {
-  const [username, setUsername] = useState('USER');
+  const [fullName, setFullName] = useState('USER');
   const [email, setEmail] = useState('user@gmail.com');
 
   useEffect(() => {
     const db = initDB();
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT username, email FROM Users',
+        'SELECT fullName, email FROM Users',
         [],
         (_, { rows }) => {
           if (rows.length > 0) {
@@ -31,7 +31,7 @@ export default function Profile({ navigation }) {
         <Image source={require('../assets/icons/setting.png')} style={styles.settingsIcon} />
         <Image source={require('../assets/icons/edit.png')} style={styles.editIcon} />
         <View style={styles.infoContainer}>
-          <Text style={styles.nameText}>{username}</Text>
+          <Text style={styles.nameText}>{fullName}</Text>
           <Text style={styles.emailText}>{email}</Text>
           <View style={styles.line} />
             <View style={styles.rowContainer}>

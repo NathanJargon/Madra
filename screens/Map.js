@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, PermissionsAndroid } from 'react-native';
+import EarthquakeUpdates from './EarthquakeUpdates';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Map() {
+export default function Map({ navigation }) {
   const [showBox, setShowBox] = useState(true);
 
     const requestLocationPermission = async () => {
@@ -36,8 +37,8 @@ export default function Map() {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../assets/bg1.png')} style={styles.screenContainer}>
-        {showBox && (
+      <ImageBackground source={require('../assets/mapTop.png')} style={styles.screenContainer}>
+        {showBox ? (
           <View style={styles.bottomBox}>
             <Image source={require('../assets/icons/place.png')} style={styles.image} />
             <Text style={styles.text}>ALLOW LOCATION</Text>
@@ -49,6 +50,8 @@ export default function Map() {
               <Text style={styles.buttonText2}>DO NOT ALLOW</Text>
             </TouchableOpacity>
           </View>
+        ) : (
+          <EarthquakeUpdates />
         )}
       </ImageBackground>
     </View>
@@ -99,7 +102,6 @@ const styles = StyleSheet.create({
   },
   button1: {
     backgroundColor: '#318E99', // Change the color as needed
-    padding: 10, // Adjust as needed
     height: "12%",
     width: "90%",
     borderRadius: 50,
@@ -108,7 +110,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Center items vertically
   },
   button2: {
-    padding: 10, // Adjust as needed
     height: "12%",
     width: "90%",
     borderRadius: 50,

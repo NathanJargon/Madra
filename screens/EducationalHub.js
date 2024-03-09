@@ -40,7 +40,7 @@ export default function EducationalHub() {
                 <Image source={require('../assets/icons/round-logo.png')} style={ styles.image } />
                 <Text style={styles.boxTitle}>STUDY GUIDE: EARTHQUAKE</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('StudyOfEarthquake')}>
+              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('DRRM')}>
                 <Image source={require('../assets/icons/round-logo.png')} style={ styles.image } />
                 <Text style={styles.boxTitle}>STUDY GUIDE: DISASTER RISK REDUCTION MANAGEMENT (DRRM)</Text>
               </TouchableOpacity>
@@ -50,6 +50,7 @@ export default function EducationalHub() {
           {selectedLesson === 'DosAndDonts' && <DosAndDonts />}
           {selectedLesson === 'SafetyProtocols' && <SafetyProtocols />}
           {selectedLesson === 'StudyOfEarthquake' && <StudyOfEarthquake />}
+          {selectedLesson === 'DRRM' && <DRRM />}
         </View>
       </ImageBackground>
     </View>
