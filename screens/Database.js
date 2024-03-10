@@ -15,7 +15,9 @@ export const initDB = () => {
         password TEXT,
         birthday TEXT,
         imageUri TEXT,
-        phoneNumber TEXT
+        phoneNumber TEXT,
+        country TEXT,
+        language TEXT
       );`,
       [],
       () => console.log('Table created successfully'),

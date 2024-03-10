@@ -1,28 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, TextInput } from 'react-native';
+import { Modal, ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, TextInput } from 'react-native';
 import { initDB } from './Database';
+import { firebase } from './FirebaseConfig';
+import { useNavigation } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function Dashboard() {
   const [username, setUsername] = useState('USER');
+  const [fullName, setFullName] = useState('USER');
+  const [earthquakes, setEarthquakes] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigation = useNavigation();
+  const clearNotifications = () => {
+    setEarthquakes([]);
+  };
 
-  useEffect(() => {
-    const db = initDB();
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT username FROM Users',
-        [],
-        (_, { rows }) => {
-          if (rows.length > 0) {
-            setUsername(rows.item(0).username);
-          }
-        },
-        (_, error) => console.log('Error fetching data:', error)
-      );
-    });
-  }, []);
+    const [userCountry, setUserCountry] = useState(null);
+
+    const handleSearch = () => {
+      const filteredEarthquakes = earthquakes.filter(earthquake => earthquake.properties.title.includes(searchTerm));
+      setEarthquakes(filteredEarthquakes);
+    };
+
+    useEffect(() => {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const userEmail = user.email;
+        const db = initDB();
+        db.transaction(tx => {
+          tx.executeSql(
+            'SELECT country FROM Users WHERE email = ?',
+            [userEmail],
+            (_, { rows }) => {
+              if (rows.length > 0) {
+                setUserCountry(rows.item(0).country);
+              } else {
+                console.log('The logged email does not exist in the database');
+              }
+            },
+            (_, error) => console.log('Error fetching data:', error)
+          );
+        });
+      } else {
+        console.log('No user is logged in');
+      }
+    }, []);
+
+    useEffect(() => {
+      const fetchData = () => {
+        if (userCountry) {
+          fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson')
+            .then(response => response.json())
+            .then(data => {
+              const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
+              setEarthquakes(filteredEarthquakes);
+            });
+        }
+      };
+
+      fetchData();
+      const intervalId = setInterval(fetchData, 60000);
+
+      return () => clearInterval(intervalId);
+    }, [userCountry]);
+
 
   return (
     <View style={styles.container}>
@@ -30,17 +74,22 @@ export default function Dashboard() {
         <ImageBackground source={require('../assets/icons/profileBackground.png')} style={styles.profileLogoBackground}>
           <Image source={require('../assets/icons/profilelogo.png')} style={styles.profileLogo} />
         </ImageBackground>
+
         <View styles={styles.textContainer}>
-          <Text style={styles.rightText}>HI {username}!</Text>
+          <Text style={styles.rightText}>HI {fullName}!</Text>
           <Text style={styles.rightSmallText}>MADRA: YOUR PARTNER FOR LIFE</Text>
         </View>
+
       </View>
       <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
-        <View style={styles.inputContainer}>
-          <Image source={require('../assets/icons/search.png')} style={styles.sendIcon} />
-              <TextInput style={styles.input} placeholder="MADRA IS HERE TO HELP" />
-          <Image source={require('../assets/icons/send.png')} style={styles.sendIcon} />
-        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('Features')}>
+            <View style={styles.inputContainer}>
+                  <Image source={require('../assets/icons/search.png')} style={styles.sendIcon} />
+                      <Text style={styles.input}>MADRA IS HERE TO HELP</Text>
+                  <Image source={require('../assets/icons/send.png')} style={styles.sendIcon} />
+            </View>
+        </TouchableOpacity>
+
         <View style={styles.imageBox}>
           <Image source={require('../assets/image1.png')} style={styles.boxImage} />
           <Image source={require('../assets/image2.png')} style={styles.boxImage} />
@@ -48,23 +97,132 @@ export default function Dashboard() {
         </View>
         <View style={styles.transparentBox}>
             <ScrollView>
-                <View style={styles.innerBox}>
-                  <Image source={require('../assets/icons/round-logo.png')} style={styles.innerBoxImage} />
-                  <Text style={styles.innerBoxText}>YOU HAVE A MADRIFICATION!</Text>
-                  <View style={styles.bottomLine} />
-                </View>
+                {earthquakes.map((earthquake, index) => (
+                  <TouchableOpacity key={index} onPress={() => navigation.navigate('Map', { earthquake })}>
+                    <View style={styles.innerBox}>
+                      <Image source={require('../assets/icons/round-logo.png')} style={styles.innerBoxImage} />
+                      <Text style={styles.innerBoxText}>YOU HAVE A MADRAFICATION!</Text>
+                      <View style={styles.bottomLine} />
+                    </View>
+                  </TouchableOpacity>
+                ))}
             </ScrollView>
           </View>
-        <View style={styles.clearAllBox}>
-          <Text style={styles.clearAllText}>CLEAR ALL</Text>
-        </View>
+            {earthquakes.length > 0 && (
+                <View style={styles.clearAllBox}>
+                    <TouchableOpacity onPress={clearNotifications}>
+                      <Text style={styles.clearAllText}>CLEAR ALL</Text>
+                    </TouchableOpacity>
+                </View>
+          )}
+
       </ImageBackground>
-      <Image source={require('../assets/icons/notif.png')} style={styles.fixedImage} />
+        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+          <Image source={require('../assets/icons/notif.png')} style={styles.fixedImage} />
+        </TouchableOpacity>
+
+
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <ImageBackground source={require('../assets/bg1.png')} style={{width: '100%', height: '100%'}}>
+            <View style={styles.fullScreenView}>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.enhancedTopInput}
+                  placeholder="Search earthquakes..."
+                  value={searchTerm}
+                  onChangeText={text => setSearchTerm(text)}
+                />
+                <TouchableOpacity onPress={handleSearch}>
+                  <Image source={require('../assets/icons/send.png')} style={styles.sendIcon1} />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <View style={styles.infoBox}>
+                    <ScrollView>
+                      {earthquakes.map((earthquake, index) => (
+                        <View key={index} style={styles.innerBox}>
+                          <Text>{earthquake.properties.title}</Text>
+                        </View>
+                      ))}
+                    </ScrollView>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.enhancedButton}
+                    onPress={() => {
+                      setModalVisible(!modalVisible);
+                    }}
+                  >
+                    <Text style={styles.enhancedButtonText}>Hide Modal</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </ImageBackground>
+        </Modal>
     </View>
   );
 }
 
+
 const styles = StyleSheet.create({
+    infoBox: {
+      backgroundColor: 'rgba(255, 255, 255, 0)', // Set the background color to gray
+      width: '100%', // Adjust the width as needed
+      height: '65%', // Adjust the height as needed
+      justifyContent: 'center', // Center the contents vertically
+      alignItems: 'center', // Center the contents horizontally
+      padding: 10, // Add some padding
+    },
+  modalView: {
+    height: '100%', // Take up the full height of the parent
+    // ... other styles
+  },
+    inputContainer: {
+      flexDirection: 'row', // Arrange children in a row
+      justifyContent: 'center', // Center the children along the main axis
+      alignItems: 'center', // Center the children along the cross axis
+      alignSelf: 'center',
+    },
+    enhancedTopInput: {
+      margin: windowWidth * 0.05,
+      flex: .9, // Take up the remaining space in the parent
+      fontSize: windowWidth * 0.045, // Increase the font size
+      height: windowHeight * 0.05,
+      borderRadius: 20,
+      borderWidth: 2, // Add border width
+      borderColor: '#318E99', // Add border color
+      textAlign: 'center', // Center the text
+    },
+  sendIcon1: {
+    width: 30, // Increase the width
+    height: 30, // Increase the height
+    resizeMode: 'contain',
+  },
+  enhancedButton: {
+    position: 'absolute', // Position it absolutely
+    bottom: windowHeight * 0.25, // At the bottom of the parent
+    width: '80%', // Full width
+    backgroundColor: "#318E99",
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: 'center',
+    margin: 10, // Add margin
+    borderWidth: 2, // Add border width
+    borderColor: '#FFFFFF', // Add border color
+  },
+  enhancedButtonText: {
+    color: '#FFFFFF',
+    fontSize: windowWidth * 0.05,
+    textAlign: 'center',
+  },
     clearAllBox: { // Modify this style
       position: 'absolute', // Position it absolutely
       bottom: 10, // At the bottom of the parent
@@ -153,12 +311,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     textAlign: 'left',
     padding: 5,
-    fontSize: windowWidth * 0.025,
+    fontSize: windowWidth * 0.03,
   },
   fixedImage: {
     position: 'absolute', // Position it absolutely
-    top: 0, // Adjust as needed
-    right: 10, // Adjust as needed
+    bottom: 350, // Adjust as needed
+    left: 175, // Adjust as needed
     width: windowWidth / 14, // Adjust as needed
     height: windowHeight / 14, // Adjust as needed
     resizeMode: 'contain',
@@ -189,10 +347,10 @@ imageTextContainer: {
     resizeMode: 'contain',
   },
   profileLogo: {
-    width: windowWidth / 4, // Adjust as needed
-    height: windowHeight / 2.8, // Adjust as needed
-    marginLeft: windowWidth * 0.125,
-    resizeMode: 'contain',
+    width: 125, // Adjust as needed
+    height: 125, // Adjust as needed
+    marginLeft: windowWidth * 0.075,
+    marginTop: windowHeight * 0.055,
   },
   rightText: {
     marginTop: windowHeight * 0.05,

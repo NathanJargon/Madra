@@ -1,34 +1,161 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Modal } from 'react-native';
 import { initDB } from './Database';
+import { firebase } from './FirebaseConfig';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+
+export const updateUserCountryAndLanguage = (username, selectedCountry, selectedLanguage) => {
+  const db = SQLite.openDatabase(database_name);
+  db.transaction(tx => {
+    tx.executeSql(
+      `UPDATE Users SET country = ?, language = ? WHERE username = ?`,
+      [selectedCountry, selectedLanguage, username],
+      () => console.log('User country and language updated successfully'),
+      (_, error) => console.log('Error updating user country and language:', error)
+    );
+  });
+};
 
 export default function Settings({ navigation }) {
   const [fullName, setFullName] = useState('USER');
   const [email, setEmail] = useState('user@gmail.com');
   const [phoneNumber, setPhoneNumber] = useState('09123456789');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleLang, setModalVisibleLang] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState('PH');
+  const [selectedLanguage, setSelectedLanguage] = useState('ENG'); // Add this line
 
-  useEffect(() => {
-    const db = initDB();
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT fullName, email, phoneNumber FROM Users',
-        [],
-        (_, { rows }) => {
-          if (rows.length > 0) {
-            setUsername(rows.item(0).username);
-            setEmail(rows.item(0).email);
-          }
-        },
-        (_, error) => console.log('Error fetching data:', error)
-      );
-    });
-  }, []);
+  const countries = [
+    { code: 'PH', name: 'Philippines' },
+    { code: 'US', name: 'United States' },
+    { code: 'IN', name: 'India' },
+    { code: 'BR', name: 'Brazil' },
+    { code: 'RU', name: 'Russia' },
+    { code: 'DE', name: 'Germany' },
+    { code: 'JP', name: 'Japan' },
+    { code: 'UK', name: 'United Kingdom' },
+    { code: 'FR', name: 'France' },
+    { code: 'ZA', name: 'South Africa' },
+    { code: 'CN', name: 'China' },
+  ];
 
-return (
-      <View style={styles.container}>
+    const languages = [
+        { code: 'PH', name: 'Filipino', shortName: 'FIL' },
+        { code: 'US', name: 'English', shortName: 'ENG' },
+        { code: 'IN', name: 'Hindi', shortName: 'HIN' },
+        { code: 'BR', name: 'Portuguese', shortName: 'POR' },
+        { code: 'RU', name: 'Russian', shortName: 'RUS' },
+        { code: 'DE', name: 'German', shortName: 'GER' },
+        { code: 'JP', name: 'Japanese', shortName: 'JPN' },
+        { code: 'FR', name: 'French', shortName: 'FRA' },
+        { code: 'ZA', name: 'Afrikaans', shortName: 'AFR' },
+        { code: 'CN', name: 'Mandarin', shortName: 'MAN' },
+    ];
+
+    useEffect(() => {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const userEmail = user.email;
+        const db = initDB();
+        db.transaction(tx => {
+          tx.executeSql(
+            'SELECT email, phoneNumber, fullname FROM Users WHERE email = ?',
+            [userEmail],
+            (_, { rows }) => {
+              if (rows.length > 0) {
+                console.log('The logged email exists in the database');
+              } else {
+                console.log('The logged email does not exist in the database');
+              }
+            },
+            (_, error) => console.log('Error fetching data:', error)
+          );
+        });
+      } else {
+        console.log('No user is logged in');
+      }
+    }, []);
+
+  return (
+    <View style={styles.container}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <ScrollView style={{ height: windowHeight * 0.3 }}>
+              {countries.map((country, index) => (
+                <View key={index} style={{ height: windowHeight * 0.09 }}>
+                    <TouchableOpacity
+                      style={styles.countryBox}
+                      onPress={() => {
+                        setSelectedCountry(country.code);
+                        setModalVisible(!modalVisible);
+                        updateUserCountryAndLanguage(username, country.code, selectedLanguage);
+                      }}
+                    >
+                      <Text style={styles.modalText}>{country.name}</Text>
+                    </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
+            <TouchableOpacity
+              style={{ ...styles.openButton, backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <Text style={styles.textStyle}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisibleLang}
+        onRequestClose={() => {
+          setModalVisibleLang(!modalVisibleLang);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <ScrollView style={{ height: windowHeight * 0.3 }}>
+              {languages.map((language, index) => (
+                <View key={index} style={{ height: windowHeight * 0.09 }}>
+                    <TouchableOpacity
+                      style={styles.countryBox}
+                      onPress={() => {
+                        setSelectedLanguage(language.shortName);
+                        setModalVisibleLang(!modalVisibleLang);
+                        updateUserCountryAndLanguage(username, selectedCountry, language.shortName);
+                      }}
+                    >
+                      <Text style={styles.modalText}>{language.name}</Text>
+                    </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
+            <TouchableOpacity
+              style={{ ...styles.openButton, backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+              onPress={() => {
+                setModalVisibleLang(!modalVisibleLang);
+              }}
+            >
+              <Text style={styles.textStyle}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+
         <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
           <View style={styles.headerBox}>
             <View style={styles.headerContent}>
@@ -76,21 +203,25 @@ return (
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                           <Image source={require('../assets/icons/user.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'  }} />
                           <Text style={[styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white',  fontWeight: 'bold' }]}>Personal Information</Text>
-                          <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.18, }]} />
+                          <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.19, }]} />
                         </View>
                       </TouchableOpacity>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <Image source={require('../assets/icons/flag.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
-                          <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white', fontWeight: 'bold' }}>Country</Text>
-                          <Text style={{ color: 'white', marginRight: 5, fontWeight: 'bold' }}>PH</Text>
-                          <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <Image source={require('../assets/icons/internet.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
-                          <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white', fontWeight: 'bold' }}>Language</Text>
-                          <Text style={{ color: 'white', marginRight: 5, fontWeight: 'bold' }}>ENG</Text>
-                          <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-                        </View>
+                          <TouchableOpacity onPress={() => setModalVisible(true)}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                              <Image source={require('../assets/icons/flag.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
+                              <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white', fontWeight: 'bold' }}>Country</Text>
+                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.365, fontWeight: 'bold' }}>{selectedCountry}</Text>
+                              <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.025, }]} />
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                              <Image source={require('../assets/icons/internet.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
+                              <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white', fontWeight: 'bold' }}>Language</Text>
+                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.32, fontWeight: 'bold' }}>{selectedLanguage}</Text>
+                              <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.025, }]} />
+                            </View>
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.innerBox3}>
                       <Text style={styles.innerBoxHeader}>GENERAL</Text>
@@ -272,5 +403,53 @@ const styles = StyleSheet.create({
   bottomContainer: {
     width: windowWidth, // Full width
     height: '100%', // Adjust the height as needed
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: windowHeight * 0.01,
+  },
+  modalView: {
+    margin: 20,
+    width: "70%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  textStyle: {
+    color: "black",
+    width: windowWidth * 0.15,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: windowWidth * 0.055,
+   },
+  countryBox: { // Add this style
+    borderWidth: 1,
+    borderColor: '#000',
+    borderRadius: 5,
+    padding: 10,
+    margin: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Modal, TextInput, Button } from 'react-native';
 import { initDB } from './Database';
+import { firebase } from './FirebaseConfig';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -8,56 +9,157 @@ const windowHeight = Dimensions.get('window').height;
 export default function Profile({ navigation }) {
   const [fullName, setFullName] = useState('USER');
   const [email, setEmail] = useState('user@gmail.com');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedField, setSelectedField] = useState(null);
+  const [inputValue, setInputValue] = useState('');
+    const handleExit = () => {
+      setModalVisible(false);
+    };
+  const [currentValue, setCurrentValue] = useState('');
 
-  useEffect(() => {
-    const db = initDB();
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT fullName, email FROM Users',
-        [],
-        (_, { rows }) => {
-          if (rows.length > 0) {
-            setUsername(rows.item(0).username);
-            setEmail(rows.item(0).email);
-          }
-        },
-        (_, error) => console.log('Error fetching data:', error)
-      );
-    });
-  }, []);
+    const handleSave = () => {
+      const db = initDB();
+      db.transaction(tx => {
+        tx.executeSql(
+          `UPDATE Users SET ${selectedField} = ? WHERE email = ?`,
+          [inputValue, email],
+          () => {
+            console.log('User data updated successfully');
+            setModalVisible(false);
+          },
+          (_, error) => console.log('Error updating user data:', error)
+        );
+      });
+    };
+
+    const handleRowPress = (field) => {
+      setSelectedField(field);
+      const db = initDB();
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT ${field} FROM Users WHERE email = ?`,
+          [email],
+          (_, { rows }) => {
+            if (rows.length > 0) {
+              setCurrentValue(rows.item(0)[field]); // Set the current value
+            }
+          },
+          (_, error) => console.log('Error fetching data:', error)
+        );
+      });
+      setModalVisible(true);
+    };
+
+    useEffect(() => {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const userEmail = user.email;
+        const db = initDB();
+        db.transaction(tx => {
+          tx.executeSql(
+            'SELECT email FROM Users WHERE email = ?',
+            [userEmail],
+            (_, { rows }) => {
+              if (rows.length > 0) {
+                console.log('The logged email exists in the database');
+              } else {
+                console.log('The logged email does not exist in the database');
+              }
+            },
+            (_, error) => console.log('Error fetching data:', error)
+          );
+        });
+      } else {
+        console.log('No user is logged in');
+      }
+    }, []);
+
+
   return (
     <ImageBackground source={require('../assets/bg1.png')} style={styles.backgroundImage}>
       <View style={styles.centerBox}>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+                <Text style={styles.modalText}>{selectedField ? selectedField.toUpperCase() : 'Empty'}</Text>
+              <TextInput
+                style={{ height: windowHeight * 0.05, borderColor: 'gray', borderWidth: 2, borderRadius: 10, width: '80%', textAlign: 'center'}}
+                onChangeText={text => setInputValue(text)}
+                value={inputValue}
+                placeholder={currentValue ? currentValue : 'EMPTY'}
+              />
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <TouchableOpacity style={styles.openButton} onPress={handleSave}>
+                  <Text style={styles.textStyle}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.openButton} onPress={handleExit}>
+                  <Text style={styles.textStyle}>Exit</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+
         <Image source={require('../assets/icons/setting.png')} style={styles.settingsIcon} />
         <Image source={require('../assets/icons/edit.png')} style={styles.editIcon} />
         <View style={styles.infoContainer}>
           <Text style={styles.nameText}>{fullName}</Text>
           <Text style={styles.emailText}>{email}</Text>
           <View style={styles.line} />
-            <View style={styles.rowContainer}>
-              <Image source={require('../assets/icons/edit.png')} style={styles.sideImage} />
+
+        <TouchableOpacity onPress={() => handleRowPress('fullName')}>
+          <View style={styles.rowContainer}>
+
+            <Image source={require('../assets/icons/edit.png')} style={styles.sideImage} />
+            <TouchableOpacity onPress={() => handleRowPress(fullName)}>
               <Text style={styles.centerText}>PROFILE NAME</Text>
-              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
-            </View>
+            </TouchableOpacity>
+            <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+
+          </View>
+        </TouchableOpacity>
+
+
           <View style={styles.line} />
-            <View style={styles.rowContainer}>
-              <Image source={require('../assets/icons/padlock.png')} style={styles.sideImage} />
-              <Text style={styles.centerText}>PASSWORD</Text>
-              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
-            </View>
+
+            <TouchableOpacity onPress={() => handleRowPress('username')}>
+              <View style={styles.rowContainer}>
+                <Image source={require('../assets/icons/user.png')} style={styles.sideImage} />
+                <Text style={styles.centerText}>USERNAME</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+              </View>
+            </TouchableOpacity>
+
           <View style={styles.line} />
-            <View style={styles.rowContainer}>
-              <Image source={require('../assets/icons/address.png')} style={styles.sideImage} />
-              <Text style={styles.centerText}>EMAIL ADDRESS</Text>
-              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
-            </View>
+
+            <TouchableOpacity onPress={() => handleRowPress('password')}>
+              <View style={styles.rowContainer}>
+                <Image source={require('../assets/icons/padlock.png')} style={styles.sideImage} />
+                <Text style={styles.centerText}>PASSWORD</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+              </View>
+            </TouchableOpacity>
+
           <View style={styles.line} />
-            <View style={styles.rowContainer}>
-              <Image source={require('../assets/icons/phone-call.png')} style={styles.sideImage} />
-              <Text style={styles.centerText}>PHONE NUMBER</Text>
-              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
-            </View>
+
+            <TouchableOpacity onPress={() => handleRowPress('phoneNumber')}>
+              <View style={styles.rowContainer}>
+                <Image source={require('../assets/icons/phone-call.png')} style={styles.sideImage} />
+                <Text style={styles.centerText}>PHONE NUMBER</Text>
+                <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+              </View>
+            </TouchableOpacity>
           <View style={styles.line} />
+
             <TouchableOpacity onPress={() => navigation.navigate('Auth')}>
               <View style={styles.rowContainer}>
                 <Image source={require('../assets/icons/logout.png')} style={styles.sideImage} />
@@ -156,5 +258,47 @@ const styles = StyleSheet.create({
     fontSize: windowWidth * 0.04, // Adjust as needed
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+    centeredView: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 22
+    },
+  openButton: {
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    borderRadius: 20,
+    elevation: 2,
+    width: '50%', // Adjust as needed
+    alignItems: 'center',
+    marginTop: windowHeight * 0.03,
+    margin: 10,
+  },
+  textStyle: {
+    color: "black",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: windowWidth * 0.045, // Adjust as needed
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: '90%', // Adjust as needed
+  },
+  modalText: {
+    fontWeight: 'bold',
+    textAlign: "center",
+    fontSize: windowWidth * 0.045, // Adjust as needed
   },
 });

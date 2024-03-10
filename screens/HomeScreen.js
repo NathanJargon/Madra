@@ -49,8 +49,8 @@ function HomeScreen({ navigation }) {
     }, []);
 
     const handleSignUpButtonPress = () => {
-      if (email === '' || password === '') {
-        alert('Email and password cannot be empty.');
+      if (username === '' || email === '' || password === '') {
+        alert('Username, email and password cannot be empty.');
       } else {
         handleSignUp(email, password);
       }
