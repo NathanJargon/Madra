@@ -4,8 +4,9 @@ import LoadingScreen from './LoadingScreen';
 import { RadioButton } from 'react-native-paper'; // Import RadioButton from react-native-paper
 import * as ImagePicker from 'expo-image-picker';
 import { firebase } from './FirebaseConfig';
-import { initDB } from './Database';
+import { setupDatabase } from './Database';
 import * as SQLite from 'expo-sqlite';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function HomeScreen({ navigation }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false); // Add this line
@@ -25,176 +26,126 @@ function HomeScreen({ navigation }) {
     const [isCustomSelected, setIsCustomSelected] = useState(false);
     const [bgImage, setBgImage] = useState(require('../assets/bgoutside1.png'));
     const [phoneNumber, setPhoneNumber] = useState(null);
-
+    const [month, setMonth] = useState('');
+    const [day, setDay] = useState('');
+    const [year, setYear] = useState('');
+    
     useEffect(() => {
-      const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
-        if (user && !user.emailVerified) {
-          // Delete the user's information from Firebase Authentication
-          await user.delete();
-
-          // Delete the user's information from the SQLite database
-          db.transaction(tx => {
-            tx.executeSql(
-              'DELETE FROM Users WHERE email = ?',
-              [user.email],
-              () => console.log('User deleted successfully from SQLite database'),
-              (_, error) => console.error('Error while deleting user from SQLite database:', error)
-            );
-          });
-        }
-      });
-
-      // Cleanup function
-      return () => unsubscribe();
-    }, []);
-
+      if (month && day && year) {
+        setBirthday(`${month}-${day}-${year}`);
+      }
+    }, [month, day, year]);
+    
     const handleSignUpButtonPress = () => {
       if (username === '' || email === '' || password === '') {
         alert('Username, email and password cannot be empty.');
       } else {
-        handleSignUp(email, password);
+        handleSignUp(gender, fullName, username, email, password, birthday, phoneNumber);
       }
     };
-
-    const db = initDB();
-
-    useEffect(() => {
+    
+    const handleSignUp = async (gender, fullName, username, email, password, birthday, phoneNumber) => {
+      const db = await setupDatabase();
+    
+      // Check if email or username already exists
       db.transaction(tx => {
         tx.executeSql(
-          'SELECT * FROM Users',
-          [],
-          (_, { rows: { _array } }) => {
-            console.log('Users:', _array);
-          },
-          (_, error) => console.log('Error fetching users:', error)
+          'SELECT * FROM Users WHERE email = ? OR username = ?',
+          [email, username],
+          (_, { rows }) => {
+            if (rows.length > 0) {
+              if (rows.item(0).email === email) {
+                alert('This email is already registered. Please log in or use a different email.');
+              } else {
+                alert('This username is already taken. Please choose a different username.');
+              }
+              return;
+            }
+          }
         );
       });
-    }, []);
     
-    const handleSignUp = async (email, password) => {
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+    
+      await user.sendEmailVerification();
+      alert('A verification email has been sent to your email. Please verify your email before logging in.');
+    
       if (username.length > 10) {
         alert('Username cannot be more than 10 characters.');
         return;
       }
-
-      try {
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-
-        if (user) {
-          await user.sendEmailVerification();
-
-          // Schedule the deletion of the user's information after 5 minutes
-          const timeoutId = setTimeout(async () => {
-            if (!user.emailVerified) {
-              // Delete the user's information if their email is not verified
-              await firebase.auth().currentUser.delete();
-
-              // Delete the user's information from the SQLite database
-              db.transaction(tx => {
-                tx.executeSql(
-                  'DELETE FROM Users WHERE email = ?',
-                  [email],
-                  () => console.log('User deleted successfully from SQLite database'),
-                  (_, error) => console.error('Error while deleting user from SQLite database:', error)
-                );
-              });
-
-              alert('Your account has been deleted because you did not verify your email within 5 minutes.');
-            }
-          }, 600000); // 5 minutes
-
-          if (user.emailVerified) {
-            setIsAuthenticated(true);
-            // Clear the timeout if the user verifies their email
-            clearTimeout(timeoutId);
-          } else {
-            alert('Verify in 10 minutes!\n\nA verification email has been sent to your email. Verify before logging in and do not close the app.');
-            setBottomContent('login');
-
-            db.transaction(tx => {
-              tx.executeSql(
-                'INSERT INTO Users (gender, fullName, username, email, password, birthday, imageUri, phoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [gender, fullName, username, email, password, birthday, imageUri, phoneNumber],
-                () => console.log('User inserted successfully'),
-                (_, error) => {
-                  if (error.message.includes('UNIQUE constraint failed: Users.email')) {
-                    alert('This email is already registered. Please log in or use a different email.');
-                  } else if (error.message.includes('UNIQUE constraint failed: Users.username')) {
-                    alert('This username is already taken. Please choose a different username.');
-                  } else {
-                    console.error('Error while signing up:', error);
-                  }
-                }
-              );
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Error while signing up:', error);
-        console.log('Error code:', error.code);
-        console.log('Error message:', error.message);
-
-        if (error.code === 'auth/email-already-in-use') {
-          alert('The email address is already in use by another account.');
-        }
-      }
-
+    
+      db.transaction(tx => {
+        tx.executeSql(
+          'INSERT INTO Users (gender, fullName, username, email, password, birthday, imageUri, phoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          [gender, fullName, username, email, password, birthday, imageUri, phoneNumber],
+          () => console.log('User inserted successfully'),
+          (_, error) => console.error('Error while signing up:', error)
+        );
+      });
+    
       setIsLoading(false);
-
+    
       setTimeout(() => {
         setButtonDisabled(false);
       }, 1000);
     };
 
-    const handleLogin = async () => {
-      if (buttonDisabled) {
-        return;
-      }
+    useEffect(() => {
+      const checkUserLoggedIn = async () => {
+        const userLoggedIn = await AsyncStorage.getItem('userLoggedIn');
     
-      if (!email || !password) {
-        alert('Both fields are required.');
-        return;
-      }
-    
-      setButtonDisabled(true);
-      setIsLoading(true);
-    
-      try {
-        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-    
-        if (user.emailVerified) {
+        if (userLoggedIn === 'true') {
           navigation.reset({
             index: 0,
             routes: [{ name: 'Main' }],
           });
-    
-          setIsAuthenticated(true);
-        } else {
-          alert('Please verify your email before logging in.');
-          setIsLoading(false);
-          setButtonDisabled(false);
-          return;
         }
-      } catch (error) {
-        console.error('Error while logging in:', error);
-        console.log('Error code:', error.code); // Print out the error code
-        console.log('Error message:', error.message); // Print out the error message
+      };
     
-        if (error.code === 'auth/user-not-found') {
-          alert('The email does not exist. Please check and try again.');
-        } else if (error.code === 'auth/wrong-password') {
-          alert('The password is incorrect. Please check and try again.');
-        }
-      }
+      checkUserLoggedIn();
+    }, []);
+
+  const handleLogin = async () => {
+    try {
+      const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+
+      if (user.emailVerified) {
+        await AsyncStorage.setItem('userLoggedIn', 'true'); // Set the flag
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
     
-      setIsLoading(false);
-    
-      setTimeout(() => {
+        setIsAuthenticated(true);
+      } else {
+        alert('Please verify your email before logging in.');
+        setIsLoading(false);
         setButtonDisabled(false);
-      }, 1000); // Disable button for 1 second
-    };
+        return;
+      }
+  } catch (error) {
+    console.error('Error while logging in:', error);
+    console.log('Error code:', error.code); // Print out the error code
+    console.log('Error message:', error.message); // Print out the error message
+
+    if (error.code === 'auth/user-not-found') {
+      alert('The email does not exist. Please check and try again.');
+    } else if (error.code === 'auth/wrong-password') {
+      alert('The password is incorrect. Please check and try again.');
+    } else if (error.code === 'auth/invalid-credential') {
+      alert('The supplied auth credential is incorrect, malformed or has expired. Please check and try again.');
+    } else if (error.code === 'auth/invalid-email') {
+      alert('The email address is badly formatted. Please check and try again.');
+    }
+  }
+
+    setIsLoading(false);
+    setButtonDisabled(false);
+  };
 
 
   const openImagePicker = async () => {
@@ -361,25 +312,25 @@ return (
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <TextInput
-                style={styles.inputDateMonth} // Apply the new style
+                style={styles.inputDateMonth}
                 placeholder="Month"
                 placeholderTextColor="#318E99"
                 keyboardType="numeric"
-                onChangeText={text => setBirthday(text)} 
+                onChangeText={text => setMonth(text)} 
               />
               <TextInput
-                style={styles.inputDateDay} // Apply the new style
+                style={styles.inputDateDay}
                 placeholder="Day"
                 placeholderTextColor="#318E99"
                 keyboardType="numeric"
-                onChangeText={text => setBirthday(text)} 
+                onChangeText={text => setDay(text)} 
               />
               <TextInput
-                style={styles.inputDateYear} // Apply the new style
+                style={styles.inputDateYear}
                 placeholder="Year"
                 placeholderTextColor="#318E99"
                 keyboardType="numeric"
-                onChangeText={text => setBirthday(text)} 
+                onChangeText={text => setYear(text)} 
               />
             </View>
 

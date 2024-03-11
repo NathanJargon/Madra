@@ -29,6 +29,7 @@ const MainStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
 const FeatureStack = createStackNavigator();
+const SplashStack = createStackNavigator();
 
 function FeatureStackScreen() {
   return (
@@ -73,7 +74,7 @@ function FeatureStackScreen() {
 function AuthStackScreen() {
   return (
     <FontLoader>
-    <AuthStack.Navigator initialRouteName="Splash">
+    <AuthStack.Navigator initialRouteName="HomeScreen">
       <AuthStack.Screen 
         name="HomeScreen" 
         component={HomeScreen} 
@@ -90,7 +91,16 @@ function AuthStackScreen() {
         cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
       }} 
     />
-    <AuthStack.Screen
+    </AuthStack.Navigator>
+    </FontLoader>
+  );
+}
+
+function SplashStackScreen() {
+  return (
+    <FontLoader>
+    <SplashStack.Navigator initialRouteName="Splash">
+    <SplashStack.Screen
       name="Splash"
       component={Splash}
       options={{
@@ -98,10 +108,11 @@ function AuthStackScreen() {
         cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
       }}
     />
-    </AuthStack.Navigator>
+    </SplashStack.Navigator>
     </FontLoader>
   );
 }
+
 
 
 function CustomTabBar({ state, descriptors, navigation }) {
@@ -219,7 +230,8 @@ function App() {
 
   return (
       <NavigationContainer>
-        <RootStack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
+        <RootStack.Navigator initialRouteName="Auth" screenOptions={{ headerShown: false }}>
+          <RootStack.Screen name='LoadingScreen' component={SplashStackScreen} />
           <RootStack.Screen name="Auth" component={AuthStackScreen} />
           <RootStack.Screen name="Main" component={MainStackScreen} />
           <RootStack.Screen name="Feature" component={FeatureStackScreen} />

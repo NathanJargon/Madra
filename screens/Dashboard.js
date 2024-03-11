@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, TextInput } from 'react-native';
-import { initDB } from './Database';
+import { setupDatabase, getAllUsers } from './Database';
 import { firebase } from './FirebaseConfig';
 import { useNavigation } from '@react-navigation/native';
+import * as SQLite from 'expo-sqlite';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+const db = SQLite.openDatabase('users.db');
 
 export default function Dashboard() {
   const [username, setUsername] = useState('USER');
   const [fullName, setFullName] = useState('USER');
+  const [userEmail, setUserEmail] = useState(null);
   const [earthquakes, setEarthquakes] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,54 +21,96 @@ export default function Dashboard() {
     setEarthquakes([]);
   };
 
-    const [userCountry, setUserCountry] = useState(null);
+  const [userCountry, setUserCountry] = useState(null);
 
-    const handleSearch = () => {
-      const filteredEarthquakes = earthquakes.filter(earthquake => earthquake.properties.title.includes(searchTerm));
-      setEarthquakes(filteredEarthquakes);
-    };
+  const handleSearch = () => {
+    const filteredEarthquakes = earthquakes.filter(earthquake => earthquake.properties.title.includes(searchTerm));
+    setEarthquakes(filteredEarthquakes);
+  };
 
     useEffect(() => {
-      const user = firebase.auth().currentUser;
-      if (user) {
-        const userEmail = user.email;
-        const db = initDB();
-        db.transaction(tx => {
-          tx.executeSql(
-            'SELECT country FROM Users WHERE email = ?',
-            [userEmail],
-            (_, { rows }) => {
-              if (rows.length > 0) {
-                setUserCountry(rows.item(0).country);
-              } else {
-                console.log('The logged email does not exist in the database');
-              }
-            },
-            (_, error) => console.log('Error fetching data:', error)
-          );
-        });
-      } else {
-        console.log('No user is logged in');
-      }
+      const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          console.log('User email:', user.email);
+          setUserEmail(user.email);
+        } else {
+          console.log('No user is logged in');
+          setUserEmail(null);
+        }
+      });
+
+      // Cleanup function
+      return () => {
+        unsubscribe();
+      };
     }, []);
 
     useEffect(() => {
-      const fetchData = () => {
-        if (userCountry) {
-          fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson')
-            .then(response => response.json())
-            .then(data => {
-              const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
-              setEarthquakes(filteredEarthquakes);
-            });
+      console.log('Fetching users...');
+      const fetchUsers = async () => {
+        try {
+          const users = await getAllUsers();
+          if (!users) {
+            console.error('Error fetching users: users is undefined');
+            return;
+          }
+          console.log('All users:', users);
+        } catch (error) {
+          console.error('Error fetching users:', error);
         }
       };
 
-      fetchData();
-      const intervalId = setInterval(fetchData, 60000);
+      fetchUsers();
+    }, []);
 
-      return () => clearInterval(intervalId);
-    }, [userCountry]);
+    useEffect(() => {
+      const fetchUser = async () => {
+        const user = await new Promise((resolve, reject) => {
+          const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+            unsubscribe();
+            resolve(user);
+          }, reject);
+        });
+
+        if (user) {
+          console.log('User email:', user.email);
+          setUserEmail(user.email);
+          const sqlStatements = ['SELECT * FROM Users WHERE email = ?'];
+          db.exec(sqlStatements, true, (error, resultSet) => {
+            if (error) {
+              console.log('Error fetching data:', error);
+            } else {
+              const users = resultSet[0].rows;
+              console.log('User data:', users);
+              setFullName(users[0].fullName);
+            }
+          });
+        } else {
+          console.log('No user is logged in');
+          setUserEmail(null);
+        }
+      };
+
+      fetchUser();
+    }, []);
+
+  useEffect(() => {
+    const fetchData = () => {
+      if (userCountry) {
+        fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson')
+          .then(response => response.json())
+          .then(data => {
+            const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
+            setEarthquakes(filteredEarthquakes);
+          });
+      }
+    };
+
+    fetchData();
+    const intervalId = setInterval(fetchData, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [userCountry]);
 
 
   return (
@@ -315,8 +360,8 @@ const styles = StyleSheet.create({
   },
   fixedImage: {
     position: 'absolute', // Position it absolutely
-    bottom: 350, // Adjust as needed
-    left: 175, // Adjust as needed
+    bottom: windowHeight * 0.385, // Adjust as needed
+    left: windowWidth * 0.385, // Adjust as needed
     width: windowWidth / 14, // Adjust as needed
     height: windowHeight / 14, // Adjust as needed
     resizeMode: 'contain',
@@ -347,10 +392,10 @@ imageTextContainer: {
     resizeMode: 'contain',
   },
   profileLogo: {
-    width: 125, // Adjust as needed
-    height: 125, // Adjust as needed
-    marginLeft: windowWidth * 0.075,
-    marginTop: windowHeight * 0.055,
+    width: 100, // Adjust as needed
+    height: 100, // Adjust as needed
+    marginLeft: windowWidth * 0.1,
+    marginTop: windowHeight * 0.1,
   },
   rightText: {
     marginTop: windowHeight * 0.05,

@@ -1,31 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Modal } from 'react-native';
-import { initDB } from './Database';
+import { setupDatabase } from './Database';
 import { firebase } from './FirebaseConfig';
+import * as SQLite from 'expo-sqlite';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
-export const updateUserCountryAndLanguage = (username, selectedCountry, selectedLanguage) => {
-  const db = SQLite.openDatabase(database_name);
-  db.transaction(tx => {
-    tx.executeSql(
-      `UPDATE Users SET country = ?, language = ? WHERE username = ?`,
-      [selectedCountry, selectedLanguage, username],
-      () => console.log('User country and language updated successfully'),
-      (_, error) => console.log('Error updating user country and language:', error)
-    );
-  });
-};
 
 export default function Settings({ navigation }) {
   const [fullName, setFullName] = useState('USER');
   const [email, setEmail] = useState('user@gmail.com');
   const [phoneNumber, setPhoneNumber] = useState('09123456789');
+  const [username, setUsername] = useState('user');
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleLang, setModalVisibleLang] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('PH');
   const [selectedLanguage, setSelectedLanguage] = useState('ENG'); // Add this line
+  const database_name = 'Test.db';
+  
+  const updateUserCountryAndLanguage = async (username, selectedCountry, selectedLanguage) => {
+    const db = await setupDatabase();
+    db.transaction(tx => {
+      tx.executeSql(
+        `UPDATE Users SET country = ?, language = ? WHERE username = ?`,
+        [selectedCountry, selectedLanguage, username],
+        () => console.log('User country and language updated successfully'),
+        (_, error) => console.log('Error updating user country and language:', error)
+      );
+    });
+  };
 
   const countries = [
     { code: 'PH', name: 'Philippines' },
@@ -55,27 +58,37 @@ export default function Settings({ navigation }) {
     ];
 
     useEffect(() => {
-      const user = firebase.auth().currentUser;
-      if (user) {
-        const userEmail = user.email;
-        const db = initDB();
-        db.transaction(tx => {
-          tx.executeSql(
-            'SELECT email, phoneNumber, fullname FROM Users WHERE email = ?',
-            [userEmail],
-            (_, { rows }) => {
-              if (rows.length > 0) {
-                console.log('The logged email exists in the database');
-              } else {
-                console.log('The logged email does not exist in the database');
-              }
-            },
-            (_, error) => console.log('Error fetching data:', error)
-          );
+      const fetchUser = async () => {
+        const user = await new Promise((resolve, reject) => {
+          const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+            unsubscribe();
+            resolve(user);
+          }, reject);
         });
-      } else {
-        console.log('No user is logged in');
-      }
+  
+        if (user) {
+          const userEmail = user.email;
+          const db = await setupDatabase();
+          db.transaction(tx => {
+            tx.executeSql(
+              'SELECT email, phoneNumber, username, fullname FROM Users WHERE email = ?',
+              [userEmail],
+              (_, { rows }) => {
+                if (rows.length > 0) {
+                  console.log('The logged email exists in the database');
+                } else {
+                  console.log('The logged email does not exist in the database');
+                }
+              },
+              (_, error) => console.log('Error fetching data:', error)
+            );
+          });
+        } else {
+          console.log('No user is logged in');
+        }
+      };
+  
+      fetchUser();
     }, []);
 
   return (

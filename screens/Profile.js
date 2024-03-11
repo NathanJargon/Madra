@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Modal, TextInput, Button } from 'react-native';
-import { initDB } from './Database';
+import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Modal, TextInput } from 'react-native';
+import { setupDatabase } from './Database';
 import { firebase } from './FirebaseConfig';
+import * as SQLite from 'expo-sqlite';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -17,6 +19,18 @@ export default function Profile({ navigation }) {
     };
   const [currentValue, setCurrentValue] = useState('');
 
+  const updateUserCountryAndLanguage = async (username, selectedCountry, selectedLanguage) => {
+    const db = await setupDatabase();
+    db.transaction(tx => {
+      tx.executeSql(
+        `UPDATE Users SET country = ?, language = ? WHERE username = ?`,
+        [selectedCountry, selectedLanguage, username],
+        () => console.log('User country and language updated successfully'),
+        (_, error) => console.log('Error updating user country and language:', error)
+      );
+    });
+  };
+
     const handleSave = () => {
       const db = initDB();
       db.transaction(tx => {
@@ -31,6 +45,16 @@ export default function Profile({ navigation }) {
         );
       });
     };
+
+    const handleQuit = async () => {
+      try {
+        await AsyncStorage.clear();
+        navigation.navigate('Auth'); 
+      } catch(e) {
+        // handle error
+        console.log(e);
+      }
+    }
 
     const handleRowPress = (field) => {
       setSelectedField(field);
@@ -50,14 +74,21 @@ export default function Profile({ navigation }) {
       setModalVisible(true);
     };
 
-    useEffect(() => {
-      const user = firebase.auth().currentUser;
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await new Promise((resolve, reject) => {
+        const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+          unsubscribe();
+          resolve(user);
+        }, reject);
+      });
+
       if (user) {
         const userEmail = user.email;
-        const db = initDB();
+        const db = await setupDatabase();
         db.transaction(tx => {
           tx.executeSql(
-            'SELECT email FROM Users WHERE email = ?',
+            'SELECT email, phoneNumber, username, fullname FROM Users WHERE email = ?',
             [userEmail],
             (_, { rows }) => {
               if (rows.length > 0) {
@@ -72,7 +103,10 @@ export default function Profile({ navigation }) {
       } else {
         console.log('No user is logged in');
       }
-    }, []);
+    };
+
+    fetchUser();
+  }, []);
 
 
   return (
@@ -160,13 +194,13 @@ export default function Profile({ navigation }) {
             </TouchableOpacity>
           <View style={styles.line} />
 
-            <TouchableOpacity onPress={() => navigation.navigate('Auth')}>
-              <View style={styles.rowContainer}>
-                <Image source={require('../assets/icons/logout.png')} style={styles.sideImage} />
-                <Text style={styles.centerText}>LOG OUT</Text>
-                <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
-              </View>
-            </TouchableOpacity>
+          <TouchableOpacity onPress={handleQuit}>
+            <View style={styles.rowContainer}>
+              <Image source={require('../assets/icons/logout.png')} style={styles.sideImage} />
+              <Text style={styles.centerText}>LOG OUT</Text>
+              <Image source={require('../assets/icons/forward.png')} style={styles.sideImage} />
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.circleBox} />

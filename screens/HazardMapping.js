@@ -4,6 +4,7 @@ import MapView, { Circle } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SQLite from 'expo-sqlite';
 import { firebase } from './FirebaseConfig';
+import { initDB } from './Database.js';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -14,6 +15,15 @@ export default function HazardMapping({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true); // Add this line
   const [selectedEarthquake, setSelectedEarthquake] = useState(null);
+  const getCircleColor = (magnitude) => {
+    if (magnitude < 2.5) {
+      return 'green';
+    } else if (magnitude < 5) {
+      return 'yellow';
+    } else {
+      return 'red';
+    }
+  };
 
   const handleEarthquakeClick = (earthquake) => {
     setSelectedEarthquake(earthquake);
@@ -77,31 +87,39 @@ export default function HazardMapping({ navigation }) {
   }, []);
 
 
-    useEffect(() => {
-      const user = firebase.auth().currentUser;
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await new Promise((resolve, reject) => {
+        const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+          unsubscribe();
+          resolve(user);
+        }, reject);
+      });
+  
       if (user) {
-        const userEmail = user.email;
-        const db = initDB();
-        db.transaction(tx => {
-          tx.executeSql(
-            'SELECT country FROM Users WHERE email = ?',
-            [userEmail],
-            (_, { rows }) => {
-              if (rows.length > 0 && rows.item(0).country) {
-                console.log('The logged email exists in the database');
-                const userCountry = rows.item(0).country;
-                // You can now use userCountry for your needs
-              } else {
-                console.log('The logged email does not exist in the database');
-              }
-            },
-            (_, error) => console.log('Error fetching data:', error)
+      const userEmail = user.email;
+      const db = initDB();
+      db.transaction(tx => {
+        tx.executeSql(
+          'SELECT email, phoneNumber, username, fullname, country FROM Users WHERE email = ?',
+          [userEmail],
+          (_, { rows }) => {
+            if (rows.length > 0) {
+              console.log('The logged email exists in the database');
+            } else {
+              console.log('The logged email does not exist in the database');
+            }
+          },
+          (_, error) => console.log('Error fetching data:', error)
           );
         });
       } else {
         console.log('No user is logged in');
       }
-    }, []);
+    };
+  
+    fetchUser();
+  }, []);
 
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const mapRef = useRef(null);
@@ -144,35 +162,50 @@ export default function HazardMapping({ navigation }) {
     });
   };
 
-return (
-  <View style={styles.container}>
-    <Animated.View style={[styles.container, { opacity: 1 }]}>
-      {showMap ? (
-        <MapView
-            mapType="satellite"
-            ref={mapRef}
-            onLayout={() => console.log('Map has been laid out')}
-            style={{ flex: 1, width: '100%', height: '100%', }}
-            initialRegion={{
-              latitude: 12.8797,
-              longitude: 121.7740,
-              latitudeDelta: 20, // adjust as needed
-              longitudeDelta: 20, // adjust as needed
-            }}
-          >
-            {earthquakes.map((earthquake, index) => (
-              <Circle
-                key={index}
-                center={{
-                  latitude: earthquake.geometry.coordinates[1],
-                  longitude: earthquake.geometry.coordinates[0],
-                }}
-                radius={(earthquake.properties.mag + 1) * 10000} // Adjust the scaling factor as needed
-                strokeColor={'#000'} // border color
-                fillColor={'rgba(255,0,0,0.5)'} // fill color
-              />
-            ))}
-        </MapView>
+  return (
+    <View style={styles.container}>
+      <Animated.View style={[styles.container, { opacity: 1 }]}>
+        {showMap ? (
+          <>
+            <MapView
+              mapType="satellite"
+              ref={mapRef}
+              onLayout={() => console.log('Map has been laid out')}
+              style={{ flex: 1, width: '100%', height: '100%', }}
+              initialRegion={{
+                latitude: 12.8797,
+                longitude: 121.7740,
+                latitudeDelta: 20, // adjust as needed
+                longitudeDelta: 20, // adjust as needed
+              }}
+            >
+              {earthquakes.map((earthquake, index) => (
+                <Circle
+                  key={index}
+                  center={{
+                    latitude: earthquake.geometry.coordinates[1],
+                    longitude: earthquake.geometry.coordinates[0],
+                  }}
+                  radius={(earthquake.properties.mag + 1) * 10000} // Adjust the scaling factor as needed
+                  strokeColor={'#000'} // border color
+                  fillColor={getCircleColor(earthquake.properties.mag)} // fill color
+                />
+              ))}
+            </MapView>
+            <View style={styles.infoBox}>
+              {selectedEarthquake && (
+                <>
+                  <Text>Magnitude: {selectedEarthquake.properties.mag}</Text>
+                  <Text>Time: {new Date(selectedEarthquake.properties.time).toString()}</Text>
+                </>
+              )}
+              {earthquakes.map((earthquake, index) => (
+                <TouchableOpacity key={index} onPress={() => handleEarthquakeClick(earthquake)}>
+                  <Text>{earthquake.properties.title}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </>
         ) : (
           <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
             <View style={styles.boxContainer}>
@@ -186,21 +219,8 @@ return (
           </ImageBackground>
         )}
       </Animated.View>
-      <View style={styles.infoBox}>
-        {selectedEarthquake && (
-          <>
-            <Text>Magnitude: {selectedEarthquake.properties.mag}</Text>
-            <Text>Time: {new Date(selectedEarthquake.properties.time).toString()}</Text>
-          </>
-        )}
-        {earthquakes.map((earthquake, index) => (
-          <TouchableOpacity key={index} onPress={() => handleEarthquakeClick(earthquake)}>
-            <Text>{earthquake.properties.title}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-  </View>
-);
+    </View>
+  );
 }
 
 
@@ -209,8 +229,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
-    width: 200, // adjust as needed
-    height: 300, // adjust as needed
+    width: windowWidth * 0.3, // adjust as needed
+    height: windowHeight * 0.25, // adjust as needed
     backgroundColor: 'white', // change as needed
     padding: 10,
     borderRadius: 10,

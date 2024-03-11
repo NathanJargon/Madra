@@ -1,11 +1,10 @@
 import * as SQLite from 'expo-sqlite';
 
-const database_name = 'Test.db';
+const db = SQLite.openDatabase('users.db');
 
-export const initDB = () => {
-  const db = SQLite.openDatabase(database_name);
-  db.transaction(tx => {
-    tx.executeSql(
+export const setupDatabase = async () => {
+  return new Promise((resolve, reject) => {
+    const sqlStatements = [
       `CREATE TABLE IF NOT EXISTS Users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         gender TEXT,
@@ -18,24 +17,38 @@ export const initDB = () => {
         phoneNumber TEXT,
         country TEXT,
         language TEXT
-      );`,
-      [],
-      () => console.log('Table created successfully'),
-      (_, error) => console.log('Error creating table:', error)
-    );
-    tx.executeSql(
-      'SELECT COUNT(*) FROM Users',
-      [],
-      (_, { rows }) => {
-        const count = rows.item(0)['COUNT(*)'];
-        if (count === 0) {
-          console.log('Table is empty');
-        } else {
-          console.log(`Table has ${count} rows`);
-        }
-      },
-      (_, error) => console.log('Error counting rows:', error)
-    );
+      );`
+    ];
+
+    db.exec(sqlStatements, false, (error) => {
+      if (error) {
+        console.log('Error creating table:', error);
+        reject(error);
+      } else {
+        console.log('Table created successfully');
+        resolve(db); // Resolve the promise with the db object
+      }
+    });
   });
-  return db;
+};
+
+export const getAllUsers = async () => {
+  return new Promise((resolve, reject) => {
+    const sqlStatements = ['SELECT * FROM Users'];
+
+    db.exec(sqlStatements, true, (error, resultSet) => {
+      if (error) {
+        console.log('Error fetching users:', error);
+        reject(error);
+      } else {
+        const users = resultSet[0]?.rows;
+        if (!users) {
+          console.log('No users found');
+          resolve([]);
+        } else {
+          resolve(users);
+        }
+      }
+    });
+  });
 };

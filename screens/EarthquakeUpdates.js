@@ -3,6 +3,7 @@ import { View, ScrollView, StyleSheet, Dimensions, Text, Image, ImageBackground,
 import MapView, { Marker } from 'react-native-maps';
 import * as SQLite from 'expo-sqlite';
 import { firebase } from './FirebaseConfig';
+import { setupDatabase } from './Database';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -10,13 +11,12 @@ const windowHeight = Dimensions.get('window').height;
 export default function EarthquakeUpdates() {
   const [earthquakes, setEarthquakes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [initialLoad, setInitialLoad] = useState(true); // Add this line
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [userLocation, setUserLocation] = useState(null);
 
-  const database_name = 'Test.db';
-  const db = SQLite.openDatabase(database_name);
-
-  const fetchData = () => {
+  const fetchData = async () => {
     setIsLoading(true);
+    const db = await setupDatabase();
     db.transaction(tx => {
       tx.executeSql(
         'SELECT country FROM Users WHERE id = ?',
@@ -63,12 +63,12 @@ export default function EarthquakeUpdates() {
     fetchData();
   }, []);
 
-
-    useEffect(() => {
+  useEffect(() => {
+    const fetchUserCountry = async () => {
       const user = firebase.auth().currentUser;
       if (user) {
         const userEmail = user.email;
-        const db = initDB();
+        const db = await setupDatabase();
         db.transaction(tx => {
           tx.executeSql(
             'SELECT country FROM Users WHERE email = ?',
@@ -88,7 +88,10 @@ export default function EarthquakeUpdates() {
       } else {
         console.log('No user is logged in');
       }
-    }, []);
+    };
+
+    fetchUserCountry();
+  }, []);
 
 return (
   <View style={styles.container}>

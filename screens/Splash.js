@@ -19,7 +19,7 @@ export default function Splash({ navigation }) {
         duration: 1000,
         useNativeDriver: true,
       }),
-    ]).start(() => navigation.navigate('HomeScreen'));
+    ]).start(() => navigation.navigate('Auth'));
   }, [fadeAnim, navigation]);
 
   return (
