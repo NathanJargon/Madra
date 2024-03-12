@@ -4,6 +4,7 @@ import { setupDatabase } from './Database';
 import { firebase } from './FirebaseConfig';
 import * as SQLite from 'expo-sqlite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -15,19 +16,173 @@ export default function Settings({ navigation }) {
   const [username, setUsername] = useState('user');
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleLang, setModalVisibleLang] = useState(false);
+  const [modalVisibleAlerts, setModalVisibleAlerts] = useState(false);
+  const [modalVisibleDetails, setModalVisibleDetails] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('PH');
   const [selectedLanguage, setSelectedLanguage] = useState('ENG');
-  const updateUserCountryAndLanguage = async (email, selectedCountry, selectedLanguage) => {
-    const selectedCountryObject = countries.find(country => country.code === selectedCountry);
-  
-    firebase.firestore().collection('users').doc(email).update({
-      country: selectedCountryObject ? selectedCountryObject.name : '',
-      language: selectedLanguage
-    })
-    .then(() => console.log('User country and language updated successfully'))
-    .catch(error => console.log('Error updating user country and language:', error));
-  };
+    const [minMagnitude, setMinMagnitude] = useState('4.0');
+    const [timePeriod, setTimePeriod] = useState('past7days');
 
+    const [emailAlerts, setEmailAlerts] = useState(false);
+    const [pushAlerts, setPushAlerts] = useState(false);
+    const [smsAlerts, setSmsAlerts] = useState(false);
+    const [dailyAlerts, setDailyAlerts] = useState(false);
+    const [weeklyAlerts, setWeeklyAlerts] = useState(false);
+    const [monthlyAlerts, setMonthlyAlerts] = useState(false);
+
+    useEffect(() => {
+      const user = firebase.auth().currentUser;
+      if (user != null) {
+        firebase.firestore().collection('users').doc(user.email).get()
+          .then((doc) => {
+            if (doc.exists) {
+              setEmailAlerts(doc.data().emailAlerts);
+              setPushAlerts(doc.data().pushAlerts);
+              setSmsAlerts(doc.data().smsAlerts);
+              setDailyAlerts(doc.data().dailyAlerts);
+              setWeeklyAlerts(doc.data().weeklyAlerts);
+              setMonthlyAlerts(doc.data().monthlyAlerts);
+            } else {
+              console.log("No such document!");
+            }
+          }).catch((error) => {
+            console.log("Error getting document:", error);
+          });
+      }
+    }, [email]);
+
+    const toggleEmailAlerts = () => {
+      setEmailAlerts(prevState => {
+        const newValue = !prevState;
+        updateUserAlertSetting('emailAlerts', newValue);
+        return newValue;
+      });
+    };
+
+    const togglePushAlerts = () => {
+      setPushAlerts(prevState => {
+        const newValue = !prevState;
+        updateUserAlertSetting('pushAlerts', newValue);
+        return newValue;
+      });
+    };
+
+    const toggleSMSAlerts = () => {
+      setSmsAlerts(prevState => {
+        const newValue = !prevState;
+        updateUserAlertSetting('smsAlerts', newValue);
+        return newValue;
+      });
+    };
+
+    const toggleDailyAlerts = () => {
+      setDailyAlerts(prevState => {
+        const newValue = !prevState;
+        updateUserAlertSetting('dailyAlerts', newValue);
+        return newValue;
+      });
+    };
+
+    const toggleWeeklyAlerts = () => {
+      setWeeklyAlerts(prevState => {
+        const newValue = !prevState;
+        updateUserAlertSetting('weeklyAlerts', newValue);
+        return newValue;
+      });
+    };
+
+    const toggleMonthlyAlerts = () => {
+      setMonthlyAlerts(prevState => {
+        const newValue = !prevState;
+        updateUserAlertSetting('monthlyAlerts', newValue);
+        return newValue;
+      });
+    };
+
+    const updateUserAlertSetting = async (field, value) => {
+      const user = firebase.auth().currentUser;
+      if (user != null) {
+        try {
+          await firebase.firestore().collection('users').doc(user.email).update({
+            [field]: value
+          });
+          console.log(`User ${field} status updated successfully`);
+        } catch (error) {
+          console.log(`Error updating user ${field} status:`, error);
+        }
+      }
+    };
+
+    useEffect(() => {
+      // This code will run whenever minMagnitude or timePeriod changes
+      console.log('MinMagnitude has been updated to:', minMagnitude);
+      console.log('TimePeriod has been updated to:', timePeriod);
+    }, [minMagnitude, timePeriod]);
+
+    const updateMinMagnitude = async (value) => {
+      // Update the minMagnitude state
+      setMinMagnitude(value);
+
+      // Update the minMagnitude field in Firebase for the current user
+      const user = firebase.auth().currentUser;
+      if (user != null) {
+        firebase.firestore().collection('users').doc(user.email).update({
+          minMagnitude: value
+        })
+        .then(() => console.log('User minimum magnitude updated successfully'))
+        .catch(error => console.log('Error updating user minimum magnitude:', error));
+      }
+    };
+
+    const updateTimePeriod = async (value) => {
+      // Update the timePeriod state
+      setTimePeriod(value);
+
+      // Update the timePeriod field in Firebase for the current user
+      const user = firebase.auth().currentUser;
+      if (user != null) {
+        firebase.firestore().collection('users').doc(user.email).update({
+          timePeriod: value
+        })
+        .then(() => console.log('User time period updated successfully'))
+        .catch(error => console.log('Error updating user time period:', error));
+      }
+    };
+
+
+    const updateUserCountryAndLanguage = async (email, selectedCountry, selectedLanguage) => {
+      const selectedCountryObject = countries.find(country => country.code === selectedCountry);
+
+      try {
+        await firebase.firestore().collection('users').doc(email).update({
+          country: selectedCountryObject ? selectedCountryObject.name : '',
+          language: selectedLanguage
+        });
+        console.log('User country and language updated successfully');
+      } catch (error) {
+        console.log('Error updating user country and language:', error);
+      }
+    };
+
+    const [isNotified, setIsNotified] = useState(false);
+
+    const toggleNotification = async () => {
+      setIsNotified(prevState => {
+        const newValue = !prevState;
+
+        // Update the isNotified field in Firebase for the current user
+        const user = firebase.auth().currentUser;
+        if (user != null) {
+          firebase.firestore().collection('users').doc(user.email).update({
+            isNotified: newValue
+          })
+          .then(() => console.log('User notification status updated successfully'))
+          .catch(error => console.log('Error updating user notification status:', error));
+        }
+
+        return newValue;
+      });
+    };
 
   const countries = [
     { code: 'PH', name: 'Philippines' },
@@ -73,7 +228,14 @@ export default function Settings({ navigation }) {
             if (userName) setUsername(userName);
             if (userLanguage) setSelectedLanguage(userLanguage);
             if (userCountry) {
-              const countryInitials = userCountry.split(' ').map(word => word.charAt(0)).join('');
+              let countryInitials;
+              if (userCountry.split(' ').length > 1) {
+                // If the country name has more than one word, take the first letter of each word
+                countryInitials = userCountry.split(' ').map(word => word.charAt(0)).join('');
+              } else {
+                // If the country name is a single word, take the first two letters
+                countryInitials = userCountry.substring(0, 2);
+              }
               setSelectedCountry(countryInitials.toUpperCase());
             }
           } catch (e) {
@@ -130,7 +292,9 @@ export default function Settings({ navigation }) {
         }}
       >
         <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+          <View style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
+            <Text style={{color: 'black', fontSize: windowWidth * 0.075, textAlign: 'center' }}>Choose a country</Text>
+            <Text style={{color: 'black', fontSize: windowWidth * 0.03, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>This will set which country to fetch earthquakes!</Text>
             <ScrollView style={{ height: windowHeight * 0.3 }}>
               {countries.map((country, index) => (
                 <View key={index} style={{ height: windowHeight * 0.09 }}>
@@ -158,6 +322,7 @@ export default function Settings({ navigation }) {
           </View>
         </View>
       </Modal>
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -167,7 +332,8 @@ export default function Settings({ navigation }) {
         }}
       >
         <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+          <View style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
+            <Text style={{color: 'black', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Choose a language</Text>
             <ScrollView style={{ height: windowHeight * 0.3 }}>
               {languages.map((language, index) => (
                 <View key={index} style={{ height: windowHeight * 0.09 }}>
@@ -197,6 +363,105 @@ export default function Settings({ navigation }) {
       </Modal>
 
 
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisibleAlerts}
+          onRequestClose={() => {
+            setModalVisibleAlerts(!modalVisibleAlerts);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
+              <Text style={{color: 'black', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Customize Alerts</Text>
+
+              <Text style={{color: 'black', fontWeight: 'bold',  fontSize: windowWidth * 0.05, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Alert Type</Text>
+              <TouchableOpacity onPress={toggleEmailAlerts}>
+                <Text style={styles.alertText}>Email Alerts: {emailAlerts ? 'On' : 'Off'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={togglePushAlerts}>
+                <Text style={styles.alertText}>Push Notifications: {pushAlerts ? 'On' : 'Off'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={toggleSMSAlerts}>
+                <Text style={styles.alertText}>SMS Alerts: {smsAlerts ? 'On' : 'Off'}</Text>
+              </TouchableOpacity>
+
+              <Text style={{color: 'black', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Alert Frequency</Text>
+              <TouchableOpacity onPress={toggleDailyAlerts}>
+                <Text style={styles.alertText}>Daily Alerts: {dailyAlerts ? 'On' : 'Off'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={toggleWeeklyAlerts}>
+                <Text style={styles.alertText}>Weekly Alerts: {weeklyAlerts ? 'On' : 'Off'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={toggleMonthlyAlerts}>
+                <Text style={[styles.alertText, { marginBottom: windowHeight * 0.02, }]}>Monthly Alerts: {monthlyAlerts ? 'On' : 'Off'}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{ ...styles.openButton, backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+                onPress={() => {
+                  setModalVisibleAlerts(!modalVisibleAlerts);
+                }}
+              >
+                <Text style={styles.textStyle}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisibleDetails}
+      onRequestClose={() => {
+        setModalVisibleLang(!modalVisibleDetails);
+      }}
+    >
+      <View style={styles.centeredView}>
+        <View style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
+          <Text style={{color: 'black', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.01, textAlign: 'center', }}>Customize Earthquake Details</Text>
+
+          <Text style={{color: 'black', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Minimum Magnitude</Text>
+          <TouchableOpacity onPress={() => updateMinMagnitude('4.0')}>
+            <Text style={styles.alertText}>Set to 4.0</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => updateMinMagnitude('5.0')}>
+            <Text style={styles.alertText}>Set to 5.0</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => updateMinMagnitude('6.0')}>
+            <Text style={styles.alertText}>Set to 6.0</Text>
+          </TouchableOpacity>
+
+          <Text style={{color: 'black', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Time Period</Text>
+          <TouchableOpacity onPress={() => updateTimePeriod('all_day')}>
+            <Text style={styles.alertText}>Daily Period</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => updateTimePeriod('all_week')}>
+            <Text style={styles.alertText}>Weekly Period</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => updateTimePeriod('all_month')}>
+            <Text style={styles.alertText}>Monthly period</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => updateTimePeriod('all_year')}>
+            <Text style={[styles.alertText, { marginBottom: windowHeight * 0.02, }]}>Yearly Period</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{ ...styles.openButton, backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            onPress={() => {
+              setModalVisibleDetails(!modalVisibleDetails);
+            }}
+          >
+            <Text style={styles.textStyle}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+
+
+
+
         <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
           <View style={styles.headerBox}>
             <View style={styles.headerContent}>
@@ -217,26 +482,24 @@ export default function Settings({ navigation }) {
             <ImageBackground source={require('../assets/bg1.png')} style={styles.box2}>
               <View style={styles.innerBox1}>
                 <Text style={styles.innerBoxHeader}>OPTIONS</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={styles.innerBoxSmallText, { flex: 1, fontSize: windowWidth * 0.05,  marginLeft: windowWidth * 0.1, color: 'white', fontWeight: 'bold', }}>Madrification</Text>
-                  <Image source={require('../assets/icons/off-button.png')} style={styles.innerBoxSwitch} />
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, color: 'white', fontWeight: 'bold', }}>Customizable Alerts</Text>
-                  <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, color: 'white', fontWeight: 'bold',  }}>Push Notification</Text>
-                  <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-                </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, color: 'white',  fontWeight: 'bold', }}>Earthquake Details</Text>
-                    <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.13, color: 'white',  fontWeight: 'bold', }}>Localize Alerts</Text>
-                    <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-                  </View>
+                    <TouchableOpacity onPress={toggleNotification}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={styles.innerBoxSmallText, { fontSize: windowWidth * 0.05,  marginLeft: windowWidth * 0.1, color: 'white', fontWeight: 'bold', }}>Madrification</Text>
+                        <Image source={isNotified ? require('../assets/icons/on-button.png') : require('../assets/icons/off-button.png')} style={styles.innerBoxSwitch} />
+                      </View>
+                    </TouchableOpacity>
+                <TouchableOpacity onPress={() => setModalVisibleAlerts(true)}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.15, color: 'white', fontWeight: 'bold', }}>Customizable Alerts</Text>
+                      <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.25, }]} />
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setModalVisibleDetails(true)}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.15, color: 'white',  fontWeight: 'bold', }}>Earthquake Details</Text>
+                        <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.27, }]} />
+                      </View>
+                </TouchableOpacity>
                 </View>
                     <View style={styles.innerBox2}>
                       <Text style={styles.innerBoxHeader}>ACCOUNT</Text>
@@ -244,38 +507,42 @@ export default function Settings({ navigation }) {
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                           <Image source={require('../assets/icons/user.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'  }} />
                           <Text style={[styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white',  fontWeight: 'bold' }]}>Personal Information</Text>
-                          <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.19, }]} />
+                          <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.15, }]} />
                         </View>
                       </TouchableOpacity>
                           <TouchableOpacity onPress={() => setModalVisible(true)}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                               <Image source={require('../assets/icons/flag.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
                               <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white', fontWeight: 'bold' }}>Country</Text>
-                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.365, fontWeight: 'bold' }}>{selectedCountry}</Text>
-                              <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.025, }]} />
+                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.335, fontWeight: 'bold' }}>{selectedCountry}</Text>
+                              <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.015, }]} />
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                               <Image source={require('../assets/icons/internet.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
                               <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white', fontWeight: 'bold' }}>Language</Text>
-                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.32, fontWeight: 'bold' }}>{selectedLanguage}</Text>
+                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.285, fontWeight: 'bold' }}>{selectedLanguage}</Text>
                               <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.025, }]} />
                             </View>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.innerBox3}>
                       <Text style={styles.innerBoxHeader}>GENERAL</Text>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Image source={require('../assets/icons/information-button.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
-                        <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white',  fontWeight: 'bold', }}>About</Text>
-                        <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-                      </View>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Image source={require('../assets/icons/lock.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
-                        <Text style={styles.innerBoxSmallText, { flex: 1, marginLeft: windowWidth * 0.05, color: 'white', fontWeight: 'bold',  }}>Privacy and Policy</Text>
-                        <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
-                      </View>
+                      <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Image source={require('../assets/icons/information-button.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
+                            <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, color: 'white',  fontWeight: 'bold', }}>About</Text>
+                            <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.445, }]} />
+                          </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Image source={require('../assets/icons/lock.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
+                            <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, color: 'white', fontWeight: 'bold',  }}>Privacy and Policy</Text>
+                            <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.27, }]} />
+                          </View>
+                      </TouchableOpacity>
                     </View>
             </ImageBackground>
           </View>
@@ -300,7 +567,7 @@ const styles = StyleSheet.create({
       width: windowWidth * 0.1, // Adjust as needed
       height: windowHeight * 0.04, // Adjust as needed
       resizeMode: 'contain',
-      marginLeft: windowWidth * 0.02, // Add some margin to the left
+      marginLeft: windowWidth * 0.25, // Add some margin to the left
     },
   centeredText: {
     fontSize: windowWidth * 0.09, // adjust as needed
@@ -366,7 +633,7 @@ const styles = StyleSheet.create({
     innerBox1: {
       flexDirection: 'column', // Change this
       width: windowWidth * 0.8, // Adjust as needed
-      height: windowHeight * 0.2, // Adjust as needed
+      height: windowHeight * 0.175, // Adjust as needed
       backgroundColor: 'rgba(255, 255, 255, 0)', // Change the color as needed
       borderRadius: 10, // Adjust as needed
       justifyContent: 'flex-start', // Align items to the start
@@ -376,7 +643,7 @@ const styles = StyleSheet.create({
     innerBox2: {
       flexDirection: 'column', // Change this
       width: windowWidth * 0.8, // Adjust as needed
-      height: windowHeight * 0.15, // Adjust as needed
+      height: windowHeight * 0.175, // Adjust as needed
       backgroundColor: 'rgba(255, 255, 255, 0)', // Change the color as needed
       borderRadius: 10, // Adjust as needed
       justifyContent: 'flex-start', // Align items to the start
@@ -492,5 +759,15 @@ const styles = StyleSheet.create({
     margin: 5,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  alertText: {
+    fontSize: windowWidth * 0.04,
+    color: '#000',
+    fontWeight: 'bold',
+    borderWidth: 2,
+    borderColor: 'black',
+    borderRadius: 20,
+    padding: 10,
+    margin: 2,
   },
 });

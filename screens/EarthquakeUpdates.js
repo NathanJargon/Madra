@@ -14,59 +14,53 @@ export default function EarthquakeUpdates() {
   const [initialLoad, setInitialLoad] = useState(true);
   const [userLocation, setUserLocation] = useState('Philippines');
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson')
-      .then(response => response.text())
-      .then(text => {
-        try {
-          const data = JSON.parse(text);
-          const countries = [userLocation];
-          let filteredData = data.features.filter(earthquake =>
-            countries.some(country => earthquake.properties.place.includes(country))
-          );
-          if (initialLoad) {
-            filteredData = filteredData.slice(0, 10);
-            setInitialLoad(false);
-          }
-          setEarthquakes(prevEarthquakes => [...prevEarthquakes, ...filteredData]);
-        } catch (error) {
-          console.error('Error parsing JSON:', error);
-        } finally {
-          setIsLoading(false);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson');
+        const text = await response.text();
+        const data = JSON.parse(text);
+        const countries = [userLocation];
+        let filteredData = data.features.filter(earthquake =>
+          countries.some(country => earthquake.properties.place.includes(country))
+        );
+        if (initialLoad) {
+          filteredData = filteredData.slice(0, 10);
+          setInitialLoad(false);
         }
-      })
-      .catch(error => {
-        console.error(error);
+        setEarthquakes(prevEarthquakes => [...prevEarthquakes, ...filteredData]);
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
         setIsLoading(false);
-      });
-  };
-  
-  useEffect(() => {
-    const fetchUserCountry = async () => {
-      const user = firebase.auth().currentUser;
-      if (user) {
-        const unsubscribe = firebase.firestore().collection('users').doc(user.email).onSnapshot(doc => {
-          if (doc.exists) {
-            const userData = doc.data();
-            setUserLocation(userData.country); // Assuming 'country' is a field in your user document
-            fetchData(); // Fetch data after setting the user location
-          } else {
-            console.log('No such document!');
-          }
-        }, error => {
-          console.log('Error getting document:', error);
-        });
-  
-        // Clean up the onSnapshot listener when the component is unmounted
-        return () => unsubscribe();
-      } else {
-        console.log('No user is logged in');
       }
     };
-  
-    fetchUserCountry();
-  }, []);
+
+    useEffect(() => {
+      const fetchUserCountry = async () => {
+        const user = firebase.auth().currentUser;
+        if (user) {
+          const unsubscribe = firebase.firestore().collection('users').doc(user.email).onSnapshot(async doc => {
+            if (doc.exists) {
+              const userData = doc.data();
+              setUserLocation(userData.country); // Assuming 'country' is a field in your user document
+              await fetchData(); // Fetch data after setting the user location
+            } else {
+              console.log('No such document!');
+            }
+          }, error => {
+            console.log('Error getting document:', error);
+          });
+
+          // Clean up the onSnapshot listener when the component is unmounted
+          return () => unsubscribe();
+        } else {
+          console.log('No user is logged in');
+        }
+      };
+
+      fetchUserCountry();
+    }, []);
 
 return (
   <View style={styles.container}>

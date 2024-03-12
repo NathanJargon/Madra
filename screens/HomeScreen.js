@@ -29,6 +29,18 @@ function HomeScreen({ navigation }) {
     const [year, setYear] = useState('');
     
     useEffect(() => {
+      const checkUserLoggedIn = async () => {
+        const userLoggedIn = await AsyncStorage.getItem('userLoggedIn');
+        if (userLoggedIn === 'true') {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          });
+        }
+      };
+
+      checkUserLoggedIn();
+
       const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           // User is signed in.
@@ -41,7 +53,7 @@ function HomeScreen({ navigation }) {
           setIsAuthenticated(false);
         }
       });
-    
+
       // Cleanup subscription on unmount
       return () => unsubscribe();
     }, []);
@@ -87,8 +99,16 @@ function HomeScreen({ navigation }) {
           phoneNumber,
           imageUri: imageUri || null,
           country: "Philippines",
-          isNotified: false, 
+          isNotified: false,
           language: "English",
+          emailAlerts: false,
+          pushAlerts: false,
+          smsAlerts: false,
+          dailyAlerts: false,
+          weeklyAlerts: false,
+          monthlyAlerts: false,
+          minMagnitude: "4.0",
+          timePeriod: "all_week",
         });
     
         console.log('User inserted successfully');

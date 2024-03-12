@@ -51,15 +51,16 @@ export default function Profile({ navigation }) {
     .catch(error => console.log('Error updating user data:', error));
   };
 
-  const handleQuit = async () => {
-    try {
-      await AsyncStorage.clear();
-      navigation.navigate('Auth'); 
-    } catch(e) {
-      // handle error
-      console.log(e);
+    const handleQuit = async () => {
+      try {
+        await AsyncStorage.clear();
+        await firebase.auth().signOut();
+        navigation.navigate('Auth');
+      } catch(e) {
+        // handle error
+        console.log(e);
+      }
     }
-  }
 
   const handleRowPress = (field) => {
     setSelectedField(field);
@@ -79,30 +80,47 @@ export default function Profile({ navigation }) {
     setModalVisible(true);
   };
 
-  useEffect(() => {
-    const user = firebase.auth().currentUser;
-  
-    if (user) {
-      const userEmail = user.email;
-      const unsubscribe = firebase.firestore().collection('users').doc(userEmail).onSnapshot(doc => {
-        if (doc.exists) {
-          const userData = doc.data();
-          setEmail(userData.email);
-          setFullName(userData.fullName);
-          // Set other state variables as needed
+    useEffect(() => {
+      const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
+        if (user) {
+          const userEmail = user.email;
+          firebase.firestore().collection('users').doc(userEmail).onSnapshot(async doc => {
+            if (doc.exists) {
+              const userData = doc.data();
+              setEmail(userData.email);
+              setFullName(userData.fullName);
+              // Store fullName and email in AsyncStorage
+              await AsyncStorage.setItem('fullName', userData.fullName);
+              await AsyncStorage.setItem('email', userData.email);
+            } else {
+              console.log('No such document!');
+            }
+          }, error => {
+            console.log('Error getting document:', error);
+          });
         } else {
-          console.log('No such document!');
+          console.log('No user is logged in');
         }
-      }, error => {
-        console.log('Error getting document:', error);
       });
-  
-      // Clean up the onSnapshot listener when the component is unmounted
+
+      // Clean up the observer when the component is unmounted
       return () => unsubscribe();
-    } else {
-      console.log('No user is logged in');
-    }
-  }, []);
+    }, []);
+
+    useEffect(() => {
+      const loadUserData = async () => {
+        const storedFullName = await AsyncStorage.getItem('fullName');
+        const storedEmail = await AsyncStorage.getItem('email');
+        if (storedFullName !== null) {
+          setFullName(storedFullName);
+        }
+        if (storedEmail !== null) {
+          setEmail(storedEmail);
+        }
+      };
+
+      loadUserData();
+    }, []);
 
   return (
     <ImageBackground source={require('../assets/bg1.png')} style={styles.backgroundImage}>

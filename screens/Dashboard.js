@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
 import { firebase } from './FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -27,23 +28,36 @@ export default function Dashboard() {
     setEarthquakes(filteredEarthquakes);
   };
 
-  useEffect(() => {
-    const fetchData = () => {
-      if (userCountry) {
-        fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson')
-          .then(response => response.json())
-          .then(data => {
-            const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
-            setEarthquakes(filteredEarthquakes);
-          });
-      }
+    const sendNotification = async (earthquakeData) => {
+      const trigger = { seconds: 2, repeats: false };
+      const content = {
+        title: 'New Earthquake Alert!',
+        body: `A magnitude ${earthquakeData.properties.mag} earthquake has occurred at ${earthquakeData.properties.place}.`,
+        data: { data: earthquakeData },
+      };
+
+      await Notifications.scheduleNotificationAsync({ content, trigger });
     };
 
-    fetchData();
-    const intervalId = setInterval(fetchData, 60000);
-
-    return () => clearInterval(intervalId);
-  }, [userCountry]);
+    const fetchData = async () => {
+      const user = firebase.auth().currentUser;
+      if (user != null) {
+        const doc = await firebase.firestore().collection('users').doc(user.email).get();
+        const userData = doc.data();
+        if (userData.isNotified) {
+          if (userCountry) {
+            fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson')
+              .then(response => response.json())
+              .then(data => {
+                const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
+                setEarthquakes(filteredEarthquakes);
+                // Send a notification for each earthquake
+                filteredEarthquakes.forEach(earthquake => sendNotification(earthquake));
+              });
+          }
+        }
+      }
+    };
 
   useEffect(() => {
     const loadUserData = async () => {
