@@ -3,6 +3,9 @@ import { StatusBar, Image, Dimensions, ImageBackground, TouchableOpacity } from 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { firebase } from './screens/FirebaseConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
@@ -60,7 +63,7 @@ function FeatureStackScreen() {
         />
         <FeatureStack.Screen
         name="EarthquakeUpdates"
-        component={EarthquakeUpdates}
+        component={Map}
         options={{
           headerShown: false,
           cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
@@ -223,20 +226,38 @@ function MainStackScreen() {
 }
 
 
+
 function App() {
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState(null);
+
+  // Handle user state changes
+  function onAuthStateChanged(result) {
+    setUser(result);
+    if (initializing) setInitializing(false);
+  }
+
   useEffect(() => {
     StatusBar.setHidden(true);
-  }, []);
+    const authSubscriber = firebase.auth().onAuthStateChanged(onAuthStateChanged);
+
+    // unsubscribe on unmount
+    return authSubscriber;
+  }, [initializing]);
+
+  if (initializing) {
+    return null;
+  }
 
   return (
-      <NavigationContainer>
-        <RootStack.Navigator initialRouteName="Auth" screenOptions={{ headerShown: false }}>
-          <RootStack.Screen name='LoadingScreen' component={SplashStackScreen} />
-          <RootStack.Screen name="Auth" component={AuthStackScreen} />
-          <RootStack.Screen name="Main" component={MainStackScreen} />
-          <RootStack.Screen name="Feature" component={FeatureStackScreen} />
-        </RootStack.Navigator>
-      </NavigationContainer>
+    <NavigationContainer>
+      <RootStack.Navigator initialRouteName={user ? "Main" : "Auth"} screenOptions={{ headerShown: false }}>
+        <RootStack.Screen name='LoadingScreen' component={SplashStackScreen} />
+        <RootStack.Screen name="Auth" component={AuthStackScreen} />
+        <RootStack.Screen name="Main" component={MainStackScreen} />
+        <RootStack.Screen name="Feature" component={FeatureStackScreen} />
+      </RootStack.Navigator>
+    </NavigationContainer>
   );
 }
 

@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Animated } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Animated } from 'react-native';
 import MapView, { Circle } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SQLite from 'expo-sqlite';
 import { firebase } from './FirebaseConfig';
-import { initDB } from './Database.js';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -12,6 +10,8 @@ const windowHeight = Dimensions.get('window').height;
 export default function HazardMapping({ navigation }) {
   const [showMap, setShowMap] = useState(false);
   const [earthquakes, setEarthquakes] = useState([]);
+  const [userCountry, setUserCountry] = useState('Philippines');
+  const [userEmail, setUserEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true); // Add this line
   const [selectedEarthquake, setSelectedEarthquake] = useState(null);
@@ -30,95 +30,71 @@ export default function HazardMapping({ navigation }) {
     mapRef.current.animateToRegion({
       latitude: earthquake.geometry.coordinates[1],
       longitude: earthquake.geometry.coordinates[0],
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
     });
   };
 
-  const database_name = 'Test.db';
-  const db = SQLite.openDatabase(database_name);
 
   const fetchData = () => {
-    setIsLoading(true);
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT country FROM Users WHERE id = ?',
-        [1],
-        (_, { rows }) => {
-          let userCountry = 'Philippines';
-          if (rows.length > 0 && rows.item(0).country) {
-            userCountry = rows.item(0).country;
-          }
-          fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson')
-            .then(response => response.text())
-            .then(text => {
-              try {
-                const data = JSON.parse(text);
-                const countries = [userCountry];
-                let filteredData = data.features.filter(earthquake =>
-                  countries.some(country => earthquake.properties.place.includes(country))
-                );
-                if (initialLoad) {
-                  filteredData = filteredData.slice(0, 10);
-                  setInitialLoad(false);
-                }
-                setEarthquakes(prevEarthquakes => [...prevEarthquakes, ...filteredData]);
-              } catch (error) {
-                console.error('Error parsing JSON:', error);
-              } finally {
-                setIsLoading(false);
-              }
-            })
-            .catch(error => {
-              console.error(error);
-              setIsLoading(false);
-            });
-        },
-        (_, error) => {
-          console.log('Error fetching user country:', error);
-          setIsLoading(false);
-        }
-      );
-    });
+    if (userCountry) {
+      fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson')
+        .then(response => response.json())
+        .then(data => {
+          const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
+          setEarthquakes(filteredEarthquakes);
+        });
+    }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+    const intervalId = setInterval(fetchData, 60000);
 
+    return () => clearInterval(intervalId);
+  }, [userCountry]);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const user = await new Promise((resolve, reject) => {
-        const unsubscribe = firebase.auth().onAuthStateChanged(user => {
-          unsubscribe();
-          resolve(user);
-        }, reject);
-      });
+    const loadUserData = async () => {
+      try {
+        const userEmail = await AsyncStorage.getItem('email');
+        const userCountry = await AsyncStorage.getItem('country');
   
+        if (userEmail) setUserEmail(userEmail);
+        if (userCountry) setUserCountry(userCountry);
+      } catch (e) {
+        console.error('Failed to load user data from storage.', e);
+      }
+    };
+  
+    loadUserData();
+  }, []);
+  
+  useEffect(() => {
+    const fetchUserCountry = async () => {
+      const user = firebase.auth().currentUser;
       if (user) {
-      const userEmail = user.email;
-      const db = initDB();
-      db.transaction(tx => {
-        tx.executeSql(
-          'SELECT email, phoneNumber, username, fullname, country FROM Users WHERE email = ?',
-          [userEmail],
-          (_, { rows }) => {
-            if (rows.length > 0) {
-              console.log('The logged email exists in the database');
-            } else {
-              console.log('The logged email does not exist in the database');
-            }
-          },
-          (_, error) => console.log('Error fetching data:', error)
-          );
+        const unsubscribe = firebase.firestore().collection('users').doc(user.email).onSnapshot(doc => {
+          if (doc.exists) {
+            const userData = doc.data();
+            setUserEmail(userData.email);
+            setUserCountry(userData.country); // Assuming 'country' is a field in your user document
+            fetchData(); // Fetch data after setting the user location
+          } else {
+            console.log('No such document!');
+          }
+        }, error => {
+          console.log('Error getting document:', error);
         });
+
+        // Clean up the onSnapshot listener when the component is unmounted
+        return () => unsubscribe();
       } else {
         console.log('No user is logged in');
       }
     };
-  
-    fetchUser();
+
+    fetchUserCountry();
   }, []);
 
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -192,7 +168,10 @@ export default function HazardMapping({ navigation }) {
                 />
               ))}
             </MapView>
-            <View style={styles.infoBox}>
+
+
+          <View style={styles.infoBox}>
+            <ScrollView>
               {selectedEarthquake && (
                 <>
                   <Text>Magnitude: {selectedEarthquake.properties.mag}</Text>
@@ -202,9 +181,13 @@ export default function HazardMapping({ navigation }) {
               {earthquakes.map((earthquake, index) => (
                 <TouchableOpacity key={index} onPress={() => handleEarthquakeClick(earthquake)}>
                   <Text>{earthquake.properties.title}</Text>
+                  <Text></Text>
                 </TouchableOpacity>
               ))}
-            </View>
+            </ScrollView>
+          </View>
+
+
           </>
         ) : (
           <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>

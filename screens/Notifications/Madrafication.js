@@ -7,7 +7,7 @@ import { firebase } from './FirebaseConfig';
 import { initDB } from './Database';
 import * as SQLite from 'expo-sqlite';
 
-function HomeScreen({ navigation }) {
+function Madrafication({ navigation }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false); // Add this line
     const [bottomContent, setBottomContent] = useState('default');
     const [bottomHeight, setBottomHeight] = useState(windowHeight / 2.5);

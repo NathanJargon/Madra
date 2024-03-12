@@ -3,6 +3,7 @@ import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions
 import { setupDatabase } from './Database';
 import { firebase } from './FirebaseConfig';
 import * as SQLite from 'expo-sqlite';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -15,20 +16,18 @@ export default function Settings({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleLang, setModalVisibleLang] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('PH');
-  const [selectedLanguage, setSelectedLanguage] = useState('ENG'); // Add this line
-  const database_name = 'Test.db';
+  const [selectedLanguage, setSelectedLanguage] = useState('ENG');
+  const updateUserCountryAndLanguage = async (email, selectedCountry, selectedLanguage) => {
+    const selectedCountryObject = countries.find(country => country.code === selectedCountry);
   
-  const updateUserCountryAndLanguage = async (username, selectedCountry, selectedLanguage) => {
-    const db = await setupDatabase();
-    db.transaction(tx => {
-      tx.executeSql(
-        `UPDATE Users SET country = ?, language = ? WHERE username = ?`,
-        [selectedCountry, selectedLanguage, username],
-        () => console.log('User country and language updated successfully'),
-        (_, error) => console.log('Error updating user country and language:', error)
-      );
-    });
+    firebase.firestore().collection('users').doc(email).update({
+      country: selectedCountryObject ? selectedCountryObject.name : '',
+      language: selectedLanguage
+    })
+    .then(() => console.log('User country and language updated successfully'))
+    .catch(error => console.log('Error updating user country and language:', error));
   };
+
 
   const countries = [
     { code: 'PH', name: 'Philippines' },
@@ -44,6 +43,8 @@ export default function Settings({ navigation }) {
     { code: 'CN', name: 'China' },
   ];
 
+  const selectedCountryObject = countries.find(country => country.name === selectedCountry);
+  
     const languages = [
         { code: 'PH', name: 'Filipino', shortName: 'FIL' },
         { code: 'US', name: 'English', shortName: 'ENG' },
@@ -57,38 +58,65 @@ export default function Settings({ navigation }) {
         { code: 'CN', name: 'Mandarin', shortName: 'MAN' },
     ];
 
+
     useEffect(() => {
-      const fetchUser = async () => {
-        const user = await new Promise((resolve, reject) => {
-          const unsubscribe = firebase.auth().onAuthStateChanged(user => {
-            unsubscribe();
-            resolve(user);
-          }, reject);
+        const loadUserData = async () => {
+          try {
+            const userEmail = await AsyncStorage.getItem('email');
+            const userName = await AsyncStorage.getItem('username');
+            const userFullName = await AsyncStorage.getItem('fullName');
+            const userCountry = await AsyncStorage.getItem('country');
+            const userLanguage = await AsyncStorage.getItem('language');
+
+            if (userEmail) setEmail(userEmail);
+            if (userFullName) setFullName(userFullName);
+            if (userName) setUsername(userName);
+            if (userLanguage) setSelectedLanguage(userLanguage);
+            if (userCountry) {
+              const countryInitials = userCountry.split(' ').map(word => word.charAt(0)).join('');
+              setSelectedCountry(countryInitials.toUpperCase());
+            }
+          } catch (e) {
+            console.error('Failed to load user data from storage.', e);
+          }
+        };
+
+      loadUserData();
+    }, []);
+    
+    useEffect(() => {
+      const user = firebase.auth().currentUser;
+    
+      if (user != null) {
+        setEmail(user.email);
+        const unsubscribe = firebase.firestore().collection('users').doc(user.email).onSnapshot(async doc => {
+          if (doc.exists) {
+            const userData = doc.data();
+            setUsername(userData.username);
+            setFullName(userData.fullName);
+    
+            // Find the country object from the countries array
+            const countryObject = countries.find(country => country.name === userData.country);
+    
+            // Set the selectedCountry state to the country code
+            setSelectedCountry(countryObject ? countryObject.code : 'PH');
+    
+            setSelectedLanguage(userData.language);
+    
+            // Save the user data to AsyncStorage
+            await AsyncStorage.setItem('email', userData.email);
+            await AsyncStorage.setItem('username', userData.username);
+            await AsyncStorage.setItem('fullName', userData.fullName);
+            await AsyncStorage.setItem('country', userData.country);
+            await AsyncStorage.setItem('language', userData.language);
+          }
+        }, error => {
+          console.error("Error getting document:", error);
         });
-  
-        if (user) {
-          const userEmail = user.email;
-          const db = await setupDatabase();
-          db.transaction(tx => {
-            tx.executeSql(
-              'SELECT email, phoneNumber, username, fullname FROM Users WHERE email = ?',
-              [userEmail],
-              (_, { rows }) => {
-                if (rows.length > 0) {
-                  console.log('The logged email exists in the database');
-                } else {
-                  console.log('The logged email does not exist in the database');
-                }
-              },
-              (_, error) => console.log('Error fetching data:', error)
-            );
-          });
-        } else {
-          console.log('No user is logged in');
-        }
-      };
-  
-      fetchUser();
+    
+        // Clean up the onSnapshot listener when the component is unmounted
+        return () => unsubscribe();
+      }
     }, []);
 
   return (
@@ -106,16 +134,16 @@ export default function Settings({ navigation }) {
             <ScrollView style={{ height: windowHeight * 0.3 }}>
               {countries.map((country, index) => (
                 <View key={index} style={{ height: windowHeight * 0.09 }}>
-                    <TouchableOpacity
-                      style={styles.countryBox}
-                      onPress={() => {
-                        setSelectedCountry(country.code);
-                        setModalVisible(!modalVisible);
-                        updateUserCountryAndLanguage(username, country.code, selectedLanguage);
-                      }}
-                    >
-                      <Text style={styles.modalText}>{country.name}</Text>
-                    </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.countryBox}
+                    onPress={() => {
+                      setSelectedCountry(country.code);
+                      setModalVisible(!modalVisible);
+                      updateUserCountryAndLanguage(email, country.code, selectedLanguage);
+                    }}
+                  >
+                    <Text style={styles.modalText}>{country.name}</Text>
+                  </TouchableOpacity>
                 </View>
               ))}
             </ScrollView>
@@ -148,7 +176,7 @@ export default function Settings({ navigation }) {
                       onPress={() => {
                         setSelectedLanguage(language.shortName);
                         setModalVisibleLang(!modalVisibleLang);
-                        updateUserCountryAndLanguage(username, selectedCountry, language.shortName);
+                        updateUserCountryAndLanguage(email, language.name, selectedLanguage);
                       }}
                     >
                       <Text style={styles.modalText}>{language.name}</Text>

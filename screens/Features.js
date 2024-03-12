@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackg
 import HazardMapping from './HazardMapping';
 import EducationalHub from './EducationalHub';
 import Madramania from './Madramania';
-import EarthquakeUpdates from './EarthquakeUpdates';
+import Map from './Map';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -205,7 +205,7 @@ export default function Features({ navigation }) {
             </View>
           </View>
         ) : (
-          showHazardMapping ? <HazardMapping /> : showEducationalHub ? <EducationalHub /> : showMadramania ? <Madramania /> : <EarthquakeUpdates />
+          showHazardMapping ? <HazardMapping /> : showEducationalHub ? <EducationalHub /> : showMadramania ? <Madramania /> : <Map />
         )}
       </ImageBackground>
     </View>

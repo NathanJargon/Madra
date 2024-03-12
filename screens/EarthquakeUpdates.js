@@ -12,84 +12,59 @@ export default function EarthquakeUpdates() {
   const [earthquakes, setEarthquakes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [userLocation, setUserLocation] = useState(null);
+  const [userLocation, setUserLocation] = useState('Philippines');
 
   const fetchData = async () => {
     setIsLoading(true);
-    const db = await setupDatabase();
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT country FROM Users WHERE id = ?',
-        [1],
-        (_, { rows }) => {
-          let userCountry = 'Philippines';
-          if (rows.length > 0 && rows.item(0).country) {
-            userCountry = rows.item(0).country;
+    fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson')
+      .then(response => response.text())
+      .then(text => {
+        try {
+          const data = JSON.parse(text);
+          const countries = [userLocation];
+          let filteredData = data.features.filter(earthquake =>
+            countries.some(country => earthquake.properties.place.includes(country))
+          );
+          if (initialLoad) {
+            filteredData = filteredData.slice(0, 10);
+            setInitialLoad(false);
           }
-          fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson')
-            .then(response => response.text())
-            .then(text => {
-              try {
-                const data = JSON.parse(text);
-                const countries = [userCountry];
-                let filteredData = data.features.filter(earthquake =>
-                  countries.some(country => earthquake.properties.place.includes(country))
-                );
-                if (initialLoad) {
-                  filteredData = filteredData.slice(0, 10);
-                  setInitialLoad(false);
-                }
-                setEarthquakes(prevEarthquakes => [...prevEarthquakes, ...filteredData]);
-              } catch (error) {
-                console.error('Error parsing JSON:', error);
-              } finally {
-                setIsLoading(false);
-              }
-            })
-            .catch(error => {
-              console.error(error);
-              setIsLoading(false);
-            });
-        },
-        (_, error) => {
-          console.log('Error fetching user country:', error);
+          setEarthquakes(prevEarthquakes => [...prevEarthquakes, ...filteredData]);
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+        } finally {
           setIsLoading(false);
         }
-      );
-    });
+      })
+      .catch(error => {
+        console.error(error);
+        setIsLoading(false);
+      });
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
+  
   useEffect(() => {
     const fetchUserCountry = async () => {
       const user = firebase.auth().currentUser;
       if (user) {
-        const userEmail = user.email;
-        const db = await setupDatabase();
-        db.transaction(tx => {
-          tx.executeSql(
-            'SELECT country FROM Users WHERE email = ?',
-            [userEmail],
-            (_, { rows }) => {
-              if (rows.length > 0 && rows.item(0).country) {
-                console.log('The logged email exists in the database');
-                const userCountry = rows.item(0).country;
-                // You can now use userCountry for your needs
-              } else {
-                console.log('The logged email does not exist in the database');
-              }
-            },
-            (_, error) => console.log('Error fetching data:', error)
-          );
+        const unsubscribe = firebase.firestore().collection('users').doc(user.email).onSnapshot(doc => {
+          if (doc.exists) {
+            const userData = doc.data();
+            setUserLocation(userData.country); // Assuming 'country' is a field in your user document
+            fetchData(); // Fetch data after setting the user location
+          } else {
+            console.log('No such document!');
+          }
+        }, error => {
+          console.log('Error getting document:', error);
         });
+  
+        // Clean up the onSnapshot listener when the component is unmounted
+        return () => unsubscribe();
       } else {
         console.log('No user is logged in');
       }
     };
-
+  
     fetchUserCountry();
   }, []);
 

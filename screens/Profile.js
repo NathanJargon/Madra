@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Modal, TextInput } from 'react-native';
-import { setupDatabase } from './Database';
 import { firebase } from './FirebaseConfig';
-import * as SQLite from 'expo-sqlite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
@@ -14,100 +12,97 @@ export default function Profile({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedField, setSelectedField] = useState(null);
   const [inputValue, setInputValue] = useState('');
-    const handleExit = () => {
-      setModalVisible(false);
-    };
   const [currentValue, setCurrentValue] = useState('');
 
-  const updateUserCountryAndLanguage = async (username, selectedCountry, selectedLanguage) => {
-    const db = await setupDatabase();
-    db.transaction(tx => {
-      tx.executeSql(
-        `UPDATE Users SET country = ?, language = ? WHERE username = ?`,
-        [selectedCountry, selectedLanguage, username],
-        () => console.log('User country and language updated successfully'),
-        (_, error) => console.log('Error updating user country and language:', error)
-      );
-    });
+  const handleExit = () => {
+    setModalVisible(false);
   };
 
-    const handleSave = () => {
-      const db = initDB();
-      db.transaction(tx => {
-        tx.executeSql(
-          `UPDATE Users SET ${selectedField} = ? WHERE email = ?`,
-          [inputValue, email],
-          () => {
-            console.log('User data updated successfully');
-            setModalVisible(false);
-          },
-          (_, error) => console.log('Error updating user data:', error)
-        );
-      });
-    };
+  const openImagePicker = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
 
-    const handleQuit = async () => {
-      try {
-        await AsyncStorage.clear();
-        navigation.navigate('Auth'); 
-      } catch(e) {
-        // handle error
-        console.log(e);
-      }
+    if (!result.cancelled) {
+      setImageUri(result.assets[0].uri);
     }
+  };
 
-    const handleRowPress = (field) => {
-      setSelectedField(field);
-      const db = initDB();
-      db.transaction(tx => {
-        tx.executeSql(
-          `SELECT ${field} FROM Users WHERE email = ?`,
-          [email],
-          (_, { rows }) => {
-            if (rows.length > 0) {
-              setCurrentValue(rows.item(0)[field]); // Set the current value
-            }
-          },
-          (_, error) => console.log('Error fetching data:', error)
-        );
+  const updateUserCountryAndLanguage = async (email, selectedCountry, selectedLanguage) => {
+    firebase.firestore().collection('users').doc(email).update({
+      country: selectedCountry,
+      language: selectedLanguage
+    })
+    .then(() => console.log('User country and language updated successfully'))
+    .catch(error => console.log('Error updating user country and language:', error));
+  };
+
+  const handleSave = () => {
+    firebase.firestore().collection('users').doc(email).update({
+      [selectedField]: inputValue
+    })
+    .then(() => {
+      console.log('User data updated successfully');
+      setModalVisible(false);
+    })
+    .catch(error => console.log('Error updating user data:', error));
+  };
+
+  const handleQuit = async () => {
+    try {
+      await AsyncStorage.clear();
+      navigation.navigate('Auth'); 
+    } catch(e) {
+      // handle error
+      console.log(e);
+    }
+  }
+
+  const handleRowPress = (field) => {
+    setSelectedField(field);
+    firebase.firestore().collection('users').doc(email).get()
+      .then(doc => {
+        if (doc.exists) {
+          const userData = doc.data();
+          setCurrentValue(userData[field]); // Set the current value
+          setInputValue(userData[field]); // Set the input value
+        } else {
+          console.log('No such document!');
+        }
+      })
+      .catch(error => {
+        console.log('Error getting document:', error);
       });
-      setModalVisible(true);
-    };
+    setModalVisible(true);
+  };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const user = await new Promise((resolve, reject) => {
-        const unsubscribe = firebase.auth().onAuthStateChanged(user => {
-          unsubscribe();
-          resolve(user);
-        }, reject);
+    const user = firebase.auth().currentUser;
+  
+    if (user) {
+      const userEmail = user.email;
+      const unsubscribe = firebase.firestore().collection('users').doc(userEmail).onSnapshot(doc => {
+        if (doc.exists) {
+          const userData = doc.data();
+          setEmail(userData.email);
+          setFullName(userData.fullName);
+          // Set other state variables as needed
+        } else {
+          console.log('No such document!');
+        }
+      }, error => {
+        console.log('Error getting document:', error);
       });
-
-      if (user) {
-        const userEmail = user.email;
-        const db = await setupDatabase();
-        db.transaction(tx => {
-          tx.executeSql(
-            'SELECT email, phoneNumber, username, fullname FROM Users WHERE email = ?',
-            [userEmail],
-            (_, { rows }) => {
-              if (rows.length > 0) {
-                console.log('The logged email exists in the database');
-              } else {
-                console.log('The logged email does not exist in the database');
-              }
-            },
-            (_, error) => console.log('Error fetching data:', error)
-          );
-        });
-      } else {
-        console.log('No user is logged in');
-      }
-    };
-
-    fetchUser();
+  
+      // Clean up the onSnapshot listener when the component is unmounted
+      return () => unsubscribe();
+    } else {
+      console.log('No user is logged in');
+    }
   }, []);
-
 
   return (
     <ImageBackground source={require('../assets/bg1.png')} style={styles.backgroundImage}>

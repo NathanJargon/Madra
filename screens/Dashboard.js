@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, TextInput } from 'react-native';
-import { setupDatabase, getAllUsers } from './Database';
-import { firebase } from './FirebaseConfig';
+import { setupDatabase } from './Database';
 import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
+import { firebase } from './FirebaseConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const db = SQLite.openDatabase('users.db');
 
 export default function Dashboard() {
   const [username, setUsername] = useState('USER');
   const [fullName, setFullName] = useState('USER');
   const [userEmail, setUserEmail] = useState(null);
+  const [userCountry, setUserCountry] = useState("Philippines");
   const [earthquakes, setEarthquakes] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,78 +22,10 @@ export default function Dashboard() {
     setEarthquakes([]);
   };
 
-  const [userCountry, setUserCountry] = useState(null);
-
   const handleSearch = () => {
     const filteredEarthquakes = earthquakes.filter(earthquake => earthquake.properties.title.includes(searchTerm));
     setEarthquakes(filteredEarthquakes);
   };
-
-    useEffect(() => {
-      const unsubscribe = firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          console.log('User email:', user.email);
-          setUserEmail(user.email);
-        } else {
-          console.log('No user is logged in');
-          setUserEmail(null);
-        }
-      });
-
-      // Cleanup function
-      return () => {
-        unsubscribe();
-      };
-    }, []);
-
-    useEffect(() => {
-      console.log('Fetching users...');
-      const fetchUsers = async () => {
-        try {
-          const users = await getAllUsers();
-          if (!users) {
-            console.error('Error fetching users: users is undefined');
-            return;
-          }
-          console.log('All users:', users);
-        } catch (error) {
-          console.error('Error fetching users:', error);
-        }
-      };
-
-      fetchUsers();
-    }, []);
-
-    useEffect(() => {
-      const fetchUser = async () => {
-        const user = await new Promise((resolve, reject) => {
-          const unsubscribe = firebase.auth().onAuthStateChanged(user => {
-            unsubscribe();
-            resolve(user);
-          }, reject);
-        });
-
-        if (user) {
-          console.log('User email:', user.email);
-          setUserEmail(user.email);
-          const sqlStatements = ['SELECT * FROM Users WHERE email = ?'];
-          db.exec(sqlStatements, true, (error, resultSet) => {
-            if (error) {
-              console.log('Error fetching data:', error);
-            } else {
-              const users = resultSet[0].rows;
-              console.log('User data:', users);
-              setFullName(users[0].fullName);
-            }
-          });
-        } else {
-          console.log('No user is logged in');
-          setUserEmail(null);
-        }
-      };
-
-      fetchUser();
-    }, []);
 
   useEffect(() => {
     const fetchData = () => {
@@ -112,6 +45,52 @@ export default function Dashboard() {
     return () => clearInterval(intervalId);
   }, [userCountry]);
 
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userEmail = await AsyncStorage.getItem('email');
+        const userName = await AsyncStorage.getItem('username');
+        const userFullName = await AsyncStorage.getItem('fullName');
+        const userCountry = await AsyncStorage.getItem('country');
+  
+        if (userEmail) setUserEmail(userEmail);
+        if (userName) setUsername(userName);
+        if (userFullName) setFullName(userFullName);
+        if (userCountry) setUserCountry(userCountry);
+      } catch (e) {
+        console.error('Failed to load user data from storage.', e);
+      }
+    };
+  
+    loadUserData();
+  }, []);
+  
+  useEffect(() => {
+    const user = firebase.auth().currentUser;
+  
+    if (user != null) {
+      setUserEmail(user.email);
+      const unsubscribe = firebase.firestore().collection('users').doc(user.email).onSnapshot(async doc => {
+        if (doc.exists) {
+          const userData = doc.data();
+          setUsername(userData.username);
+          setFullName(userData.fullName);
+          setUserCountry(userData.country);
+  
+          // Save the user data to AsyncStorage
+          await AsyncStorage.setItem('email', userData.email);
+          await AsyncStorage.setItem('username', userData.username);
+          await AsyncStorage.setItem('fullName', userData.fullName);
+          await AsyncStorage.setItem('country', userData.country);
+        }
+      }, error => {
+        console.error("Error getting document:", error);
+      });
+  
+      // Clean up the onSnapshot listener when the component is unmounted
+      return () => unsubscribe();
+    }
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -142,7 +121,7 @@ export default function Dashboard() {
         </View>
         <View style={styles.transparentBox}>
             <ScrollView>
-                {earthquakes.map((earthquake, index) => (
+                {earthquakes && earthquakes.length > 0 && earthquakes.map((earthquake, index) => (
                   <TouchableOpacity key={index} onPress={() => navigation.navigate('Map', { earthquake })}>
                     <View style={styles.innerBox}>
                       <Image source={require('../assets/icons/round-logo.png')} style={styles.innerBoxImage} />
@@ -153,7 +132,7 @@ export default function Dashboard() {
                 ))}
             </ScrollView>
           </View>
-            {earthquakes.length > 0 && (
+            {earthquakes && earthquakes.length > 0 && (
                 <View style={styles.clearAllBox}>
                     <TouchableOpacity onPress={clearNotifications}>
                       <Text style={styles.clearAllText}>CLEAR ALL</Text>
@@ -398,9 +377,9 @@ imageTextContainer: {
     marginTop: windowHeight * 0.1,
   },
   rightText: {
-    marginTop: windowHeight * 0.05,
-    marginLeft: windowWidth * 0.07,
-    fontSize: windowWidth * 0.075, // Adjust as needed
+    marginTop: windowHeight * 0.07,
+    marginLeft: windowWidth * 0.05,
+    fontSize: windowWidth * 0.06, // Adjust as needed
     color: '#000', // Adjust as needed
     textAlign: 'center',
   },
