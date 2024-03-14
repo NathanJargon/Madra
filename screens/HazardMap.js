@@ -2,14 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, PermissionsAndroid } from 'react-native';
 import EarthquakeUpdates from './EarthquakeUpdates';
 import HazardMapping from './HazardMapping';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Map({ navigation }) {
+export default function HazardMap() {
   const [showBox, setShowBox] = useState(true);
+  const [allowed, setAllowed] = useState(false);
   const [locationEnabled, setLocationEnabled] = useState(false);
-
+  const navigation = useNavigation();
+  
   useEffect(() => {
     checkLocationPermission();
   }, []);
@@ -22,32 +26,57 @@ export default function Map({ navigation }) {
       
       if (result === PermissionsAndroid.RESULTS.GRANTED) {
         setLocationEnabled(true);
+        await AsyncStorage.setItem('locationPermissionGranted', 'true'); // Store the flag
+        navigation.navigate('Feature', { screen: 'HazardMapping' });
+        setAllowed(true);
       } else {
         setLocationEnabled(false);
       }
     } else {
       setLocationEnabled(true);
+      await AsyncStorage.setItem('locationPermissionGranted', 'true'); // Store the flag
+      navigation.navigate('Feature', { screen: 'HazardMapping' });
+      setAllowed(true);
     }
   };
-
   
+  const checkPermission = async () => {
+    const locationPermissionGranted = await AsyncStorage.getItem('locationPermissionGranted'); // Retrieve the flag
+  
+    if (locationPermissionGranted === 'true') {
+      setLocationEnabled(true);
+    } else {
+      checkLocationPermission();
+    }
+  };
+  
+  useEffect(() => {
+    checkPermission();
+  }, []);
+
+  // Remove this useFocusEffect hook
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     if (locationEnabled) {
+  //       navigation.navigate('Feature', { screen: 'HazardMapping' });
+  //     }
+  //   }, [locationEnabled])
+  // );
+
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../assets/mapTop.png')} style={styles.screenContainer}>
         {showBox ? (
           <View style={styles.bottomBox}>
             <Image source={require('../assets/icons/place.png')} style={styles.image} />
-            <Text style={styles.text}>ALLOW LOCATION</Text>
-            <Text style={styles.subtext}>MADRA needs access to your location</Text>
-            <TouchableOpacity style={styles.button1} onPress={() => {setShowBox(false); checkLocationPermission();}}>
-              <Text style={styles.buttonText1}>ALLOW</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button2} onPress={() => setShowBox(false)}>
-              <Text style={styles.buttonText2}>DO NOT ALLOW</Text>
+            <Text style={styles.text}>HAZARD MAPPING</Text>
+            <Text style={styles.subtext}>MADRA will analytically assess range of earthquake magntitudes</Text>
+            <TouchableOpacity style={styles.button1} onPress={() => {setShowBox(true); checkLocationPermission();}}>
+              <Text style={styles.buttonText1}>ASSESS VULNERABILITY</Text>
             </TouchableOpacity>
           </View>
         ) : locationEnabled ? (
-          <EarthquakeUpdates />
+          <Text>Location enabled, navigating to HazardMapping...</Text>
         ) : (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>Location services are not enabled. Please enable them to view the map.</Text>

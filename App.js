@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
-import { StatusBar, Image, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, Text, StatusBar, Image, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { firebase } from './screens/FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserContext } from './UserContext';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -25,6 +26,7 @@ import HazardMapping from './screens/HazardMapping';
 import EducationalHub from './screens/EducationalHub';
 import Madramania from './screens/Madramania';
 import EarthquakeUpdates from './screens/EarthquakeUpdates';
+import HazardMap from './screens/HazardMap';
 
 // Create the stack navigators
 const AuthStack = createStackNavigator();
@@ -225,9 +227,12 @@ function MainStackScreen() {
   );
 }
 
-
-
 function App() {
+  const [info, setInfo] = useState({
+    fullName: '',
+    email: '',
+    phoneNumber: ''
+  });
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
 
@@ -246,18 +251,24 @@ function App() {
   }, [initializing]);
 
   if (initializing) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading...</Text>
+      </View>
+    );
   }
 
   return (
-    <NavigationContainer>
-      <RootStack.Navigator initialRouteName={user ? "Main" : "Auth"} screenOptions={{ headerShown: false }}>
-        <RootStack.Screen name='LoadingScreen' component={SplashStackScreen} />
-        <RootStack.Screen name="Auth" component={AuthStackScreen} />
-        <RootStack.Screen name="Main" component={MainStackScreen} />
-        <RootStack.Screen name="Feature" component={FeatureStackScreen} />
-      </RootStack.Navigator>
-    </NavigationContainer>
+    <UserContext.Provider value={{ user, setUser, info, setInfo }}>
+      <NavigationContainer>
+        <RootStack.Navigator initialRouteName="LoadingScreen" screenOptions={{ headerShown: false }}>
+          <RootStack.Screen name='LoadingScreen' component={SplashStackScreen} />
+          <RootStack.Screen name="Auth" component={AuthStackScreen} />
+          <RootStack.Screen name="Main" component={MainStackScreen} />
+          <RootStack.Screen name="Feature" component={FeatureStackScreen} />
+        </RootStack.Navigator>
+      </NavigationContainer>
+    </UserContext.Provider>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Animated, StyleSheet, Dimensions, ImageBackground } from 'react-native';
+import { firebase } from './FirebaseConfig';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -8,18 +9,35 @@ export default function Splash({ navigation }) {
   const [fadeAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-    ]).start(() => navigation.navigate('Auth'));
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      Animated.sequence([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        if (user) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Auth' }],
+          });
+        }
+      });
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [fadeAnim, navigation]);
 
   return (

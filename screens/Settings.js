@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Modal } from 'react-native';
 import { setupDatabase } from './Database';
 import { firebase } from './FirebaseConfig';
 import * as SQLite from 'expo-sqlite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
+import { UserContext } from '../UserContext';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function Settings({ navigation }) {
-  const [fullName, setFullName] = useState('USER');
-  const [email, setEmail] = useState('user@gmail.com');
-  const [phoneNumber, setPhoneNumber] = useState('09123456789');
+  const { info, setInfo } = useContext(UserContext);
+  const [fullName, setFullName] = useState("USER");
+  const [email, setEmail] = useState("user@gmail.com");
+  const [phoneNumber, setPhoneNumber] = useState("0999928751");
   const [username, setUsername] = useState('user');
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleLang, setModalVisibleLang] = useState(false);
@@ -29,6 +31,44 @@ export default function Settings({ navigation }) {
     const [dailyAlerts, setDailyAlerts] = useState(false);
     const [weeklyAlerts, setWeeklyAlerts] = useState(false);
     const [monthlyAlerts, setMonthlyAlerts] = useState(false);
+
+    useEffect(() => {
+      const loadUserData = async () => {
+        try {
+          const userFullName = await AsyncStorage.getItem('fullName');
+          const userEmail = await AsyncStorage.getItem('email');
+          const userPhoneNumber = await AsyncStorage.getItem('phoneNumber');
+
+          if (info.fullName) {
+            setFullName(info.fullName);
+          } else if (userFullName) {
+            setFullName(userFullName);
+          } else {
+            setFullName('user');
+          }
+
+          if (info.email) {
+            setEmail(info.email);
+          } else if (userEmail) {
+            setEmail(userEmail);
+          } else {
+            setEmail('user@gmail.com');
+          }
+
+          if (info.phoneNumber) {
+            setPhoneNumber(info.phoneNumber);
+          } else if (userPhoneNumber) {
+            setPhoneNumber(userPhoneNumber);
+          } else {
+            setPhoneNumber('12396162');
+          }
+        } catch (e) {
+          console.error('Failed to load user data from storage.', e);
+        }
+      };
+
+      loadUserData();
+    }, [info]);
 
     useEffect(() => {
       const user = firebase.auth().currentUser;
@@ -217,11 +257,31 @@ export default function Settings({ navigation }) {
     useEffect(() => {
         const loadUserData = async () => {
           try {
+            const minManitude = await AsyncStorage.getItem('minMagnitude');
+            const monthlyAlerts = await AsyncStorage.getItem('monthlyAlerts');
+            const pushAlerts = await AsyncStorage.getItem('pushAlerts');
+            const smsAlerts = await AsyncStorage.getItem('smsAlerts');
+            const timePeriod = await AsyncStorage.getItem('timePeriod');
+            const weeklyAlerts = await AsyncStorage.getItem('weeklyAlerts');
+            const dailyAlerts = await AsyncStorage.getItem('dailyAlerts');
+            const emailAlerts = await AsyncStorage.getItem('emailAlerts');
+
             const userEmail = await AsyncStorage.getItem('email');
             const userName = await AsyncStorage.getItem('username');
             const userFullName = await AsyncStorage.getItem('fullName');
             const userCountry = await AsyncStorage.getItem('country');
             const userLanguage = await AsyncStorage.getItem('language');
+            const isNotified = await AsyncStorage.getItem('isNotified');
+
+            if (isNotified) setIsNotified(isNotified === 'true');
+            if (minManitude) setMinMagnitude(minManitude);
+            if (monthlyAlerts) setMonthlyAlerts(monthlyAlerts === 'true');
+            if (pushAlerts) setPushAlerts(pushAlerts === 'true');
+            if (smsAlerts) setSmsAlerts(smsAlerts === 'true');
+            if (timePeriod) setTimePeriod(timePeriod);
+            if (weeklyAlerts) setWeeklyAlerts(weeklyAlerts === 'true');
+            if (dailyAlerts) setDailyAlerts(dailyAlerts === 'true');
+            if (emailAlerts) setEmailAlerts(emailAlerts === 'true');
 
             if (userEmail) setEmail(userEmail);
             if (userFullName) setFullName(userFullName);
@@ -256,7 +316,9 @@ export default function Settings({ navigation }) {
             const userData = doc.data();
             setUsername(userData.username);
             setFullName(userData.fullName);
-    
+            setEmail(userData.email); // Add this line
+            setPhoneNumber(userData.phoneNumber); // Add this line
+
             // Find the country object from the countries array
             const countryObject = countries.find(country => country.name === userData.country);
     
@@ -271,6 +333,16 @@ export default function Settings({ navigation }) {
             await AsyncStorage.setItem('fullName', userData.fullName);
             await AsyncStorage.setItem('country', userData.country);
             await AsyncStorage.setItem('language', userData.language);
+            await AsyncStorage.setItem('isNotified', userData.isNotified ? 'true' : 'false');
+            await AsyncStorage.setItem('minMagnitude', userData.minMagnitude || '5.0'); // Default to '5.0' if not present
+            await AsyncStorage.setItem('monthlyAlerts', userData.monthlyAlerts ? 'true' : 'false');
+            await AsyncStorage.setItem('pushAlerts', userData.pushAlerts ? 'true' : 'false');
+            await AsyncStorage.setItem('smsAlerts', userData.smsAlerts ? 'true' : 'false');
+            await AsyncStorage.setItem('timePeriod', userData.timePeriod || 'all_day'); // Default to 'all_day' if not present
+            await AsyncStorage.setItem('weeklyAlerts', userData.weeklyAlerts ? 'true' : 'false');
+            await AsyncStorage.setItem('dailyAlerts', userData.dailyAlerts ? 'true' : 'false');
+            await AsyncStorage.setItem('emailAlerts', userData.emailAlerts ? 'true' : 'false');
+
           }
         }, error => {
           console.error("Error getting document:", error);
@@ -292,7 +364,7 @@ export default function Settings({ navigation }) {
         }}
       >
         <View style={styles.centeredView}>
-          <View style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
+          <ImageBackground source={require('../assets/bg1.png')} style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
             <Text style={{color: 'black', fontSize: windowWidth * 0.075, textAlign: 'center' }}>Choose a country</Text>
             <Text style={{color: 'black', fontSize: windowWidth * 0.03, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>This will set which country to fetch earthquakes!</Text>
             <ScrollView style={{ height: windowHeight * 0.3 }}>
@@ -319,7 +391,7 @@ export default function Settings({ navigation }) {
             >
               <Text style={styles.textStyle}>Close</Text>
             </TouchableOpacity>
-          </View>
+          </ImageBackground>
         </View>
       </Modal>
 
@@ -332,7 +404,7 @@ export default function Settings({ navigation }) {
         }}
       >
         <View style={styles.centeredView}>
-          <View style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
+          <ImageBackground source={require('../assets/bg1.png')} style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
             <Text style={{color: 'black', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Choose a language</Text>
             <ScrollView style={{ height: windowHeight * 0.3 }}>
               {languages.map((language, index) => (
@@ -358,7 +430,7 @@ export default function Settings({ navigation }) {
             >
               <Text style={styles.textStyle}>Close</Text>
             </TouchableOpacity>
-          </View>
+          </ImageBackground>
         </View>
       </Modal>
 
@@ -372,29 +444,29 @@ export default function Settings({ navigation }) {
           }}
         >
           <View style={styles.centeredView}>
-            <View style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
+          <ImageBackground source={require('../assets/bg1.png')} style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
               <Text style={{color: 'black', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Customize Alerts</Text>
 
               <Text style={{color: 'black', fontWeight: 'bold',  fontSize: windowWidth * 0.05, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Alert Type</Text>
               <TouchableOpacity onPress={toggleEmailAlerts}>
-                <Text style={styles.alertText}>Email Alerts: {emailAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, {backgroundColor: (emailAlerts) ? 'white' : 'transparent'}]}>Email Alerts: {emailAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={togglePushAlerts}>
-                <Text style={styles.alertText}>Push Notifications: {pushAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, {backgroundColor: (pushAlerts) ? 'white' : 'transparent'}]}>Push Notifications: {pushAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleSMSAlerts}>
-                <Text style={styles.alertText}>SMS Alerts: {smsAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, {backgroundColor: (smsAlerts) ? 'white' : 'transparent'}]}>SMS Alerts: {smsAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
 
               <Text style={{color: 'black', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Alert Frequency</Text>
               <TouchableOpacity onPress={toggleDailyAlerts}>
-                <Text style={styles.alertText}>Daily Alerts: {dailyAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, {backgroundColor: (dailyAlerts) ? 'white' : 'transparent'}]}>Daily Alerts: {dailyAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleWeeklyAlerts}>
-                <Text style={styles.alertText}>Weekly Alerts: {weeklyAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, {backgroundColor: (weeklyAlerts) ? 'white' : 'transparent'}]}>Weekly Alerts: {weeklyAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleMonthlyAlerts}>
-                <Text style={[styles.alertText, { marginBottom: windowHeight * 0.02, }]}>Monthly Alerts: {monthlyAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, { marginBottom: windowHeight * 0.02, backgroundColor: (monthlyAlerts) ? 'white' : 'transparent'}]}>Monthly Alerts: {monthlyAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -405,7 +477,7 @@ export default function Settings({ navigation }) {
               >
                 <Text style={styles.textStyle}>Close</Text>
               </TouchableOpacity>
-            </View>
+            </ImageBackground>
           </View>
         </Modal>
 
@@ -419,19 +491,26 @@ export default function Settings({ navigation }) {
       }}
     >
       <View style={styles.centeredView}>
-        <View style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
+          <ImageBackground source={require('../assets/bg1.png')} style={[styles.modalView, { justifyContent: 'center', alignItems: 'center', width: windowWidth * .85, }]}>
           <Text style={{color: 'black', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.01, textAlign: 'center', }}>Customize Earthquake Details</Text>
 
           <Text style={{color: 'black', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Minimum Magnitude</Text>
-          <TouchableOpacity onPress={() => updateMinMagnitude('4.0')}>
-            <Text style={styles.alertText}>Set to 4.0</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => updateMinMagnitude('5.0')}>
-            <Text style={styles.alertText}>Set to 5.0</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => updateMinMagnitude('6.0')}>
-            <Text style={styles.alertText}>Set to 6.0</Text>
-          </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => updateMinMagnitude('4.0')}
+            >
+              <Text style={[styles.alertText, {backgroundColor: (minMagnitude === '4.0') ? 'white' : 'transparent'}]}>Set to 4.0</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => updateMinMagnitude('5.0')}
+            >
+              <Text style={[styles.alertText, {backgroundColor: (minMagnitude === '5.0') ? 'white' : 'transparent'}]}>Set to 5.0</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => updateMinMagnitude('6.0')}
+            >
+              <Text style={[styles.alertText, {backgroundColor: (minMagnitude === '6.0') ? 'white' : 'transparent'}]}>Set to 6.0</Text>
+            </TouchableOpacity>
 
           <Text style={{color: 'black', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Time Period</Text>
           <TouchableOpacity onPress={() => updateTimePeriod('all_day')}>
@@ -455,7 +534,7 @@ export default function Settings({ navigation }) {
           >
             <Text style={styles.textStyle}>Close</Text>
           </TouchableOpacity>
-        </View>
+        </ImageBackground>
       </View>
     </Modal>
 
@@ -491,13 +570,13 @@ export default function Settings({ navigation }) {
                 <TouchableOpacity onPress={() => setModalVisibleAlerts(true)}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                       <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.15, color: 'white', fontWeight: 'bold', }}>Customizable Alerts</Text>
-                      <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.25, }]} />
+                      <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.2, }]} />
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setModalVisibleDetails(true)}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.15, color: 'white',  fontWeight: 'bold', }}>Earthquake Details</Text>
-                        <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.27, }]} />
+                        <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.225, }]} />
                       </View>
                 </TouchableOpacity>
                 </View>
@@ -507,7 +586,7 @@ export default function Settings({ navigation }) {
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                           <Image source={require('../assets/icons/user.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'  }} />
                           <Text style={[styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white',  fontWeight: 'bold' }]}>Personal Information</Text>
-                          <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.15, }]} />
+                          <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.16, }]} />
                         </View>
                       </TouchableOpacity>
                           <TouchableOpacity onPress={() => setModalVisible(true)}>
@@ -540,7 +619,7 @@ export default function Settings({ navigation }) {
                           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image source={require('../assets/icons/lock.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
                             <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, color: 'white', fontWeight: 'bold',  }}>Privacy and Policy</Text>
-                            <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.27, }]} />
+                            <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.225, }]} />
                           </View>
                       </TouchableOpacity>
                     </View>
@@ -720,9 +799,9 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    width: "70%",
-    backgroundColor: "white",
+    width: windowWidth * .75,
     borderRadius: 20,
+    overflow: 'hidden',
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",

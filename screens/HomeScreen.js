@@ -27,33 +27,31 @@ function HomeScreen({ navigation }) {
     const [month, setMonth] = useState('');
     const [day, setDay] = useState('');
     const [year, setYear] = useState('');
-    
+
     useEffect(() => {
-      const checkUserLoggedIn = async () => {
-        const userLoggedIn = await AsyncStorage.getItem('userLoggedIn');
-        if (userLoggedIn === 'true') {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Main' }],
-          });
-        }
-      };
-
-      checkUserLoggedIn();
-
-      const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
           // User is signed in.
           navigation.reset({
             index: 0,
             routes: [{ name: 'Main' }],
           });
+          setIsAuthenticated(true);
         } else {
           // User is signed out.
           setIsAuthenticated(false);
+    
+          // Try to log in the user automatically
+          const email = await AsyncStorage.getItem('email');
+          const password = await AsyncStorage.getItem('password');
+          if (email && password) {
+            setEmail(email);
+            setPassword(password);
+            handleLogin();
+          }
         }
       });
-
+    
       // Cleanup subscription on unmount
       return () => unsubscribe();
     }, []);
@@ -109,6 +107,7 @@ function HomeScreen({ navigation }) {
           monthlyAlerts: false,
           minMagnitude: "4.0",
           timePeriod: "all_week",
+          password: password,
         });
     
         console.log('User inserted successfully');
@@ -127,13 +126,24 @@ function HomeScreen({ navigation }) {
     };
 
     const handleLogin = async () => {
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('The email address is badly formatted.');
+        return;
+      }
+
+      console.log('Email: ', email);
+      
       try {
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
         if (user.emailVerified) {
           await AsyncStorage.setItem('userLoggedIn', 'true'); // Set the flag
-
+          await AsyncStorage.setItem('email', email);
+          await AsyncStorage.setItem('password', password);
+      
           navigation.reset({
             index: 0,
             routes: [{ name: 'Main' }],

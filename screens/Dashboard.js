@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Modal, ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, TextInput } from 'react-native';
 import { setupDatabase } from './Database';
 import { useNavigation } from '@react-navigation/native';
@@ -6,22 +6,47 @@ import * as SQLite from 'expo-sqlite';
 import { firebase } from './FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import { UserContext } from '../UserContext';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function Dashboard() {
+  const { info, setInfo } = useContext(UserContext);
   const [username, setUsername] = useState('USER');
   const [fullName, setFullName] = useState('USER');
   const [userEmail, setUserEmail] = useState(null);
   const [userCountry, setUserCountry] = useState("Philippines");
   const [earthquakes, setEarthquakes] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [minMagnitude, setMinMagnitude] = useState('');
+  const [timePeriod, setTimePeriod] = useState('');
+  const [isNotified, setIsNotified] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const navigation = useNavigation();
   const clearNotifications = () => {
     setEarthquakes([]);
   };
+
+    useEffect(() => {
+      const loadUserData = async () => {
+        try {
+          const userFullName = await AsyncStorage.getItem('fullName');
+          if (info.fullName) {
+            setFullName(info.fullName);
+          } else if (userFullName) {
+            setFullName(userFullName);
+          } else {
+            setFullName('user');
+          }
+        } catch (e) {
+          console.error('Failed to load user data from storage.', e);
+        }
+      };
+
+      loadUserData();
+    }, [info]);
+
 
   const handleSearch = () => {
     const filteredEarthquakes = earthquakes.filter(earthquake => earthquake.properties.title.includes(searchTerm));
@@ -46,7 +71,7 @@ export default function Dashboard() {
         const userData = doc.data();
         if (userData.isNotified) {
           if (userCountry) {
-            fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson')
+            fetch(`https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${timePeriod}.geojson`)
               .then(response => response.json())
               .then(data => {
                 const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
@@ -66,11 +91,17 @@ export default function Dashboard() {
         const userName = await AsyncStorage.getItem('username');
         const userFullName = await AsyncStorage.getItem('fullName');
         const userCountry = await AsyncStorage.getItem('country');
+        const userMinMagnitude = await AsyncStorage.getItem('minMagnitude');
+        const userTimePeriod = await AsyncStorage.getItem('timePeriod');
+        const userIsNotified = await AsyncStorage.getItem('isNotified');
   
         if (userEmail) setUserEmail(userEmail);
         if (userName) setUsername(userName);
         if (userFullName) setFullName(userFullName);
         if (userCountry) setUserCountry(userCountry);
+        if (userMinMagnitude) setMinMagnitude(userMinMagnitude);
+        if (userTimePeriod) setTimePeriod(userTimePeriod);
+        if (userIsNotified) setIsNotified(userIsNotified);
       } catch (e) {
         console.error('Failed to load user data from storage.', e);
       }
@@ -90,12 +121,18 @@ export default function Dashboard() {
           setUsername(userData.username);
           setFullName(userData.fullName);
           setUserCountry(userData.country);
-  
+          setMinMagnitude(userData.minMagnitude);
+          setTimePeriod(userData.timePeriod);
+          setIsNotified(userData.isNotified);
+
           // Save the user data to AsyncStorage
           await AsyncStorage.setItem('email', userData.email);
           await AsyncStorage.setItem('username', userData.username);
           await AsyncStorage.setItem('fullName', userData.fullName);
           await AsyncStorage.setItem('country', userData.country);
+          await AsyncStorage.setItem('timePeriod', userData.timePeriod || 'all_day');
+          await AsyncStorage.setItem('isNotified', userData.isNotified ? 'true' : 'false');
+          await AsyncStorage.setItem('minMagnitude', userData.minMagnitude || '5.0');
         }
       }, error => {
         console.error("Error getting document:", error);
@@ -155,7 +192,11 @@ export default function Dashboard() {
           )}
 
       </ImageBackground>
-        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+
+        <TouchableOpacity
+          style={styles.touchableArea}
+          onPress={() => navigation.navigate('Settings')}
+        >
           <Image source={require('../assets/icons/notif.png')} style={styles.fixedImage} />
         </TouchableOpacity>
 
@@ -211,6 +252,16 @@ export default function Dashboard() {
 
 
 const styles = StyleSheet.create({
+  touchableArea: {
+    position: 'absolute',
+    bottom: windowHeight * 0.85,
+    left: windowWidth * .9,
+    width: windowWidth / 14,
+    height: windowHeight / 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
     infoBox: {
       backgroundColor: 'rgba(255, 255, 255, 0)', // Set the background color to gray
       width: '100%', // Adjust the width as needed
@@ -353,8 +404,6 @@ const styles = StyleSheet.create({
   },
   fixedImage: {
     position: 'absolute', // Position it absolutely
-    bottom: windowHeight * 0.385, // Adjust as needed
-    left: windowWidth * 0.385, // Adjust as needed
     width: windowWidth / 14, // Adjust as needed
     height: windowHeight / 14, // Adjust as needed
     resizeMode: 'contain',

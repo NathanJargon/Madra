@@ -4,6 +4,7 @@ import HazardMapping from './HazardMapping';
 import EducationalHub from './EducationalHub';
 import Madramania from './Madramania';
 import Map from './Map';
+import HazardMap from './HazardMap';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -205,7 +206,7 @@ export default function Features({ navigation }) {
             </View>
           </View>
         ) : (
-          showHazardMapping ? <HazardMapping /> : showEducationalHub ? <EducationalHub /> : showMadramania ? <Madramania /> : <Map />
+          showHazardMapping ? <HazardMap /> : showEducationalHub ? <EducationalHub /> : showMadramania ? <Madramania /> : <Map />
         )}
       </ImageBackground>
     </View>

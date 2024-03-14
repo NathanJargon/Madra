@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Modal, TextInput } from 'react-native';
 import { firebase } from './FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserContext } from '../UserContext';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function Profile({ navigation }) {
+  const { info, setInfo } = useContext(UserContext);
   const [fullName, setFullName] = useState('USER');
   const [email, setEmail] = useState('user@gmail.com');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedField, setSelectedField] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [currentValue, setCurrentValue] = useState('');
+  const [imageUri, setImageUri] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   const handleExit = () => {
     setModalVisible(false);
@@ -40,16 +44,34 @@ export default function Profile({ navigation }) {
     .catch(error => console.log('Error updating user country and language:', error));
   };
 
-  const handleSave = () => {
-    firebase.firestore().collection('users').doc(email).update({
-      [selectedField]: inputValue
-    })
-    .then(() => {
-      console.log('User data updated successfully');
-      setModalVisible(false);
-    })
-    .catch(error => console.log('Error updating user data:', error));
-  };
+    const handleSave = () => {
+      firebase.firestore().collection('users').doc(email).update({
+        [selectedField]: inputValue
+      })
+      .then(async () => {
+        console.log('User data updated successfully');
+        setModalVisible(false);
+        // Update the corresponding state variable
+        if (selectedField === 'fullName') {
+          setFullName(inputValue);
+          setInfo(prevInfo => ({ ...prevInfo, fullName: inputValue }));
+          await AsyncStorage.setItem('fullName', inputValue);
+        } else if (selectedField === 'email') {
+          setEmail(inputValue);
+          setInfo(prevInfo => ({ ...prevInfo, email: inputValue }));
+          await AsyncStorage.setItem('email', inputValue);
+        } else if (selectedField === 'phoneNumber') {
+          setPhoneNumber(inputValue);
+          setInfo(prevInfo => ({ ...prevInfo, phoneNumber: inputValue }));
+          await AsyncStorage.setItem('phoneNumber', inputValue);
+        }
+      })
+      .catch(error => {
+        console.log('Error updating user data:', error);
+        // Show an alert if there is an error
+        alert('Error updating user data: ' + error.message);
+      });
+    };
 
     const handleQuit = async () => {
       try {
@@ -62,23 +84,24 @@ export default function Profile({ navigation }) {
       }
     }
 
-  const handleRowPress = (field) => {
-    setSelectedField(field);
-    firebase.firestore().collection('users').doc(email).get()
-      .then(doc => {
-        if (doc.exists) {
-          const userData = doc.data();
-          setCurrentValue(userData[field]); // Set the current value
-          setInputValue(userData[field]); // Set the input value
-        } else {
-          console.log('No such document!');
-        }
-      })
-      .catch(error => {
-        console.log('Error getting document:', error);
-      });
-    setModalVisible(true);
-  };
+    const handleRowPress = (field) => {
+      setSelectedField(field);
+      firebase.firestore().collection('users').doc(email).get()
+        .then(doc => {
+          if (doc.exists) {
+            const userData = doc.data();
+            const fieldValue = userData[field] || ''; // Use an empty string if userData[field] is undefined
+            setCurrentValue(fieldValue); // Set the current value
+            setInputValue(fieldValue); // Set the input value
+          } else {
+            console.log('No such document!');
+          }
+        })
+        .catch(error => {
+          console.log('Error getting document:', error);
+        });
+      setModalVisible(true);
+    };
 
     useEffect(() => {
       const unsubscribe = firebase.auth().onAuthStateChanged(async user => {

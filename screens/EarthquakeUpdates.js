@@ -4,6 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import * as SQLite from 'expo-sqlite';
 import { firebase } from './FirebaseConfig';
 import { setupDatabase } from './Database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -18,8 +19,10 @@ export default function EarthquakeUpdates() {
       setIsLoading(true);
       try {
         const response = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson');
-        const text = await response.text();
-        const data = JSON.parse(text);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
         const countries = [userLocation];
         let filteredData = data.features.filter(earthquake =>
           countries.some(country => earthquake.properties.place.includes(country))
@@ -29,8 +32,24 @@ export default function EarthquakeUpdates() {
           setInitialLoad(false);
         }
         setEarthquakes(prevEarthquakes => [...prevEarthquakes, ...filteredData]);
+
+        // Save the fetched data to AsyncStorage
+        try {
+          await AsyncStorage.setItem('earthquakes', JSON.stringify(filteredData));
+        } catch (e) {
+          console.error('Failed to save earthquake data to storage.', e);
+        }
       } catch (error) {
         console.error('Error:', error);
+        // Fetch data from AsyncStorage if the fetch request fails
+        try {
+          const asyncData = await AsyncStorage.getItem('earthquakes');
+          if (asyncData !== null) {
+            setEarthquakes(JSON.parse(asyncData));
+          }
+        } catch (e) {
+          console.error('Failed to load earthquake data from storage.', e);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -158,7 +177,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     height: windowHeight * 0.1,
-    backgroundColor: 'white',
+    backgroundColor: '#00605B',
     marginBottom: 2,
     paddingHorizontal: 10,
     borderTopWidth: 15,
@@ -170,7 +189,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     height: windowHeight * 0.08,
-    backgroundColor: 'white',
+    backgroundColor: '#00605B',
     marginBottom: 2,
     paddingHorizontal: 10,
   },

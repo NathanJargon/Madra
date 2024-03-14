@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Animated } from 'react-native';
-import MapView, { Circle } from 'react-native-maps';
+import MapView, { Circle, Marker } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { firebase } from './FirebaseConfig';
 
@@ -15,34 +15,53 @@ export default function HazardMapping({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true); // Add this line
   const [selectedEarthquake, setSelectedEarthquake] = useState(null);
+  const [selectedEarthquakeIndex, setSelectedEarthquakeIndex] = useState(null);
+  const [mapReady, setMapReady] = useState(false);
+
+  useEffect(() => {
+    if (mapReady && mapRef.current) {
+      mapRef.current.fitToCoordinates([{ latitude: 13.41, longitude: 122.56 }], {
+        edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+        animated: true,
+      });
+    }
+  }, [mapReady]);
+
+
   const getCircleColor = (magnitude) => {
     if (magnitude < 2.5) {
-      return 'green';
+      return 'rgba(0, 128, 0, 0.5)';
     } else if (magnitude < 5) {
-      return 'yellow';
+      return 'rgba(255, 255, 0, 0.5)';
     } else {
-      return 'red';
+      return 'rgba(255, 0, 0, 0.5)';
     }
   };
 
-  const handleEarthquakeClick = (earthquake) => {
+  const handleEarthquakeClick = (earthquake, index) => {
     setSelectedEarthquake(earthquake);
+    setSelectedEarthquakeIndex(index);
+    console.log('Earthquake:', earthquake);
+    console.log('Index:', index);
+    setTimeout(() => setSelectedEarthquakeIndex(null), 5000); // Reset after 5 seconds
     mapRef.current.animateToRegion({
       latitude: earthquake.geometry.coordinates[1],
       longitude: earthquake.geometry.coordinates[0],
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
+      latitudeDelta: 5,
+      longitudeDelta: 5,
     });
   };
 
 
   const fetchData = () => {
     if (userCountry) {
+      setIsLoading(true); // Set loading to true when starting to fetch data
       fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson')
         .then(response => response.json())
         .then(data => {
           const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
           setEarthquakes(filteredEarthquakes);
+          setIsLoading(false); // Set loading to false when data is fetched
         });
     }
   };
@@ -140,13 +159,20 @@ export default function HazardMapping({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Image source={require('../assets/arrow_back.png')} style={styles.backImage} />
+      </TouchableOpacity>
       <Animated.View style={[styles.container, { opacity: 1 }]}>
-        {showMap ? (
+        {isLoading ? (
+          <ImageBackground source={require('../assets/bg1.png')} style={styles.loadingContainer}>
+            <Image source={require('../assets/icons/loading.png')} style={styles.loadingImage} />
+          </ImageBackground>
+      ) : showMap ? (
           <>
             <MapView
               mapType="satellite"
               ref={mapRef}
-              onLayout={() => console.log('Map has been laid out')}
+              onLayout={() => setMapReady(true)}
               style={{ flex: 1, width: '100%', height: '100%', }}
               initialRegion={{
                 latitude: 12.8797,
@@ -155,37 +181,45 @@ export default function HazardMapping({ navigation }) {
                 longitudeDelta: 20, // adjust as needed
               }}
             >
-              {earthquakes.map((earthquake, index) => (
-                <Circle
-                  key={index}
-                  center={{
-                    latitude: earthquake.geometry.coordinates[1],
-                    longitude: earthquake.geometry.coordinates[0],
-                  }}
-                  radius={(earthquake.properties.mag + 1) * 10000} // Adjust the scaling factor as needed
-                  strokeColor={'#000'} // border color
-                  fillColor={getCircleColor(earthquake.properties.mag)} // fill color
-                />
-              ))}
+
+                {earthquakes.map((earthquake, index) => (
+                  <View key={index}>
+                    <Marker
+                      coordinate={{
+                        latitude: earthquake.geometry.coordinates[1],
+                        longitude: earthquake.geometry.coordinates[0],
+                      }}
+                      onPress={() => handleEarthquakeClick(earthquake, index)} // Pass the index here
+                    />
+                    <Circle
+                      center={{
+                        latitude: earthquake.geometry.coordinates[1],
+                        longitude: earthquake.geometry.coordinates[0],
+                      }}
+                      radius={(earthquake.properties.mag + 1) * 10000} // Adjust the scaling factor as needed
+                      strokeColor={'#000'} // border color
+                      fillColor={index === selectedEarthquakeIndex ? 'gold' : getCircleColor(earthquake.properties.mag)} // fill color
+                    />
+                  </View>
+                ))}
+
             </MapView>
 
 
-          <View style={styles.infoBox}>
-            <ScrollView>
-              {selectedEarthquake && (
-                <>
-                  <Text>Magnitude: {selectedEarthquake.properties.mag}</Text>
-                  <Text>Time: {new Date(selectedEarthquake.properties.time).toString()}</Text>
-                </>
-              )}
-              {earthquakes.map((earthquake, index) => (
-                <TouchableOpacity key={index} onPress={() => handleEarthquakeClick(earthquake)}>
-                  <Text>{earthquake.properties.title}</Text>
-                  <Text></Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
+            <ImageBackground source={require('../assets/bg1.png')} style={styles.infoBox}>
+              <ScrollView>
+                {selectedEarthquake && (
+                  <>
+                  </>
+                )}
+                {earthquakes.map((earthquake, index) => (
+                  <TouchableOpacity key={index} onPress={() => handleEarthquakeClick(earthquake)}>
+                    <Text>{earthquake.properties.title}</Text>
+                    <Text></Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </ImageBackground>
 
 
           </>
@@ -208,15 +242,45 @@ export default function HazardMapping({ navigation }) {
 
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 2,
+  },
+  loadingImage: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    padding: 10,
+    zIndex: 1,
+  },
+  backImage: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+  },
   infoBox: {
     position: 'absolute',
     top: 10,
     right: 10,
     width: windowWidth * 0.3, // adjust as needed
-    height: windowHeight * 0.25, // adjust as needed
+    height: windowHeight * 0.3, // adjust as needed
     backgroundColor: 'white', // change as needed
     padding: 10,
     borderRadius: 10,
+    overflow: 'hidden',
   },
   container: {
     flex: 1,
