@@ -23,6 +23,7 @@ export default function Dashboard() {
   const [timePeriod, setTimePeriod] = useState('');
   const [isNotified, setIsNotified] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+    const [imageUri , setImageUri] = useState(null);
   const navigation = useNavigation();
   const clearNotifications = () => {
     setEarthquakes([]);
@@ -94,7 +95,8 @@ export default function Dashboard() {
         const userMinMagnitude = await AsyncStorage.getItem('minMagnitude');
         const userTimePeriod = await AsyncStorage.getItem('timePeriod');
         const userIsNotified = await AsyncStorage.getItem('isNotified');
-  
+      const imageUri = await AsyncStorage.getItem('imageUri');
+
         if (userEmail) setUserEmail(userEmail);
         if (userName) setUsername(userName);
         if (userFullName) setFullName(userFullName);
@@ -124,8 +126,13 @@ export default function Dashboard() {
           setMinMagnitude(userData.minMagnitude);
           setTimePeriod(userData.timePeriod);
           setIsNotified(userData.isNotified);
+            const userImageUri = userData.imageUri;
+            if (userImageUri) {
+              setImageUri(userImageUri);
+            }
 
           // Save the user data to AsyncStorage
+        await AsyncStorage.setItem('imageUri', userData.imageUri);
           await AsyncStorage.setItem('email', userData.email);
           await AsyncStorage.setItem('username', userData.username);
           await AsyncStorage.setItem('fullName', userData.fullName);
@@ -147,7 +154,7 @@ export default function Dashboard() {
     <View style={styles.container}>
       <View style={styles.imageTextContainer}>
         <ImageBackground source={require('../assets/icons/profileBackground.png')} style={styles.profileLogoBackground}>
-          <Image source={require('../assets/icons/profilelogo.png')} style={styles.profileLogo} />
+            <Image source={imageUri ? { uri: imageUri } : require('../assets/icons/profilelogo.png')} style={styles.boxImage1} />
         </ImageBackground>
 
         <View styles={styles.textContainer}>
@@ -379,6 +386,15 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     margin: windowWidth * 0.015,
     borderRadius: 20,
+  },
+  boxImage1: { // Add this style
+    width: windowWidth / 3.5, // Adjust as needed
+    height: windowHeight / 7, // Adjust as needed
+    resizeMode: 'cover',
+    margin: windowWidth * 0.2,
+    marginLeft: windowWidth * 0.12,
+    borderRadius: 100,
+    overflow: 'hidden'
   },
   inputContainer: {
     flexDirection: 'row', // Arrange children in a row

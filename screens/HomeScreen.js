@@ -40,18 +40,25 @@ function HomeScreen({ navigation }) {
         } else {
           // User is signed out.
           setIsAuthenticated(false);
-    
+
           // Try to log in the user automatically
           const email = await AsyncStorage.getItem('email');
           const password = await AsyncStorage.getItem('password');
           if (email && password) {
-            setEmail(email);
-            setPassword(password);
-            handleLogin();
+            try {
+              await firebase.auth().signInWithEmailAndPassword(email, password);
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Main' }],
+              });
+              setIsAuthenticated(true);
+            } catch (error) {
+              console.error('Error while logging in:', error);
+            }
           }
         }
       });
-    
+
       // Cleanup subscription on unmount
       return () => unsubscribe();
     }, []);
@@ -108,6 +115,7 @@ function HomeScreen({ navigation }) {
           minMagnitude: "4.0",
           timePeriod: "all_week",
           password: password,
+          imageUri,
         });
     
         console.log('User inserted successfully');
@@ -129,7 +137,7 @@ function HomeScreen({ navigation }) {
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        alert('The email address is badly formatted.');
+        alert('Your login session has expired. Please login again.');
         return;
       }
 

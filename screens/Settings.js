@@ -24,6 +24,7 @@ export default function Settings({ navigation }) {
   const [selectedLanguage, setSelectedLanguage] = useState('ENG');
     const [minMagnitude, setMinMagnitude] = useState('4.0');
     const [timePeriod, setTimePeriod] = useState('past7days');
+  const [imageUri , setImageUri] = useState(null);
 
     const [emailAlerts, setEmailAlerts] = useState(false);
     const [pushAlerts, setPushAlerts] = useState(false);
@@ -265,7 +266,7 @@ export default function Settings({ navigation }) {
             const weeklyAlerts = await AsyncStorage.getItem('weeklyAlerts');
             const dailyAlerts = await AsyncStorage.getItem('dailyAlerts');
             const emailAlerts = await AsyncStorage.getItem('emailAlerts');
-
+            const imageUri = await AsyncStorage.getItem('imageUri');
             const userEmail = await AsyncStorage.getItem('email');
             const userName = await AsyncStorage.getItem('username');
             const userFullName = await AsyncStorage.getItem('fullName');
@@ -318,7 +319,10 @@ export default function Settings({ navigation }) {
             setFullName(userData.fullName);
             setEmail(userData.email); // Add this line
             setPhoneNumber(userData.phoneNumber); // Add this line
-
+            const userImageUri = userData.imageUri;
+            if (userImageUri) {
+              setImageUri(userImageUri);
+            }
             // Find the country object from the countries array
             const countryObject = countries.find(country => country.name === userData.country);
     
@@ -328,6 +332,7 @@ export default function Settings({ navigation }) {
             setSelectedLanguage(userData.language);
     
             // Save the user data to AsyncStorage
+            await AsyncStorage.setItem('imageUri', userData.imageUri);
             await AsyncStorage.setItem('email', userData.email);
             await AsyncStorage.setItem('username', userData.username);
             await AsyncStorage.setItem('fullName', userData.fullName);
@@ -549,7 +554,7 @@ export default function Settings({ navigation }) {
           </View>
           <View style={styles.boxRow}>
             <ImageBackground source={require('../assets/settingsTop.png')} style={styles.box1}>
-              <Image source={require('../assets/icons/profilelogo.png')} style={styles.boxImage} />
+            <Image source={imageUri ? { uri: imageUri } : require('../assets/icons/profilelogo.png')} style={styles.boxImage} />
               <View style={styles.textContainer}>
                   <Text style={styles.boxText1}>{fullName}</Text>
                   <Text style={styles.boxText2}>{email}</Text>
@@ -679,9 +684,11 @@ const styles = StyleSheet.create({
     marginRight: windowWidth * 0.05,
   },
   boxImage: {
-    width: windowWidth * 0.4, // Adjust as needed
-    height: windowHeight * 0.13, // Adjust as needed
-    resizeMode: 'contain', // Or 'cover'
+    width: windowWidth * 0.25, // Adjust as needed
+    height: windowHeight * 0.12, // Adjust as needed
+    resizeMode: 'cover', // Or 'cover'
+    borderRadius: 100,
+    overflow: 'hidden',
   },
   boxText1: {
     fontSize: windowWidth * 0.05, // Adjust as needed

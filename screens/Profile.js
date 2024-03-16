@@ -3,6 +3,11 @@ import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions
 import { firebase } from './FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserContext } from '../UserContext';
+import * as ImagePicker from 'expo-image-picker';
+import { v4 as uuidv4 } from 'uuid';
+import 'react-native-get-random-values';
+
+const id = uuidv4();
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -32,8 +37,35 @@ export default function Profile({ navigation }) {
 
     if (!result.cancelled) {
       setImageUri(result.assets[0].uri);
+      uploadImage(result.assets[0].uri); // Call the uploadImage function here
     }
   };
+
+  const uploadImage = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const imageName = uuidv4();
+    const ref = firebase.storage().ref().child(`images/${imageName}`);
+    ref.put(blob).then(async (snapshot) => {
+      const downloadURL = await snapshot.ref.getDownloadURL();
+      firebase.firestore().collection('users').doc(email).update({
+        imageUri: downloadURL
+      });
+      await AsyncStorage.setItem('imageUri', downloadURL);
+      setImageUri(downloadURL);
+    });
+  };
+
+  const retrieveImageUri = async () => {
+    const storedImageUri = await AsyncStorage.getItem('imageUri');
+    if (storedImageUri !== null) {
+      setImageUri(storedImageUri);
+    }
+  };
+
+  useEffect(() => {
+    retrieveImageUri(); // Call the retrieveImageUri function here
+  }, []);
 
   const updateUserCountryAndLanguage = async (email, selectedCountry, selectedLanguage) => {
     firebase.firestore().collection('users').doc(email).update({
@@ -240,26 +272,34 @@ export default function Profile({ navigation }) {
         </View>
       </View>
       <View style={styles.circleBox} />
-      <Image source={require('../assets/icons/profilelogo.png')} style={styles.profileLogo} />
+        <TouchableOpacity onPress={openImagePicker} style={styles.profileLogo}>
+          <Image source={imageUri ? { uri: imageUri } : require('../assets/icons/profilelogo.png')} style={styles.profileLogoImage} />
+        </TouchableOpacity>
     </ImageBackground>
   );
 }
 
 
 const styles = StyleSheet.create({
+    profileLogo: {
+      position: 'absolute',
+      top: windowHeight * 0.19, // Increase this value as needed
+      width: windowWidth * 0.4, // Adjust as needed
+      height: windowHeight * 0.4, // Adjust as needed
+    },
+    profileLogoImage: {
+      width: '100%',
+      height: '50%',
+      resizeMode: 'cover', // Change this line
+      borderRadius: 100,
+      overflow: 'hidden',
+    },
   backgroundImage: {
     flex: 1,
     width: windowWidth,
     height: windowHeight,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  profileLogo: {
-    position: 'absolute',
-    top: windowHeight * 0.09, // Increase this value as needed
-    width: windowWidth * 0.4, // Adjust as needed
-    height: windowHeight * 0.4, // Adjust as needed
-    resizeMode: 'contain',
   },
   circleBox: {
     position: 'absolute',
