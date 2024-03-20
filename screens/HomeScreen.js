@@ -29,6 +29,7 @@ function HomeScreen({ navigation }) {
     const [year, setYear] = useState('');
 
     useEffect(() => {
+      setIsLoading(true); // Start loading
       const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
           // User is signed in.
@@ -57,6 +58,7 @@ function HomeScreen({ navigation }) {
             }
           }
         }
+        setIsLoading(false); // Stop loading
       });
 
       // Cleanup subscription on unmount

@@ -1,44 +1,45 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
-import HazardMapping from './HazardMapping';
-import EducationalHub from './EducationalHub';
-import Madramania from './Madramania';
-import Map from './Map';
-import HazardMap from './HazardMap';
+
+// EducationalHub
+import GenInfo from './EducationalHub/GenInfo';
+import Hazards from './EducationalHub/Hazards';
+import StudentCenteredInfo from './EducationalHub/StudentCenteredInfo';
+import HelpCenter from './EducationalHub/HelpCenter';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Features({ navigation }) {
-  const [showHazardMapping, setShowHazardMapping] = useState(false);
-  const [showEducationalHub, setShowEducationalHub] = useState(false);
-  const [showMadramania, setShowMadramania] = useState(false);
-  const [showEarthquakeUpdates, setShowEarthquakeUpdates] = useState(false);
+export default function EducationalHubInterface({ navigation }) {
+    const [showGenInfo, setShowGenInfo] = useState(false);
+    const [showHazards, setShowHazards] = useState(false);
+    const [showStudentCenteredInfo, setShowStudentCenteredInfo] = useState(false);
+    const [showHelpCenter, setShowHelpCenter] = useState(false);
 
-  const handleHazardMappingPress = () => {
-    setShowHazardMapping(true);
-  };
-
-    const handleEducationalHubPress = () => {
-      navigation.navigate('EducationalHubInterface');
+    const handleGenInfoPress = () => {
+      setShowGenInfo(true);
     };
 
-  const handleMadramaniaPress = () => {
-    setShowMadramania(true);
-  };
+    const handleStudentCenteredInfoPress = () => {
+      navigation.navigate('Student Centered Info');
+    };
 
-  const handleEarthquakeUpdatesPress = () => {
-    setShowEarthquakeUpdates(true);
-  };
+    const handleHazardsPress = () => {
+      setShowHazards(true);
+    };
+
+    const handleHelpCenterPress = () => {
+     setShowHelpCenter(true);
+    };
 
   const handleBackPress = () => {
-    if (showHazardMapping || showEducationalHub || showMadramania || showEarthquakeUpdates) {
-      setShowHazardMapping(false);
-      setShowEducationalHub(false);
-      setShowMadramania(false);
-      setShowEarthquakeUpdates(false);
+    if (showGenInfo || showHazards || showStudentCenteredInfo || showHelpCenter) {
+      setShowGenInfo(false);
+      setShowHazards(false);
+      setShowStudentCenteredInfo(false);
+      setShowHelpCenter(false);
     } else {
-      navigation.navigate('Home');
+      navigation.navigate('Features');
     }
   };
 
@@ -105,10 +106,10 @@ export default function Features({ navigation }) {
     },
     headerBox: {
       width: '100%', // Full width
-      height: showEarthquakeUpdates ? windowHeight * 0.15 : windowHeight * 0.175,
+      height: windowHeight * 0.15,
       backgroundColor: 'white', // Change the color as needed
-      borderBottomLeftRadius: showEarthquakeUpdates ? 0 : 50,
-      borderBottomRightRadius: showEarthquakeUpdates ? 0 : 50,
+      borderBottomLeftRadius: 50,
+      borderBottomRightRadius: 50,
       overflow: 'hidden',
       borderColor: '#318E99',
       borderBottomWidth: 15,
@@ -149,31 +150,31 @@ export default function Features({ navigation }) {
                 style={styles.backArrow}
               />
               <Text style={styles.headerText}>
-                {showHazardMapping ? 'HAZARD MAPPING' : showEducationalHub ? 'EDUCATIONAL HUB' : showMadramania ? 'MADRAMANIA' : showEarthquakeUpdates ? 'EARTHQUAKE UPDATES' : 'MADRA FEATURES'}
+                {showGenInfo ? 'GEN INFO' : showHazards ? 'DONATIONS' : showStudentCenteredInfo ? 'STUDENT CENTERED INFO' : showHelpCenter ? 'NOTLINE CENTER' : 'EDUCATIONAL HUB'}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
-        {!showHazardMapping && !showEducationalHub && !showMadramania && !showEarthquakeUpdates ? (
+        {!showGenInfo && !showStudentCenteredInfo && !showHazards && !showHelpCenter ? (
           <View style={styles.boxContainer}>
             <View style={styles.boxRow}>
               <View style={styles.boxWrapper}>
                 <View style={styles.box}>
-                  <Image source={require('../assets/featureMap.png')} style={styles.boxImage} />
-                  <Text style={styles.boxTitle}>HAZARD MAPPING</Text>
+                  <Image source={require('../assets/ed1.jpg')} style={styles.boxImage} />
+                  <Text style={styles.boxTitle}>GEN INFO</Text>
                   <TouchableOpacity
                     style={styles.proceedButton}
-                    onPress={handleHazardMappingPress}
+                    onPress={handleGenInfoPress}
                   >
                     <Text style={styles.proceedButtonText}>PROCEED</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.box}>
-                  <Image source={require('../assets/featureLearn.png')} style={styles.boxImage} />
-                  <Text style={styles.boxTitle}>EDUCATIONAL HUB</Text>
+                  <Image source={require('../assets/ed2.jpg')} style={styles.boxImage} />
+                  <Text style={styles.boxTitle}>STUDENT CENTERED INFO</Text>
                   <TouchableOpacity
                     style={styles.proceedButton}
-                    onPress={handleEducationalHubPress}
+                    onPress={handleStudentCenteredInfoPress}
                   >
                     <Text style={styles.proceedButtonText}>PROCEED</Text>
                   </TouchableOpacity>
@@ -183,21 +184,21 @@ export default function Features({ navigation }) {
             <View style={styles.boxRow}>
               <View style={styles.boxWrapper}>
                 <View style={styles.box}>
-                  <Image source={require('../assets/featureQuiz.png')} style={styles.boxImage} />
-                  <Text style={styles.boxTitle}>MADRAMANIA</Text>
+                  <Image source={require('../assets/ed3.jpg')} style={styles.boxImage} />
+                  <Text style={styles.boxTitle}>DONATIONS</Text>
                   <TouchableOpacity
                     style={styles.proceedButton}
-                    onPress={handleMadramaniaPress}
+                    onPress={handleHazardsPress}
                   >
                     <Text style={styles.proceedButtonText}>PROCEED</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.box}>
-                  <Image source={require('../assets/featureUpdate.png')} style={styles.boxImage} />
-                  <Text style={styles.boxTitle}>EARTHQUAKE UPDATES</Text>
+                  <Image source={require('../assets/ed4.jpg')} style={styles.boxImage} />
+                  <Text style={styles.boxTitle}>HOTLINE CENTER</Text>
                   <TouchableOpacity
                     style={styles.proceedButton}
-                    onPress={handleEarthquakeUpdatesPress}
+                    onPress={handleHelpCenterPress}
                   >
                     <Text style={styles.proceedButtonText}>PROCEED</Text>
                   </TouchableOpacity>
@@ -206,7 +207,7 @@ export default function Features({ navigation }) {
             </View>
           </View>
         ) : (
-          showHazardMapping ? <HazardMap /> : showEducationalHub ? <EducationalHub /> : showMadramania ? <Madramania /> : <Map />
+          showGenInfo ? <GenInfo /> : showHazards ? <Hazards /> : showStudentCenteredInfo ? <StudentCenteredInfo /> : <HelpCenter />
         )}
       </ImageBackground>
     </View>

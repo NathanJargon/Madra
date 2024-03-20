@@ -14,7 +14,7 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function Profile({ navigation }) {
   const { info, setInfo } = useContext(UserContext);
-  const [fullName, setFullName] = useState('USER');
+  const [fullName, setFullName] = useState('LOADING...');
   const [email, setEmail] = useState('user@gmail.com');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedField, setSelectedField] = useState(null);

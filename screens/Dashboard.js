@@ -14,7 +14,7 @@ const windowHeight = Dimensions.get('window').height;
 export default function Dashboard() {
   const { info, setInfo } = useContext(UserContext);
   const [username, setUsername] = useState('USER');
-  const [fullName, setFullName] = useState('USER');
+  const [fullName, setFullName] = useState('LOADING...');
   const [userEmail, setUserEmail] = useState(null);
   const [userCountry, setUserCountry] = useState("Philippines");
   const [earthquakes, setEarthquakes] = useState([]);
@@ -388,8 +388,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   boxImage1: { // Add this style
-    width: windowWidth / 3.5, // Adjust as needed
-    height: windowHeight / 7, // Adjust as needed
+    width: windowWidth / 4, // Adjust as needed
+    height: windowHeight / 8, // Adjust as needed
     resizeMode: 'cover',
     margin: windowWidth * 0.2,
     marginLeft: windowWidth * 0.12,

@@ -20,6 +20,7 @@ import Settings from './screens/Settings';
 import LoadingScreen from './screens/LoadingScreen';
 import Splash from './screens/Splash';
 import Profile from './screens/Profile';
+import EducationalHubInterface from './screens/EducationalHubInterface';
 
 // Features
 import HazardMapping from './screens/HazardMapping';
@@ -28,6 +29,17 @@ import Madramania from './screens/Madramania';
 import EarthquakeUpdates from './screens/EarthquakeUpdates';
 import HazardMap from './screens/HazardMap';
 
+import GenInfo from './screens/EducationalHub/GenInfo';
+import Hazards from './screens/EducationalHub/Hazards';
+import StudentCenteredInfo from './screens/EducationalHub/StudentCenteredInfo';
+import HelpCenter from './screens/EducationalHub/HelpCenter';
+
+import EarthquakeHazards from './screens/EducationalHub/Earthquakes/EarthquakeHazards';
+import HydrometeorologicalHazards from './screens/EducationalHub/Earthquakes/HydrometeorologicalHazards';
+import FireHazards from './screens/EducationalHub/Earthquakes/FireHazards';
+import OtherGeologicalHazards from './screens/EducationalHub/Earthquakes/OtherGeologicalHazards';
+import VolcanicHazards from './screens/EducationalHub/Earthquakes/VolcanicHazards';
+
 // Create the stack navigators
 const AuthStack = createStackNavigator();
 const MainStack = createStackNavigator();
@@ -35,6 +47,47 @@ const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
 const FeatureStack = createStackNavigator();
 const SplashStack = createStackNavigator();
+const EducationalHubStack = createStackNavigator();
+
+function EducationalHubStackScreen() {
+  return (
+    <EducationalHubStack.Navigator>
+      <FeatureStack.Screen
+        name="Gen Info"
+        component={GenInfo}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
+        }}
+      />
+        <EducationalHubStack.Screen
+        name="Student Centered Info"
+        component={StudentCenteredInfo}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
+        }}
+        />
+        <EducationalHubStack.Screen
+        name="Hazards"
+        component={Hazards}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
+        }}
+        />
+        <EducationalHubStack.Screen
+        name="Help Center"
+        component={HelpCenter}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid
+        }}
+        />
+    </EducationalHubStack.Navigator>
+  );
+}
+
 
 function FeatureStackScreen() {
   return (
@@ -174,6 +227,68 @@ function CustomTabBar({ state, descriptors, navigation }) {
 
 function MainStackScreen() {
   return (
+    <MainStack.Navigator initialRouteName="TabNavigator">
+      <MainStack.Screen
+        name="TabNavigator"
+        component={TabNavigator}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="EducationalHubInterface"
+        component={EducationalHubInterface}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="Gen Info"
+        component={GenInfo}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="Student Centered Info"
+        component={StudentCenteredInfo}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="Hazards"
+        component={Hazards}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="Help Center"
+        component={HelpCenter}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="EarthquakeHazards"
+        component={EarthquakeHazards}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="HydrometeorologicalHazards"
+        component={HydrometeorologicalHazards}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="FireHazards"
+        component={FireHazards}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="OtherGeologicalHazards"
+        component={OtherGeologicalHazards}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="VolcanicHazards"
+        component={VolcanicHazards}
+        options={{ headerShown: false }}
+      />
+    </MainStack.Navigator>
+  );
+}
+
+function TabNavigator() {
+  return (
     <Tab.Navigator 
       tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }} 
@@ -223,7 +338,7 @@ function MainStackScreen() {
           },
         }}
       />
-    </Tab.Navigator>
+     </Tab.Navigator>
   );
 }
 

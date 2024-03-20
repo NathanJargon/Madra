@@ -12,7 +12,7 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function Settings({ navigation }) {
   const { info, setInfo } = useContext(UserContext);
-  const [fullName, setFullName] = useState("USER");
+  const [fullName, setFullName] = useState("LOADING...");
   const [email, setEmail] = useState("user@gmail.com");
   const [phoneNumber, setPhoneNumber] = useState("0999928751");
   const [username, setUsername] = useState('user');
