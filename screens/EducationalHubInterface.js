@@ -160,7 +160,7 @@ export default function EducationalHubInterface({ navigation }) {
             <View style={styles.boxRow}>
               <View style={styles.boxWrapper}>
                 <View style={styles.box}>
-                  <Image source={require('../assets/ed1.jpg')} style={styles.boxImage} />
+                  <Image source={require('../assets/ed3.jpg')} style={styles.boxImage} />
                   <Text style={styles.boxTitle}>GEN INFO</Text>
                   <TouchableOpacity
                     style={styles.proceedButton}
@@ -184,7 +184,7 @@ export default function EducationalHubInterface({ navigation }) {
             <View style={styles.boxRow}>
               <View style={styles.boxWrapper}>
                 <View style={styles.box}>
-                  <Image source={require('../assets/ed3.jpg')} style={styles.boxImage} />
+                  <Image source={require('../assets/ed1.jpg')} style={styles.boxImage} />
                   <Text style={styles.boxTitle}>DONATIONS</Text>
                   <TouchableOpacity
                     style={styles.proceedButton}

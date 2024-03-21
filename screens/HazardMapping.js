@@ -167,7 +167,7 @@ export default function HazardMapping({ navigation }) {
           <ImageBackground source={require('../assets/bg1.png')} style={styles.loadingContainer}>
             <Image source={require('../assets/icons/loading.png')} style={styles.loadingImage} />
           </ImageBackground>
-      ) : showMap ? (
+      ) : (
           <>
             <MapView
               mapType="satellite"
@@ -181,7 +181,6 @@ export default function HazardMapping({ navigation }) {
                 longitudeDelta: 20, // adjust as needed
               }}
             >
-
                 {earthquakes.map((earthquake, index) => (
                   <View key={index}>
                     <Marker
@@ -202,9 +201,7 @@ export default function HazardMapping({ navigation }) {
                     />
                   </View>
                 ))}
-
             </MapView>
-
 
             <ImageBackground source={require('../assets/bg1.png')} style={styles.infoBox}>
               <ScrollView>
@@ -220,26 +217,12 @@ export default function HazardMapping({ navigation }) {
                 ))}
               </ScrollView>
             </ImageBackground>
-
-
           </>
-        ) : (
-          <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
-            <View style={styles.boxContainer}>
-              <Text style={styles.boxTitle}>HAZARD MAP</Text>
-              <ImageBackground source={require('../assets/hazardImage.png')} style={styles.box}>
-              </ImageBackground>
-              <TouchableOpacity style={styles.proceedButton} onPress={fadeOut}>
-                <Text style={styles.proceedButtonText}>ASSESS VULNERABILITY</Text>
-              </TouchableOpacity>
-            </View>
-          </ImageBackground>
         )}
       </Animated.View>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   loadingContainer: {

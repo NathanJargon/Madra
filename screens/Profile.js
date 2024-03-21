@@ -303,10 +303,10 @@ const styles = StyleSheet.create({
   },
   circleBox: {
     position: 'absolute',
-    top: windowHeight * 0.175, // Same as profileLogo
+    top: windowHeight * 0.18, // Same as profileLogo
     width: windowWidth * 0.45, // Same as profileLogo
-    height: windowHeight * 0.2, // Same as profileLogo
-    borderRadius: (windowWidth * 0.4) / 2, // Half of the width or height to make it a circle
+    height: windowHeight * 0.22, // Same as profileLogo
+    borderRadius: 100, // Half of the width or height to make it a circle
     backgroundColor: 'white', // Change the color as needed
   },
   centerBox: {

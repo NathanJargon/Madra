@@ -152,17 +152,14 @@ export default function Dashboard() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.imageTextContainer}>
-        <ImageBackground source={require('../assets/icons/profileBackground.png')} style={styles.profileLogoBackground}>
-            <Image source={imageUri ? { uri: imageUri } : require('../assets/icons/profilelogo.png')} style={styles.boxImage1} />
-        </ImageBackground>
-
-        <View styles={styles.textContainer}>
+      <ImageBackground source={require('../assets/head.png')} style={styles.imageTextContainer}>
+        <Image source={imageUri ? { uri: imageUri } : require('../assets/icons/profilelogo.png')} style={styles.profileLogo} />
+        <View style={styles.textContainer}>
           <Text style={styles.rightText}>HI {fullName}!</Text>
           <Text style={styles.rightSmallText}>MADRA: YOUR PARTNER FOR LIFE</Text>
         </View>
-
-      </View>
+      </ImageBackground>
+      
       <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
         <TouchableOpacity onPress={() => navigation.navigate('Features')}>
             <View style={styles.inputContainer}>
@@ -259,6 +256,29 @@ export default function Dashboard() {
 
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start', // Align children at the start of the container's main axis
+  },
+  imageTextContainer: {
+    flex: 0.2,
+    flexDirection: 'row',
+    alignItems: 'flex-start', // Align children at the start of the container's cross axis
+    justifyContent: 'center', // Center children along the main axis of the container
+    padding: 10,
+  },
+  profileLogo: {
+    width: windowWidth / 4,
+    height: windowHeight / 8,
+    resizeMode: 'contain',
+    overflow: 'hidden',
+    borderRadius: 50,
+    marginRight: 10,
+  },
+  textContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
   touchableArea: {
     position: 'absolute',
     bottom: windowHeight * 0.85,
@@ -268,35 +288,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-    infoBox: {
-      backgroundColor: 'rgba(255, 255, 255, 0)', // Set the background color to gray
-      width: '100%', // Adjust the width as needed
-      height: '65%', // Adjust the height as needed
-      justifyContent: 'center', // Center the contents vertically
-      alignItems: 'center', // Center the contents horizontally
-      padding: 10, // Add some padding
-    },
-  modalView: {
-    height: '100%', // Take up the full height of the parent
-    // ... other styles
+  infoBox: {
+    backgroundColor: 'rgba(255, 255, 255, 0)', // Set the background color to gray
+    width: '100%', // Adjust the width as needed
+    height: '65%', // Adjust the height as needed
+    justifyContent: 'center', // Center the contents vertically
+    alignItems: 'center', // Center the contents horizontally
+    padding: 10, // Add some padding
   },
-    inputContainer: {
-      flexDirection: 'row', // Arrange children in a row
-      justifyContent: 'center', // Center the children along the main axis
-      alignItems: 'center', // Center the children along the cross axis
-      alignSelf: 'center',
-    },
-    enhancedTopInput: {
-      margin: windowWidth * 0.05,
-      flex: .9, // Take up the remaining space in the parent
-      fontSize: windowWidth * 0.045, // Increase the font size
-      height: windowHeight * 0.05,
-      borderRadius: 20,
-      borderWidth: 2, // Add border width
-      borderColor: '#318E99', // Add border color
-      textAlign: 'center', // Center the text
-    },
+  modalView: {
+    height: '100%',
+  },  
+  inputContainer: {
+    flexDirection: 'row', // Arrange children in a row
+    justifyContent: 'center', // Center the children along the main axis
+    alignItems: 'center', // Center the children along the cross axis
+    alignSelf: 'center',
+  },
+  enhancedTopInput: {
+    margin: windowWidth * 0.05,
+    flex: .9, // Take up the remaining space in the parent
+    fontSize: windowWidth * 0.045, // Increase the font size
+    height: windowHeight * 0.05,
+    borderRadius: 20,
+    borderWidth: 2, // Add border width
+    borderColor: '#318E99', // Add border color
+    textAlign: 'center', // Center the text
+  },
   sendIcon1: {
     width: 30, // Increase the width
     height: 30, // Increase the height
@@ -387,15 +405,6 @@ const styles = StyleSheet.create({
     margin: windowWidth * 0.015,
     borderRadius: 20,
   },
-  boxImage1: { // Add this style
-    width: windowWidth / 4, // Adjust as needed
-    height: windowHeight / 8, // Adjust as needed
-    resizeMode: 'cover',
-    margin: windowWidth * 0.2,
-    marginLeft: windowWidth * 0.12,
-    borderRadius: 100,
-    overflow: 'hidden'
-  },
   inputContainer: {
     flexDirection: 'row', // Arrange children in a row
     alignItems: 'center',
@@ -423,37 +432,6 @@ const styles = StyleSheet.create({
     width: windowWidth / 14, // Adjust as needed
     height: windowHeight / 14, // Adjust as needed
     resizeMode: 'contain',
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textContainer: {
-    flexDirection: 'column', // Arrange children in a column
-    justifyContent: 'center', // Center the contents horizontally
-    alignItems: 'left', // Center the contents vertically
-  },
-imageTextContainer: {
-  flexDirection: 'row', // Arrange children in a row
-  position: 'absolute', // Position it absolutely
-  bottom: windowHeight / 1.4, // Position it above the bottomContainer
-  right: windowWidth / 15,
-  justifyContent: 'space-start', // Maximize the space between the children
-  alignItems: 'center', // Center the contents vertically
-  width: '100%', // Take up the full width of the parent
-},
-  profileLogoBackground: {
-    width: 180, // Adjust as needed
-    height: 180, // Adjust as needed
-    marginBottom: windowHeight * 0.05,
-    resizeMode: 'contain',
-  },
-  profileLogo: {
-    width: 100, // Adjust as needed
-    height: 100, // Adjust as needed
-    marginLeft: windowWidth * 0.1,
-    marginTop: windowHeight * 0.1,
   },
   rightText: {
     marginTop: windowHeight * 0.07,

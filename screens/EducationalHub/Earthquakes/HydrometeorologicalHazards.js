@@ -36,19 +36,6 @@ export default function HydrometeorologicalHazards({ navigation }) {
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
-        <View style={styles.headerBox}>
-          <View style={styles.headerContent}>
-            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={handleBackPress}>
-              <Image
-                source={require('../../../assets/icons/back.png')}
-                style={styles.backArrow}
-              />
-                <Text style={styles.headerText}>
-                  HYDROMETEOROLOGICAL HAZARDS
-                </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
         <ImageViewer imageUrls={images} />
       </ImageBackground>
     </View>

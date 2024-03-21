@@ -645,7 +645,6 @@ const styles = StyleSheet.create({
       width: windowWidth * 0.03, // Adjust as needed
       height: windowHeight * 0.03, // Adjust as needed
       resizeMode: 'contain',
-      marginLeft: windowWidth * 0.02, // Add some margin to the left
     },
     innerBoxSwitch: {
       width: windowWidth * 0.1, // Adjust as needed
