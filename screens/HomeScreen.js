@@ -22,7 +22,7 @@ function HomeScreen({ navigation }) {
     const [birthday, setBirthday] = useState('');
     const [imageUri, setImageUri] = useState('');
     const [isCustomSelected, setIsCustomSelected] = useState(false);
-    const [bgImage, setBgImage] = useState(require('../assets/bgoutside1.png'));
+    const [bgImage, setBgImage] = useState(require('../assets/bgoutside.png'));
     const [phoneNumber, setPhoneNumber] = useState('');
     const [month, setMonth] = useState('');
     const [day, setDay] = useState('');
@@ -206,7 +206,7 @@ function HomeScreen({ navigation }) {
   }, [bottomContent]);
 
   useEffect(() => {
-    setBgImage(bottomContent === 'createAccount' ? require('../assets/bg1.png') : require('../assets/bgoutside1.png'));
+    setBgImage(bottomContent === 'createAccount' ? require('../assets/bg1.png') : require('../assets/bgoutside.png'));
   }, [bottomContent]);
   
 
@@ -281,18 +281,18 @@ return (
               <TextInput
                 style={styles.input}
                 placeholder="EMAIL"
-                placeholderTextColor="#318E99"
+                placeholderTextColor="white"
                 onChangeText={text => setEmail(text)} 
               />
               <TextInput
                 style={styles.input}
                 placeholder="PASSWORD"
-                placeholderTextColor="#318E99"
+                placeholderTextColor="white"
                 secureTextEntry
                 onChangeText={text => setPassword(text)} 
               />
               <TouchableOpacity disabled={buttonDisabled} style={[styles.buttonLogin, {alignSelf: 'center'}]} onPress={handleLogin}>
-                  <Text style={styles.buttonText}>Login</Text>
+                  <Text style={styles.buttonText}>LOGIN</Text>
               </TouchableOpacity>
               </View>
             </View>
@@ -303,7 +303,7 @@ return (
               <TextInput
                 style={styles.input}
                 placeholder="TYPE HERE"
-                placeholderTextColor="#318E99"
+                placeholderTextColor="white"
                 onChangeText={text => setFullName(text)} 
               />
             </View>
@@ -312,7 +312,7 @@ return (
             <TextInput
               style={styles.input}
                 placeholder="TYPE HERE"
-                placeholderTextColor="#318E99"
+                placeholderTextColor="white"
                 onChangeText={text => setUsername(text)} 
             />
             </View>
@@ -321,7 +321,7 @@ return (
             <TextInput
               style={styles.input}
                 placeholder="TYPE HERE"
-                placeholderTextColor="#318E99"
+                placeholderTextColor="white"
                 onChangeText={text => setEmail(text)} 
             />
             </View>
@@ -330,7 +330,7 @@ return (
              <TextInput
                style={styles.input}
                 placeholder="TYPE HERE"
-                placeholderTextColor="#318E99"
+                placeholderTextColor="white"
                secureTextEntry
                onChangeText={text => setPassword(text)} 
              />
@@ -342,21 +342,21 @@ return (
               <TextInput
                 style={styles.inputDateMonth}
                 placeholder="Month"
-                placeholderTextColor="#318E99"
+                placeholderTextColor="white"
                 keyboardType="numeric"
                 onChangeText={text => setMonth(text)} 
               />
               <TextInput
                 style={styles.inputDateDay}
                 placeholder="Day"
-                placeholderTextColor="#318E99"
+                placeholderTextColor="white"
                 keyboardType="numeric"
                 onChangeText={text => setDay(text)} 
               />
               <TextInput
                 style={styles.inputDateYear}
                 placeholder="Year"
-                placeholderTextColor="#318E99"
+                placeholderTextColor="white"
                 keyboardType="numeric"
                 onChangeText={text => setYear(text)} 
               />
@@ -400,7 +400,7 @@ return (
               <TextInput
                 style={styles.inputCustom}
                 placeholder="Custom"
-                placeholderTextColor="#318E99"
+                placeholderTextColor="white"
                 onChangeText={text => setGender(text)}
               />
             )}
@@ -413,7 +413,7 @@ return (
           </Text>
 
           <TouchableOpacity disabled={buttonDisabled} style={styles.button} onPress={handleSignUpButtonPress}>
-              <Text style={styles.buttonText}>Sign Up</Text>
+              <Text style={styles.buttonText}>SIGN UP</Text>
           </TouchableOpacity>
           </View>
         </View>
@@ -436,46 +436,50 @@ const styles = StyleSheet.create({
   },
   outsideSmallLoginText: {
     color: 'white',
-    fontSize: windowWidth * 0.035, // Adjust this value as needed
+    fontSize: windowWidth * 0.03, // Adjust this value as needed
     textAlign: 'center',
     marginTop: windowHeight * 0.005,
     marginBottom: windowHeight * 0.035,
     textDecorationLine: 'underline',
+    fontFamily: 'media-sans-bold',
   },
   outsideLoginText: {
-    color: '#00605B',
-    fontWeight: 'bold',
+    color: 'white',
+    fontFamily: 'media-sans-bold',
     fontSize: windowWidth * 0.1,
     textAlign: 'center',
     fontSize: windowWidth * 0.08,
     marginBottom: -windowHeight * 0.09,
   },
   outsideText: {
-    color: '#B6E6CF',
+    color: 'white',
     fontSize: windowWidth * 0.15, // Adjust this value as needed
     textAlign: 'center',
+    fontFamily: 'media-sans-bold',
   },
   radioButtonLabel: {
-    color: 'white',
+    color: '#00605B',
   },
   smallSignUpText: {
     color: 'white',
+    fontFamily: 'media-sans-bold',
     width: windowWidth * 0.8,
-    fontSize: windowWidth * 0.04, // Adjust this value as needed
+    fontSize: windowWidth * 0.035, // Adjust this value as needed
     marginBottom: windowHeight * 0.025,
     textAlign: 'center',
     textDecorationLine: 'underline',
   },
   smallText: {
-    color: 'white',
+    color: '#00605B',
     width: windowWidth * 0.8,
     fontSize: windowWidth * 0.025, // Adjust this value as needed
-    marginBottom: windowHeight * 0.005,
+    marginTop: windowHeight * 0.01,
+    marginBottom: windowHeight * 0.02,
     textAlign: 'center',
   },
   welcomeText: {
     fontSize: windowWidth * 0.09,
-    fontFamily: 'NeueMachina-Ultrabold',
+    fontFamily: 'media-sans-bold',
     textAlign: 'center',
     color: 'white',
     marginBottom: windowWidth * 0.09,
@@ -514,7 +518,7 @@ const styles = StyleSheet.create({
     height: windowHeight / 5,
   },
   buttonLogin: {
-    width: windowWidth / 4,
+    width: windowWidth / 3.5,
     height: windowHeight / 20,
     alignItems: 'center',
     justifyContent: 'center', // Add this line
@@ -534,7 +538,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: windowWidth * 0.05,
     color: 'white',
-    fontFamily: 'NeueMachina-Regular',
+    fontFamily: 'montserrat-bold',
     textAlign: 'center', // Add this line
   },
   buttonImage: {
@@ -573,16 +577,18 @@ bottomContainer: {
     color: 'white',
     fontSize: windowWidth * 0.035,
     marginBottom: windowHeight * 0.01,
+    fontFamily: 'montserrat-bold',
   },
   input: {
     width: windowWidth - 90,
     height: windowHeight / 20,
     marginBottom: windowHeight / 60,
     fontSize: windowWidth * 0.03,
-    backgroundColor: '#FFFFFF',
-    color: 'black',
+    backgroundColor: '#00605B',
+    color: 'white',
     borderRadius: 20,
     textAlign: 'center',
+    fontFamily: 'montserrat-bold',
     padding: 10,
   },
    inputDateMonth: {
@@ -590,44 +596,48 @@ bottomContainer: {
      height: windowHeight / 20,
      marginBottom: windowHeight / 60,
          fontSize: windowWidth * 0.03,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#00605B',
      color: 'black',
      borderRadius: 20,
      textAlign: 'center',
      padding: 10,
+     fontFamily: 'montserrat-bold',
    },
    inputDateDay: {
      width: windowWidth / 4 - 30, // Reduced width for date inputs
      height: windowHeight / 20,
      marginBottom: windowHeight / 60,
          fontSize: windowWidth * 0.03,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#00605B',
      color: 'black',
      borderRadius: 20,
      textAlign: 'center',
      padding: 10,
+     fontFamily: 'montserrat-bold',
    },
    inputDateYear: {
      width: windowWidth / 3, // Reduced width for date inputs
      height: windowHeight / 20,
      marginBottom: windowHeight / 60,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#00605B',
         fontSize: windowWidth * 0.03,
      color: 'black',
      borderRadius: 20,
      textAlign: 'center',
      padding: 10,
+     fontFamily: 'montserrat-bold',
    },
    inputCustom: {
      width: windowWidth / 2 - 90, // Reduced width for custom input
      height: windowHeight / 20,
      marginBottom: windowHeight / 60,
          fontSize: windowWidth * 0.03,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#00605B',
      color: 'black',
      borderRadius: 20,
      textAlign: 'center',
      padding: 10,
+     fontFamily: 'montserrat-bold',
    },
   signupContainer: {
     flexDirection: 'row',

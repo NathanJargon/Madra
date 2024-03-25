@@ -340,13 +340,14 @@ const styles = StyleSheet.create({
   },
   nameText: {
     fontSize: windowWidth * 0.065, // Adjust as needed
-    fontWeight: 'bold', // Adjust as needed
     textAlign: 'center',
+    fontFamily: 'glacial-indifference-bold',
   },
   emailText: {
     fontSize: windowWidth * 0.03, // Adjust as needed
     textAlign: 'center',
     marginBottom: windowHeight * 0.015,
+    fontFamily: 'glacial-indifference-regular',
   },
   line: {
     width: windowWidth * .65, // Adjust as needed
@@ -367,7 +368,7 @@ const styles = StyleSheet.create({
   centerText: {
     fontSize: windowWidth * 0.04, // Adjust as needed
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontFamily: 'glacial-indifference-bold',
   },
     centeredView: {
       flex: 1,

@@ -420,12 +420,13 @@ const styles = StyleSheet.create({
   },
   input: {
     width: windowWidth - 120, // Adjust as needed
-    height: windowHeight / 30, // Adjust as needed
+    height: windowHeight / 34, // Adjust as needed
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     textAlign: 'left',
     padding: 5,
     fontSize: windowWidth * 0.03,
+    fontFamily: 'montserrat-light',
   },
   fixedImage: {
     position: 'absolute', // Position it absolutely
@@ -435,14 +436,15 @@ const styles = StyleSheet.create({
   },
   rightText: {
     marginTop: windowHeight * 0.07,
-    marginLeft: windowWidth * 0.05,
-    fontSize: windowWidth * 0.06, // Adjust as needed
+    marginLeft: windowWidth * 0.07,
+    fontSize: windowWidth * 0.055, // Adjust as needed
     color: '#000', // Adjust as needed
     textAlign: 'center',
+    fontFamily: 'montserrat-bold',
   },
   rightSmallText: {
     fontSize: windowWidth * 0.025, // Adjust as needed
-    marginLeft: windowWidth * 0.07,
+    marginLeft: windowWidth * 0.12,
     color: '#000', // Adjust as needed
   },
   bottomContainer: {

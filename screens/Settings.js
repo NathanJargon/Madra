@@ -568,20 +568,20 @@ export default function Settings({ navigation }) {
                 <Text style={styles.innerBoxHeader}>OPTIONS</Text>
                     <TouchableOpacity onPress={toggleNotification}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={styles.innerBoxSmallText, { fontSize: windowWidth * 0.05,  marginLeft: windowWidth * 0.1, color: 'white', fontWeight: 'bold', }}>Madrification</Text>
+                        <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.05,  marginLeft: windowWidth * 0.1, color: 'white', }}>Madrification</Text>
                         <Image source={isNotified ? require('../assets/icons/on-button.png') : require('../assets/icons/off-button.png')} style={styles.innerBoxSwitch} />
                       </View>
                     </TouchableOpacity>
                 <TouchableOpacity onPress={() => setModalVisibleAlerts(true)}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.15, color: 'white', fontWeight: 'bold', }}>Customizable Alerts</Text>
-                      <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.2, }]} />
+                      <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.15, color: 'white', }}>Customizable Alerts</Text>
+                      <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.21, }]} />
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setModalVisibleDetails(true)}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.15, color: 'white',  fontWeight: 'bold', }}>Earthquake Details</Text>
-                        <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.225, }]} />
+                        <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.15, color: 'white', }}>Earthquake Details</Text>
+                        <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.23, }]} />
                       </View>
                 </TouchableOpacity>
                 </View>
@@ -590,23 +590,23 @@ export default function Settings({ navigation }) {
                       <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                           <Image source={require('../assets/icons/user.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'  }} />
-                          <Text style={[styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white',  fontWeight: 'bold' }]}>Personal Information</Text>
-                          <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.16, }]} />
+                          <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.03, color: 'white', }]}>Personal Information</Text>
+                          <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.2, }]} />
                         </View>
                       </TouchableOpacity>
                           <TouchableOpacity onPress={() => setModalVisible(true)}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                               <Image source={require('../assets/icons/flag.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
-                              <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white', fontWeight: 'bold' }}>Country</Text>
-                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.335, fontWeight: 'bold' }}>{selectedCountry}</Text>
+                              <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.03, color: 'white', }}>Country</Text>
+                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.34, }}>{selectedCountry}</Text>
                               <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.015, }]} />
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                               <Image source={require('../assets/icons/internet.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
-                              <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.04, color: 'white', fontWeight: 'bold' }}>Language</Text>
-                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.285, fontWeight: 'bold' }}>{selectedLanguage}</Text>
+                              <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.03, color: 'white', }}>Language</Text>
+                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.3, }}>{selectedLanguage}</Text>
                               <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.025, }]} />
                             </View>
                         </TouchableOpacity>
@@ -616,14 +616,14 @@ export default function Settings({ navigation }) {
                       <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
                           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image source={require('../assets/icons/information-button.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
-                            <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, color: 'white',  fontWeight: 'bold', }}>About</Text>
-                            <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.445, }]} />
+                            <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.05, color: 'white', }}>About</Text>
+                            <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.415, }]} />
                           </View>
                       </TouchableOpacity>
                       <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
                           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image source={require('../assets/icons/lock.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
-                            <Text style={styles.innerBoxSmallText, { marginLeft: windowWidth * 0.05, color: 'white', fontWeight: 'bold',  }}>Privacy and Policy</Text>
+                            <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.05, color: 'white',  }}>Privacy and Policy</Text>
                             <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.225, }]} />
                           </View>
                       </TouchableOpacity>
@@ -650,11 +650,11 @@ const styles = StyleSheet.create({
       width: windowWidth * 0.1, // Adjust as needed
       height: windowHeight * 0.04, // Adjust as needed
       resizeMode: 'contain',
-      marginLeft: windowWidth * 0.25, // Add some margin to the left
+      marginLeft: windowWidth * 0.2, // Add some margin to the left
     },
   centeredText: {
     fontSize: windowWidth * 0.09, // adjust as needed
-    fontWeight: 'bold',
+    fontFamily: 'glacial-indifference-bold',
     color: '#62B7AF', // adjust as needed
   },
   boxRow: {
@@ -693,14 +693,17 @@ const styles = StyleSheet.create({
     fontSize: windowWidth * 0.05, // Adjust as needed
     color: '#000', // Adjust as needed
     marginTop: windowHeight * 0.01, // Adjust as needed
+    fontFamily: 'glacial-indifference-bold',
   },
   boxText2: {
     fontSize: windowWidth * 0.025, // Adjust as needed
     color: '#000', // Adjust as needed
+    fontFamily: 'glacial-indifference-bold',
   },
   boxText3: {
     fontSize: windowWidth * 0.025, // Adjust as needed
     color: '#000', // Adjust as needed
+    fontFamily: 'glacial-indifference-bold',
   },
     box2: {
       flexDirection: 'column', // Keep this
@@ -748,9 +751,9 @@ const styles = StyleSheet.create({
 
     // Add a new style for the header
     innerBoxHeader: {
-      fontSize: windowWidth * 0.035, // Adjust as needed
+      fontSize: windowWidth * 0.04, // Adjust as needed
       color: '#32DBC5', // Adjust as needed
-      fontWeight: 'bold', // Add some weight
+      fontFamily: 'glacial-indifference-bold',
       marginBottom: windowWidth * 0.02, // Add some margin to the bottom
     },
   backgroundImage: {

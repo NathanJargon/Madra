@@ -83,7 +83,7 @@ export default function Features({ navigation }) {
     boxTitle: {
       fontSize: windowWidth * 0.03,
       textAlign: 'center',
-      fontWeight: 'bold',
+        fontFamily: 'glacial-indifference-bold',
       margin: 20,
     },
     proceedButton: {
@@ -131,6 +131,7 @@ export default function Features({ navigation }) {
     headerText: {
       fontSize: windowWidth * 0.035,
       color: '#000',
+    fontFamily: 'glacial-indifference-regular',
     },
     bottomContainer: {
       width: windowWidth, // Full width

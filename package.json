@@ -19,6 +19,8 @@
     "axios": "^1.6.7",
     "cheerio": "^1.0.0-rc.12",
     "expo": "~50.0.8",
+    "expo-app-loading": "^2.1.1",
+    "expo-font": "^11.10.3",
     "expo-image-picker": "^14.7.1",
     "expo-location": "^16.5.5",
     "expo-notifications": "^0.27.6",

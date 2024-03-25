@@ -96,7 +96,7 @@ boxContainer: {
     margin: windowWidth * 0.01,
     marginLeft: windowWidth * 0.05,
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontFamily: 'glacial-indifference-bold',
     textAlign: 'left',
   },
   proceedButton: {

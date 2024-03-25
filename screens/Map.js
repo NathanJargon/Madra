@@ -31,31 +31,31 @@ export default function Map({ navigation }) {
   };
 
   
-  return (
-    <View style={styles.container}>
-      <ImageBackground source={require('../assets/mapTop.png')} style={styles.screenContainer}>
-        {showBox ? (
-          <View style={styles.bottomBox}>
-            <Image source={require('../assets/icons/place.png')} style={styles.image} />
-            <Text style={styles.text}>ALLOW LOCATION</Text>
-            <Text style={styles.subtext}>MADRA needs access to your location</Text>
-            <TouchableOpacity style={styles.button1} onPress={() => {setShowBox(false); checkLocationPermission();}}>
-              <Text style={styles.buttonText1}>ALLOW</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button2} onPress={() => setShowBox(false)}>
-              <Text style={styles.buttonText2}>DO NOT ALLOW</Text>
-            </TouchableOpacity>
-          </View>
-        ) : locationEnabled ? (
-          <EarthquakeUpdates />
-        ) : (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>Location services are not enabled. Please enable them to view the map.</Text>
-          </View>
-        )}
-      </ImageBackground>
-    </View>
-  );
+    return (
+      <View style={styles.container}>
+        <ImageBackground source={require('../assets/mapTop.png')} style={styles.screenContainer}>
+          {showBox ? (
+            <ImageBackground source={require('../assets/bg1.png')} style={styles.bottomBox}>
+              <Image source={require('../assets/icons/place.png')} style={styles.image} />
+              <Text style={styles.text}>ALLOW LOCATION</Text>
+              <Text style={styles.subtext}>MADRA needs access to your location</Text>
+              <TouchableOpacity style={styles.button1} onPress={() => {setShowBox(false); checkLocationPermission();}}>
+                <Text style={styles.buttonText1}>ALLOW</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button2} onPress={() => setShowBox(false)}>
+                <Text style={styles.buttonText2}>DO NOT ALLOW</Text>
+              </TouchableOpacity>
+            </ImageBackground>
+          ) : locationEnabled ? (
+            <EarthquakeUpdates />
+          ) : (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>Location services are not enabled. Please enable them to view the map.</Text>
+            </View>
+          )}
+        </ImageBackground>
+      </View>
+    );
 }
 
 
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: windowWidth * 0.065, // Adjust as needed
-    fontWeight: 'bold', // Adjust as needed
+    fontFamily: 'glacial-indifference-bold',
     textAlign: 'center',
     marginVertical: 10, // Adjust as needed
   },
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     fontSize: windowWidth * 0.035, // Adjust as needed
     textAlign: 'center',
     marginBottom: 20, // Adjust as needed
+    fontFamily: 'glacial-indifference-regular',
   },
   button1: {
     backgroundColor: '#318E99', // Change the color as needed
@@ -121,10 +122,10 @@ const styles = StyleSheet.create({
   },
   buttonText1: {
     color: 'white', // Change the color as needed
-    fontWeight: 'bold', // Adjust as needed
+    fontFamily: 'glacial-indifference-bold',
   },
   buttonText2: {
     color: 'black', // Change the color as needed
-    fontWeight: 'bold', // Adjust as needed
+    fontFamily: 'glacial-indifference-bold',
   },
 });

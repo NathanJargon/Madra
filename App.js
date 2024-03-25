@@ -6,6 +6,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { firebase } from './screens/FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserContext } from './UserContext';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -350,20 +352,52 @@ function App() {
   });
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+    const fetchFonts = () => {
+      return Font.loadAsync({
+        'montserrat-light': require('./assets/fonts/Montserrat Light.otf'),
+        'glacial-indifference-regular': require('./assets/fonts/GlacialIndifference-Regular.otf'),
+        'glacial-indifference-bold': require('./assets/fonts/GlacialIndifference-Bold.otf'),
+        'media-sans-bold': require('./assets/fonts/MediaSans-Bold.otf'),
+        'montserrat-bold': require('./assets/fonts/Montserrat-Bold.ttf'),
+        'squad-regular': require('./assets/fonts/Squad-Regular.otf'),
+      });
+    };
+
+  useEffect(() => {
+    StatusBar.setHidden(true);
+    const authSubscriber = firebase.auth().onAuthStateChanged(onAuthStateChanged);
+
+    // Prevent the splash screen from auto hiding
+    SplashScreen.preventAutoHideAsync()
+      .then()
+      .catch(console.warn);
+
+    // Load the fonts
+    fetchFonts().then(() => {
+      setDataLoaded(true);
+      // Hide the splash screen
+      SplashScreen.hideAsync();
+    });
+
+    // unsubscribe on unmount
+    return authSubscriber;
+  }, [initializing]);
+
+  if (!dataLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   // Handle user state changes
   function onAuthStateChanged(result) {
     setUser(result);
     if (initializing) setInitializing(false);
   }
-
-  useEffect(() => {
-    StatusBar.setHidden(true);
-    const authSubscriber = firebase.auth().onAuthStateChanged(onAuthStateChanged);
-
-    // unsubscribe on unmount
-    return authSubscriber;
-  }, [initializing]);
 
   if (initializing) {
     return (
