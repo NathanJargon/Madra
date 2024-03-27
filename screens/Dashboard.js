@@ -1,15 +1,81 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Modal, ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, TextInput } from 'react-native';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { Modal, ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, TextInput, Platform } from 'react-native';
 import { setupDatabase } from './Database';
 import { useNavigation } from '@react-navigation/native';
+import * as Device from 'expo-device';
 import * as SQLite from 'expo-sqlite';
 import { firebase } from './FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { UserContext } from '../UserContext';
+import Constants from 'expo-constants';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
+// Can use this function below or use Expo's Push Notification Tool from: https://expo.dev/notifications
+async function sendPushNotification(expoPushToken) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: 'Original Title',
+    body: 'And here is the body!',
+    data: { someData: 'goes here' },
+  };
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+}
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    token = await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig.extra.eas.projectId,
+    });
+    console.log(token);
+  } else {
+    alert('Must use physical device for Push Notifications');
+  }
+
+  return token.data;
+}
+
 
 export default function Dashboard() {
   const { info, setInfo } = useContext(UserContext);
@@ -20,7 +86,7 @@ export default function Dashboard() {
   const [earthquakes, setEarthquakes] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [minMagnitude, setMinMagnitude] = useState('');
-  const [timePeriod, setTimePeriod] = useState('');
+  const [timePeriod, setTimePeriod] = useState('all_day');
   const [isNotified, setIsNotified] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
     const [imageUri , setImageUri] = useState(null);
@@ -28,6 +94,29 @@ export default function Dashboard() {
   const clearNotifications = () => {
     setEarthquakes([]);
   };
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  const [notifiedEarthquakeIds, setNotifiedEarthquakeIds] = useState([]);
+
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
     useEffect(() => {
       const loadUserData = async () => {
@@ -65,25 +154,28 @@ export default function Dashboard() {
       await Notifications.scheduleNotificationAsync({ content, trigger });
     };
 
-    const fetchData = async () => {
-      const user = firebase.auth().currentUser;
-      if (user != null) {
-        const doc = await firebase.firestore().collection('users').doc(user.email).get();
-        const userData = doc.data();
-        if (userData.isNotified) {
-          if (userCountry) {
-            fetch(`https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${timePeriod}.geojson`)
-              .then(response => response.json())
-              .then(data => {
-                const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
-                setEarthquakes(filteredEarthquakes);
-                // Send a notification for each earthquake
-                filteredEarthquakes.forEach(earthquake => sendNotification(earthquake));
-              });
-          }
+  const fetchData = async () => {
+    const user = firebase.auth().currentUser;
+    if (user != null) {
+      const doc = await firebase.firestore().collection('users').doc(user.email).get();
+      const userData = doc.data();
+      if (userData.isNotified) {
+        if (userCountry) {
+          fetch(`https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${timePeriod}.geojson`)
+            .then(response => response.json())
+            .then(data => {
+              const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
+              const newEarthquakes = filteredEarthquakes.filter(earthquake => !notifiedEarthquakeIds.includes(earthquake.id));
+              setEarthquakes(filteredEarthquakes);
+              // Send a notification for each new earthquake
+              newEarthquakes.forEach(earthquake => sendNotification(earthquake));
+              // Update the list of notified earthquake IDs
+              setNotifiedEarthquakeIds(notifiedEarthquakeIds.concat(newEarthquakes.map(earthquake => earthquake.id)));
+            });
         }
       }
-    };
+    }
+  };
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -150,6 +242,10 @@ export default function Dashboard() {
     }
   }, []);
 
+  useEffect(() => {
+    fetchData();
+  }, [timePeriod, userCountry]);
+  
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../assets/head.png')} style={styles.imageTextContainer}>

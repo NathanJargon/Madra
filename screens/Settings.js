@@ -572,59 +572,59 @@ export default function Settings({ navigation }) {
                         <Image source={isNotified ? require('../assets/icons/on-button.png') : require('../assets/icons/off-button.png')} style={styles.innerBoxSwitch} />
                       </View>
                     </TouchableOpacity>
-                <TouchableOpacity onPress={() => setModalVisibleAlerts(true)}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.15, color: 'white', }}>Customizable Alerts</Text>
-                      <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.21, }]} />
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setModalVisibleDetails(true)}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.15, color: 'white', }}>Earthquake Details</Text>
-                        <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.23, }]} />
-                      </View>
-                </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalVisibleAlerts(true)}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
+                  <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.03, color: 'white', marginLeft: windowWidth * 0.2, }]}>Customizable Alerts</Text>
+                  <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalVisibleDetails(true)}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
+                  <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.03, color: 'white', marginLeft: windowWidth * 0.2 }]}>Earthquake Details</Text>
+                  <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
+                </View>
+              </TouchableOpacity>
                 </View>
                     <View style={styles.innerBox2}>
                       <Text style={styles.innerBoxHeader}>ACCOUNT</Text>
                       <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
                           <Image source={require('../assets/icons/user.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'  }} />
-                          <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.03, color: 'white', }]}>Personal Information</Text>
-                          <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.2, }]} />
+                          <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.03, color: 'white', marginLeft: windowWidth * 0.005, }]}>Personal Information</Text>
+                          <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
                         </View>
                       </TouchableOpacity>
                           <TouchableOpacity onPress={() => setModalVisible(true)}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
                               <Image source={require('../assets/icons/flag.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
-                              <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.03, color: 'white', }}>Country</Text>
-                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.34, }}>{selectedCountry}</Text>
-                              <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.015, }]} />
+                              <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.03, color: 'white', marginLeft: windowWidth * 0.005, }]}>Country</Text>
+                              <Text style={{ color: 'green', }}>{selectedCountry}</Text>
+                              <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
                               <Image source={require('../assets/icons/internet.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain' }} />
-                              <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.05, fontSize: windowWidth * 0.03, color: 'white', }}>Language</Text>
-                              <Text style={{ color: 'white', marginLeft: windowWidth * 0.3, }}>{selectedLanguage}</Text>
-                              <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.025, }]} />
+                              <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.03, color: 'white', marginLeft: windowWidth * 0.025, }]}>Language</Text>
+                              <Text style={{ color: 'green',}}>{selectedLanguage}</Text>
+                              <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
                             </View>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.innerBox3}>
                       <Text style={styles.innerBoxHeader}>GENERAL</Text>
                       <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
-                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
                             <Image source={require('../assets/icons/information-button.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
-                            <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.05, color: 'white', }}>About</Text>
-                            <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.415, }]} />
+                            <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.03, color: 'white', marginRight: windowWidth * 0.25, }]}>About</Text>
+                            <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
                           </View>
                       </TouchableOpacity>
                       <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
-                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
                             <Image source={require('../assets/icons/lock.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
-                            <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', marginLeft: windowWidth * 0.05, color: 'white',  }}>Privacy and Policy</Text>
-                            <Image source={require('../assets/icons/forward.png')} style={[styles.innerBoxImage, {marginLeft: windowWidth * 0.225, }]} />
+                            <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.03, color: 'white', marginLeft: windowWidth * 0.005, }]}>Privacy and Policy</Text>
+                            <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
                           </View>
                       </TouchableOpacity>
                     </View>
