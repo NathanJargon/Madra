@@ -33,11 +33,15 @@ function HomeScreen({ navigation }) {
       const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
           // User is signed in.
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Main' }],
-          });
-          setIsAuthenticated(true);
+          if (user.emailVerified) {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Main' }],
+            });
+            setIsAuthenticated(true);
+          } else {
+            alert('Please verify your email before logging in.');
+          }
         } else {
           // User is signed out.
           setIsAuthenticated(false);
@@ -48,11 +52,15 @@ function HomeScreen({ navigation }) {
           if (email && password) {
             try {
               await firebase.auth().signInWithEmailAndPassword(email, password);
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Main' }],
-              });
-              setIsAuthenticated(true);
+              if (firebase.auth().currentUser.emailVerified) {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Main' }],
+                });
+                setIsAuthenticated(true);
+              } else {
+                alert('Please verify your email before logging in.');
+              }
             } catch (error) {
               console.error('Error while logging in:', error);
             }
@@ -76,9 +84,12 @@ function HomeScreen({ navigation }) {
         alert('Username, email and password cannot be empty.');
       } else {
         try {
+          setButtonDisabled(true); // Disable the button
           await handleSignUp(gender, fullName, username, email, password, birthday, phoneNumber);
+          setTimeout(() => setButtonDisabled(false), 1000); // Enable the button after 1 second
         } catch (error) {
           console.error('Error during sign up:', error);
+          setButtonDisabled(false); // Enable the button if there was an error
         }
       }
     };
@@ -87,14 +98,19 @@ function HomeScreen({ navigation }) {
       try {
         const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
-    
-        await user.sendEmailVerification();
-        alert('A verification email has been sent to your email. Please verify your email before logging in.');
-    
+
+        if (password.length < 6) {
+          alert('Password must be at least 6 characters long.');
+          return;
+        }
+
         if (username.length > 10) {
           alert('Username cannot be more than 10 characters.');
           return;
         }
+            
+        await user.sendEmailVerification();
+        alert('A verification email has been sent to your email. Please verify your email before logging in.');
     
         // Store user data in Firebase Firestore
         await firebase.firestore().collection('users').doc(email).set({
@@ -107,7 +123,7 @@ function HomeScreen({ navigation }) {
           imageUri: imageUri || null,
           country: "Philippines",
           isNotified: false,
-          language: "English",
+          language: "FIL",
           emailAlerts: false,
           pushAlerts: false,
           smsAlerts: false,
@@ -125,6 +141,12 @@ function HomeScreen({ navigation }) {
         console.error('Error while signing up:', error);
         if (error.code === 'auth/email-already-in-use') {
           alert('The email address is already in use by another account.');
+        } else if (error.code === 'auth/invalid-email') {
+          alert('The email address is badly formatted.');
+        } else if (error.code === 'auth/operation-not-allowed') {
+          alert('Email/password accounts are not enabled. Enable email/password in Firebase Console.');
+        } else if (error.code === 'auth/weak-password') {
+          alert('The password is not strong enough.');
         }
       }
     
@@ -170,7 +192,7 @@ function HomeScreen({ navigation }) {
         console.error('Error while logging in:', error);
         console.log('Error code:', error.code); // Print out the error code
         console.log('Error message:', error.message); // Print out the error message
-
+    
         if (error.code === 'auth/user-not-found') {
           alert('The email does not exist. Please check and try again.');
         } else if (error.code === 'auth/wrong-password') {
@@ -179,6 +201,10 @@ function HomeScreen({ navigation }) {
           alert('The supplied auth credential is incorrect, malformed or has expired. Please check and try again.');
         } else if (error.code === 'auth/invalid-email') {
           alert('The email address is badly formatted. Please check and try again.');
+        } else if (error.code === 'auth/user-disabled') {
+          alert('The user corresponding to the given email has been disabled.');
+        } else if (error.code === 'auth/too-many-requests') {
+          alert('Too many unsuccessful login attempts. Please try again later.');
         }
       }
 

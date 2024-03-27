@@ -533,6 +533,7 @@ const styles = StyleSheet.create({
   rightText: {
     marginTop: windowHeight * 0.07,
     marginLeft: windowWidth * 0.07,
+    width: windowWidth * 0.5,
     fontSize: windowWidth * 0.055, // Adjust as needed
     color: '#000', // Adjust as needed
     textAlign: 'center',

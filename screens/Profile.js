@@ -6,6 +6,7 @@ import { UserContext } from '../UserContext';
 import * as ImagePicker from 'expo-image-picker';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
+import { CommonActions } from '@react-navigation/native';
 
 const id = uuidv4();
 
@@ -109,12 +110,19 @@ export default function Profile({ navigation }) {
       try {
         await AsyncStorage.clear();
         await firebase.auth().signOut();
-        navigation.navigate('Auth');
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [
+              { name: 'Auth' },
+            ],
+          })
+        );
       } catch(e) {
         // handle error
         console.log(e);
       }
-    }
+    };
 
     const handleRowPress = (field) => {
       setSelectedField(field);
@@ -312,7 +320,7 @@ const styles = StyleSheet.create({
   centerBox: {
     marginTop: windowHeight * 0.2, // Increase this value as needed
     width: windowWidth * 0.8, // Adjust the width as needed
-    height: windowHeight * 0.55, // Adjust the height as needed
+    height: windowHeight * 0.6, // Adjust the height as needed
     backgroundColor: 'white', // Change the color as needed
     borderRadius: 20,
     justifyContent: 'center',
@@ -339,6 +347,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nameText: {
+    marginTop: '10%',
     fontSize: windowWidth * 0.065, // Adjust as needed
     textAlign: 'center',
     fontFamily: 'glacial-indifference-bold',

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, ScrollView, StyleSheet, Dimensions, Text, Image, ImageBackground, TouchableOpacity } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as SQLite from 'expo-sqlite';
 import { firebase } from './FirebaseConfig';
 import { setupDatabase } from './Database';
@@ -14,6 +14,7 @@ export default function EarthquakeUpdates() {
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
   const [userLocation, setUserLocation] = useState('Philippines');
+  const mapRef = useRef();
 
     const fetchData = async () => {
       setIsLoading(true);
@@ -87,7 +88,8 @@ return (
       <>
         <View style={styles.mapContainer, { height: windowHeight * 0.5, }}>
           <MapView
-            ref={map => this.map = map}
+            provider={PROVIDER_GOOGLE}
+            ref={mapRef}
             style={styles.map}
             initialRegion={{
               latitude: 12.8797,
@@ -105,8 +107,9 @@ return (
     ) : (
       <View style={styles.mapContainer}>
             <MapView
+              provider={PROVIDER_GOOGLE}
               mapType="satellite"
-              ref={map => this.map = map}
+              ref={mapRef}
               style={styles.map}
               initialRegion={{
                 latitude: 13.41,
@@ -135,7 +138,7 @@ return (
             const earthquakeTime = new Date(earthquake.properties.time);
             return (
               <TouchableOpacity key={index} onPress={() => {
-                this.map.animateToRegion({
+                mapRef.current.animateToRegion({
                   latitude: earthquake.geometry.coordinates[1],
                   longitude: earthquake.geometry.coordinates[0],
                   latitudeDelta: 0.0922,

@@ -21,7 +21,7 @@ export default function Settings({ navigation }) {
   const [modalVisibleAlerts, setModalVisibleAlerts] = useState(false);
   const [modalVisibleDetails, setModalVisibleDetails] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('PH');
-  const [selectedLanguage, setSelectedLanguage] = useState('ENG');
+  const [selectedLanguage, setSelectedLanguage] = useState('FIL');
     const [minMagnitude, setMinMagnitude] = useState('4.0');
     const [timePeriod, setTimePeriod] = useState('past7days');
   const [imageUri , setImageUri] = useState(null);
@@ -691,6 +691,7 @@ const styles = StyleSheet.create({
   },
   boxText1: {
     fontSize: windowWidth * 0.05, // Adjust as needed
+    width: windowWidth * 0.5,
     color: '#000', // Adjust as needed
     marginTop: windowHeight * 0.01, // Adjust as needed
     fontFamily: 'glacial-indifference-bold',

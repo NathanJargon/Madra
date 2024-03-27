@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Animated } from 'react-native';
-import MapView, { Circle, Marker } from 'react-native-maps';
+import MapView, { Circle, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { firebase } from './FirebaseConfig';
 
@@ -170,6 +170,7 @@ export default function HazardMapping({ navigation }) {
       ) : (
           <>
             <MapView
+              provider={PROVIDER_GOOGLE}
               mapType="satellite"
               ref={mapRef}
               onLayout={() => setMapReady(true)}
