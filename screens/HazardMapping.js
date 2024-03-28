@@ -65,6 +65,13 @@ export default function HazardMapping({ navigation }) {
   };
 
 
+  let mapType = "satellite"; // your mapType value
+
+  if (!mapType) {
+    console.warn('mapType was null or undefined, setting it to "standard"');
+    mapType = "standard";
+  }
+
   const fetchData = () => {
     if (userCountry) {
       setIsLoading(true); // Set loading to true when starting to fetch data
@@ -181,19 +188,19 @@ export default function HazardMapping({ navigation }) {
           </ImageBackground>
       ) : (
           <>
-            <MapView
-              provider={PROVIDER_GOOGLE}
-              mapType="satellite"
-              ref={mapRef}
-              onLayout={() => setMapReady(true)}
-              style={{ flex: 1, width: '100%', height: '100%', }}
-              initialRegion={{
-                latitude: 12.8797,
-                longitude: 121.7740,
-                latitudeDelta: 20, // adjust as needed
-                longitudeDelta: 20, // adjust as needed
-              }}
-            >
+              <MapView
+                provider={PROVIDER_GOOGLE}
+                mapType={mapType}
+                ref={mapRef}
+                onLayout={() => setMapReady(true)}
+                style={{ flex: 1, width: '100%', height: '100%', }}
+                initialRegion={{
+                  latitude: 12.8797,
+                  longitude: 121.7740,
+                  latitudeDelta: 20, // adjust as needed
+                  longitudeDelta: 20, // adjust as needed
+                }}
+              >
               {displayedEarthquakes.map((earthquake, index) => (
                 <View key={index}>
                   <Marker

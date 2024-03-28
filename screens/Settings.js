@@ -178,7 +178,7 @@ export default function Settings({ navigation }) {
     const updateTimePeriod = async (value) => {
       // Update the timePeriod state
       setTimePeriod(value);
-
+      await AsyncStorage.setItem('timePeriod', value);
       // Update the timePeriod field in Firebase for the current user
       const user = firebase.auth().currentUser;
       if (user != null) {
@@ -206,23 +206,32 @@ export default function Settings({ navigation }) {
     };
 
     const [isNotified, setIsNotified] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     const toggleNotification = async () => {
-      setIsNotified(prevState => {
-        const newValue = !prevState;
+      const user = firebase.auth().currentUser;
+      if (user != null) {
+        setIsNotified(prevState => {
+          const newValue = !prevState;
 
-        // Update the isNotified field in Firebase for the current user
-        const user = firebase.auth().currentUser;
-        if (user != null) {
           firebase.firestore().collection('users').doc(user.email).update({
             isNotified: newValue
           })
-          .then(() => console.log('User notification status updated successfully'))
-          .catch(error => console.log('Error updating user notification status:', error));
-        }
+          .then(() => {
+            console.log('User notification status updated successfully');
+          })
+          .catch(error => {
+            console.error('Error updating user notification status:', error);
+          });
 
-        return newValue;
-      });
+          return newValue;
+        });
+
+        setIsButtonDisabled(true);
+        setTimeout(() => setIsButtonDisabled(false), 1000); // Enable the button after 5 seconds
+      } else {
+        console.error('Cannot update notification status: No user is logged in');
+      }
     };
 
   const countries = [
@@ -519,16 +528,16 @@ export default function Settings({ navigation }) {
 
           <Text style={{color: 'black', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Time Period</Text>
           <TouchableOpacity onPress={() => updateTimePeriod('all_day')}>
-            <Text style={styles.alertText}>Daily Period</Text>
+            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_day') ? 'white' : 'transparent'}]}>Daily Period</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => updateTimePeriod('all_week')}>
-            <Text style={styles.alertText}>Weekly Period</Text>
+            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_week') ? 'white' : 'transparent'}]}>Weekly Period</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => updateTimePeriod('all_month')}>
-            <Text style={styles.alertText}>Monthly period</Text>
+            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_month') ? 'white' : 'transparent'}]}>Monthly period</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => updateTimePeriod('all_year')}>
-            <Text style={[styles.alertText, { marginBottom: windowHeight * 0.02, }]}>Yearly Period</Text>
+            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_year') ? 'white' : 'transparent', marginBottom: windowHeight * 0.02}]}>Yearly Period</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -566,7 +575,7 @@ export default function Settings({ navigation }) {
             <ImageBackground source={require('../assets/bg1.png')} style={styles.box2}>
               <View style={styles.innerBox1}>
                 <Text style={styles.innerBoxHeader}>OPTIONS</Text>
-                    <TouchableOpacity onPress={toggleNotification}>
+                    <TouchableOpacity onPress={toggleNotification} disabled={isButtonDisabled}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.05,  marginLeft: windowWidth * 0.1, color: 'white', }}>Madrification</Text>
                         <Image source={isNotified ? require('../assets/icons/on-button.png') : require('../assets/icons/off-button.png')} style={styles.innerBoxSwitch} />

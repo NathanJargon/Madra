@@ -21,28 +21,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// Can use this function below or use Expo's Push Notification Tool from: https://expo.dev/notifications
-async function sendPushNotification(expoPushToken) {
-  const message = {
-    to: expoPushToken,
-    sound: 'default',
-    title: 'Original Title',
-    body: 'And here is the body!',
-    data: { someData: 'goes here' },
-  };
-
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
-  });
-}
-
-async function registerForPushNotificationsAsync() {
+ async function registerForPushNotificationsAsync() {
   let token;
 
   if (Platform.OS === 'android') {
@@ -73,7 +52,12 @@ async function registerForPushNotificationsAsync() {
     alert('Must use physical device for Push Notifications');
   }
 
-  return token.data;
+  if (token !== undefined && token.data !== undefined) {
+    return token.data;
+  } else {
+    console.log('Failed to get token data for push notification');
+    return;
+  }
 }
 
 
@@ -144,6 +128,7 @@ export default function Dashboard() {
   };
 
     const sendNotification = async (earthquakeData) => {
+      console.log('Earthquake Data for Notification:', earthquakeData);
       const trigger = { seconds: 2, repeats: false };
       const content = {
         title: 'New Earthquake Alert!',
@@ -154,28 +139,29 @@ export default function Dashboard() {
       await Notifications.scheduleNotificationAsync({ content, trigger });
     };
 
-  const fetchData = async () => {
-    const user = firebase.auth().currentUser;
-    if (user != null) {
-      const doc = await firebase.firestore().collection('users').doc(user.email).get();
-      const userData = doc.data();
-      if (userData.isNotified) {
-        if (userCountry) {
-          fetch(`https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${timePeriod}.geojson`)
-            .then(response => response.json())
-            .then(data => {
-              const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
-              const newEarthquakes = filteredEarthquakes.filter(earthquake => !notifiedEarthquakeIds.includes(earthquake.id));
-              setEarthquakes(filteredEarthquakes);
-              // Send a notification for each new earthquake
-              newEarthquakes.forEach(earthquake => sendNotification(earthquake));
-              // Update the list of notified earthquake IDs
-              setNotifiedEarthquakeIds(notifiedEarthquakeIds.concat(newEarthquakes.map(earthquake => earthquake.id)));
-            });
+    const fetchData = async () => {
+      const user = firebase.auth().currentUser;
+      if (user != null) {
+        const doc = await firebase.firestore().collection('users').doc(user.email).get();
+        const userData = doc.data();
+        console.log('User Data:', userData);
+        if (userData.isNotified) {
+          if (userCountry) {
+            fetch(`https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson`) // Changed timePeriod to 'all_hour'
+              .then(response => response.json())
+              .then(data => {
+                const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));
+                const newEarthquakes = filteredEarthquakes.filter(earthquake => !notifiedEarthquakeIds.includes(earthquake.id));
+                setEarthquakes(filteredEarthquakes);
+                // Send a notification for each new earthquake
+                newEarthquakes.forEach(earthquake => sendNotification(earthquake));
+                // Update the list of notified earthquake IDs
+                setNotifiedEarthquakeIds(notifiedEarthquakeIds.concat(newEarthquakes.map(earthquake => earthquake.id)));
+              });
+          }
         }
       }
-    }
-  };
+    };
 
   useEffect(() => {
     const loadUserData = async () => {

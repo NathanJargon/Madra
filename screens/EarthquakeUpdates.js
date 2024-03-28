@@ -15,6 +15,13 @@ export default function EarthquakeUpdates() {
   const [initialLoad, setInitialLoad] = useState(true);
   const [userLocation, setUserLocation] = useState('Philippines');
   const mapRef = useRef();
+    let mapType = "satellite"; // your mapType value
+
+    if (!mapType) {
+      console.warn('mapType was null or undefined, setting it to "standard"');
+      mapType = "standard";
+    }
+
 
     const fetchData = async () => {
       setIsLoading(true);
@@ -33,24 +40,8 @@ export default function EarthquakeUpdates() {
           setInitialLoad(false);
         }
         setEarthquakes(prevEarthquakes => [...prevEarthquakes, ...filteredData]);
-
-        // Save the fetched data to AsyncStorage
-        try {
-          await AsyncStorage.setItem('earthquakes', JSON.stringify(filteredData));
-        } catch (e) {
-          console.error('Failed to save earthquake data to storage.', e);
-        }
       } catch (error) {
         console.error('Error:', error);
-        // Fetch data from AsyncStorage if the fetch request fails
-        try {
-          const asyncData = await AsyncStorage.getItem('earthquakes');
-          if (asyncData !== null) {
-            setEarthquakes(JSON.parse(asyncData));
-          }
-        } catch (e) {
-          console.error('Failed to load earthquake data from storage.', e);
-        }
       } finally {
         setIsLoading(false);
       }
@@ -108,7 +99,7 @@ return (
       <View style={styles.mapContainer}>
             <MapView
               provider={PROVIDER_GOOGLE}
-              mapType="satellite"
+              mapType={mapType}
               ref={mapRef}
               style={styles.map}
               initialRegion={{
