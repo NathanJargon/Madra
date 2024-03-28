@@ -2,7 +2,7 @@
   "expo": {
     "name": "Madra",
     "slug": "Madra",
-    "version": "1.0.0",
+    "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -13,13 +13,12 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.synochrina.Madra",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.synochrina.Madra",
-      "googleServicesFile": "./google-services.json",
-      "permissions": ["ACCESS_FINE_LOCATION"],
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyAyYrujSoH2OcmWCxXlup_KSKE9coSDgnE"
@@ -30,7 +29,6 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "googleApiKey": "AIzaSyAyYrujSoH2OcmWCxXlup_KSKE9coSDgnE",
       "eas": {
         "projectId": "62a0baca-2d5f-42f3-a7f1-cbc7c8f5e731"
       }

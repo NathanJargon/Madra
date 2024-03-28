@@ -17,6 +17,16 @@ export default function HazardMapping({ navigation }) {
   const [selectedEarthquake, setSelectedEarthquake] = useState(null);
   const [selectedEarthquakeIndex, setSelectedEarthquakeIndex] = useState(null);
   const [mapReady, setMapReady] = useState(false);
+  const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(null);
+  const [displayedEarthquakes, setDisplayedEarthquakes] = useState([]);
+
+  useEffect(() => {
+  if (selectedMarkerIndex !== null) {
+    setDisplayedEarthquakes([earthquakes[selectedMarkerIndex]]);
+  } else {
+    setDisplayedEarthquakes(earthquakes);
+  }
+}, [earthquakes, selectedMarkerIndex]);
 
   useEffect(() => {
     if (mapReady && mapRef.current) {
@@ -43,7 +53,9 @@ export default function HazardMapping({ navigation }) {
     setSelectedEarthquakeIndex(index);
     console.log('Earthquake:', earthquake);
     console.log('Index:', index);
-    setTimeout(() => setSelectedEarthquakeIndex(null), 5000); // Reset after 5 seconds
+    setTimeout(() => {
+      setSelectedEarthquakeIndex(null);
+    }, 5000);
     mapRef.current.animateToRegion({
       latitude: earthquake.geometry.coordinates[1],
       longitude: earthquake.geometry.coordinates[0],
@@ -68,7 +80,7 @@ export default function HazardMapping({ navigation }) {
 
   useEffect(() => {
     fetchData();
-    const intervalId = setInterval(fetchData, 60000);
+    const intervalId = setInterval(fetchData, 60000 * 30);
 
     return () => clearInterval(intervalId);
   }, [userCountry]);
@@ -182,26 +194,27 @@ export default function HazardMapping({ navigation }) {
                 longitudeDelta: 20, // adjust as needed
               }}
             >
-                {earthquakes.map((earthquake, index) => (
-                  <View key={index}>
-                    <Marker
-                      coordinate={{
-                        latitude: earthquake.geometry.coordinates[1],
-                        longitude: earthquake.geometry.coordinates[0],
-                      }}
-                      onPress={() => handleEarthquakeClick(earthquake, index)} // Pass the index here
-                    />
-                    <Circle
-                      center={{
-                        latitude: earthquake.geometry.coordinates[1],
-                        longitude: earthquake.geometry.coordinates[0],
-                      }}
-                      radius={(earthquake.properties.mag + 1) * 10000} // Adjust the scaling factor as needed
-                      strokeColor={'#000'} // border color
-                      fillColor={index === selectedEarthquakeIndex ? 'gold' : getCircleColor(earthquake.properties.mag)} // fill color
-                    />
-                  </View>
-                ))}
+              {displayedEarthquakes.map((earthquake, index) => (
+                <View key={index}>
+                  <Marker
+                    coordinate={{
+                      latitude: earthquake.geometry.coordinates[1],
+                      longitude: earthquake.geometry.coordinates[0],
+                    }}
+                    onPress={() => handleEarthquakeClick(earthquake, index)}
+                    pinColor={selectedEarthquakeIndex === null ? 'red' : (index === selectedEarthquakeIndex ? 'red' : 'white')}
+                  />
+                  <Circle
+                    center={{
+                      latitude: earthquake.geometry.coordinates[1],
+                      longitude: earthquake.geometry.coordinates[0],
+                    }}
+                    radius={(earthquake.properties.mag + 1) * 10000}
+                    strokeColor={selectedEarthquakeIndex === null ? '#000' : (index === selectedEarthquakeIndex ? '#000' : 'white')}
+                    fillColor={selectedEarthquakeIndex === null ? getCircleColor(earthquake.properties.mag) : (index === selectedEarthquakeIndex ? getCircleColor(earthquake.properties.mag) : 'white')}
+                  />
+                </View>
+              ))}
             </MapView>
 
             <ImageBackground source={require('../assets/bg1.png')} style={styles.infoBox}>
@@ -211,7 +224,7 @@ export default function HazardMapping({ navigation }) {
                   </>
                 )}
                 {earthquakes.map((earthquake, index) => (
-                  <TouchableOpacity key={index} onPress={() => handleEarthquakeClick(earthquake)}>
+                  <TouchableOpacity key={index} onPress={() => handleEarthquakeClick(earthquake, index)}>
                     <Text>{earthquake.properties.title}</Text>
                     <Text></Text>
                   </TouchableOpacity>
