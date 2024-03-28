@@ -205,34 +205,6 @@ export default function Settings({ navigation }) {
       }
     };
 
-    const [isNotified, setIsNotified] = useState(false);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-
-    const toggleNotification = async () => {
-      const user = firebase.auth().currentUser;
-      if (user != null) {
-        setIsNotified(prevState => {
-          const newValue = !prevState;
-
-          firebase.firestore().collection('users').doc(user.email).update({
-            isNotified: newValue
-          })
-          .then(() => {
-            console.log('User notification status updated successfully');
-          })
-          .catch(error => {
-            console.error('Error updating user notification status:', error);
-          });
-
-          return newValue;
-        });
-
-        setIsButtonDisabled(true);
-        setTimeout(() => setIsButtonDisabled(false), 1000); // Enable the button after 5 seconds
-      } else {
-        console.error('Cannot update notification status: No user is logged in');
-      }
-    };
 
   const countries = [
     { code: 'PH', name: 'Philippines' },
@@ -366,6 +338,36 @@ export default function Settings({ navigation }) {
         return () => unsubscribe();
       }
     }, []);
+
+
+    const [isNotified, setIsNotified] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+    const toggleNotification = async () => {
+      const user = firebase.auth().currentUser;
+      if (user != null) {
+        setIsNotified(prevState => {
+          const newValue = !prevState;
+
+          firebase.firestore().collection('users').doc(user.email).update({
+            isNotified: newValue
+          })
+          .then(() => {
+            console.log('User notification status updated successfully');
+          })
+          .catch(error => {
+            console.error('Error updating user notification status:', error);
+          });
+
+          return newValue;
+        });
+
+        setIsButtonDisabled(true);
+        setTimeout(() => setIsButtonDisabled(false), 1000); // Enable the button after 5 seconds
+      } else {
+        console.error('Cannot update notification status: No user is logged in');
+      }
+    };
 
   return (
     <View style={styles.container}>

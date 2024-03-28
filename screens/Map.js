@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, PermissionsAndroid } from 'react-native';
 import EarthquakeUpdates from './EarthquakeUpdates';
 import HazardMapping from './HazardMapping';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -12,21 +14,54 @@ export default function Map({ navigation }) {
 
   useEffect(() => {
     checkLocationPermission();
+    getShowBoxState();
   }, []);
+
+    useFocusEffect(
+      React.useCallback(() => {
+        if (!showBox) {
+          navigation.navigate('Main', { screen: 'EarthquakeUpdates' });
+        }
+        return () => {};
+      }, [showBox, navigation])
+    );
+
+  const getShowBoxState = async () => {
+    try {
+      const value = await AsyncStorage.getItem('showBox');
+      if (value !== null) {
+        setShowBox(JSON.parse(value));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const setShowBoxState = async (value) => {
+    try {
+      await AsyncStorage.setItem('showBox', JSON.stringify(value));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const checkLocationPermission = async () => {
     const granted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
-    
+
     if (!granted) {
       const result = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
-      
+
       if (result === PermissionsAndroid.RESULTS.GRANTED) {
         setLocationEnabled(true);
+        setShowBoxState(false);
+        navigation.navigate('Main', { screen: 'EarthquakeUpdates' });
       } else {
         setLocationEnabled(false);
       }
     } else {
       setLocationEnabled(true);
+      setShowBoxState(false);
+      navigation.navigate('Main', { screen: 'EarthquakeUpdates' });
     }
   };
 
@@ -37,17 +72,14 @@ export default function Map({ navigation }) {
           {showBox ? (
             <ImageBackground source={require('../assets/bg1.png')} style={styles.bottomBox}>
               <Image source={require('../assets/icons/place.png')} style={styles.image} />
-              <Text style={styles.text}>ALLOW LOCATION</Text>
-              <Text style={styles.subtext}>MADRA needs access to your location</Text>
+              <Text style={styles.text}>ASSESS EARTHQUAKE UPDATES</Text>
+              <Text style={styles.subtext}>MADRA will fetch the latest information for you</Text>
               <TouchableOpacity style={styles.button1} onPress={() => {setShowBox(false); checkLocationPermission();}}>
-                <Text style={styles.buttonText1}>ALLOW</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button2} onPress={() => setShowBox(false)}>
-                <Text style={styles.buttonText2}>DO NOT ALLOW</Text>
+                <Text style={styles.buttonText1}>ASSESS</Text>
               </TouchableOpacity>
             </ImageBackground>
           ) : locationEnabled ? (
-            <EarthquakeUpdates />
+            null
           ) : (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>Location services are not enabled. Please enable them to view the map.</Text>

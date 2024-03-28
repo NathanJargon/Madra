@@ -285,6 +285,11 @@ function MainStackScreen() {
         component={VolcanicHazards}
         options={{ headerShown: false }}
       />
+      <MainStack.Screen
+        name="EarthquakeUpdates"
+        component={EarthquakeUpdates}
+        options={{ headerShown: false }}
+        />
     </MainStack.Navigator>
   );
 }

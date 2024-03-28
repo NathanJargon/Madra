@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, ScrollView, StyleSheet, Dimensions, Text, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import { BackHandler, View, ScrollView, StyleSheet, Dimensions, Text, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as SQLite from 'expo-sqlite';
 import { firebase } from './FirebaseConfig';
@@ -9,13 +9,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function EarthquakeUpdates() {
+export default function EarthquakeUpdates({ navigation }) {
   const [earthquakes, setEarthquakes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
   const [userLocation, setUserLocation] = useState('Philippines');
   const mapRef = useRef();
     let mapType = "satellite"; // your mapType value
+
+    useEffect(() => {
+      const backAction = () => {
+        navigation.navigate('Home');
+        return true; // This will prevent the app from exiting
+      };
+
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+      return () => backHandler.remove(); // Don't forget to remove the event listener when the component is unmounted
+    }, [navigation]);
 
     if (!mapType) {
       console.warn('mapType was null or undefined, setting it to "standard"');
@@ -96,8 +107,8 @@ return (
         </View>
       </>
     ) : (
-      <View style={styles.mapContainer}>
-            <MapView
+        <View style={{...styles.mapContainer, height: windowHeight * 0.5, flex: 1}}>
+          <MapView
               provider={PROVIDER_GOOGLE}
               mapType={mapType}
               ref={mapRef}
