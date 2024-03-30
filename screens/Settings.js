@@ -631,7 +631,7 @@ export default function Settings({ navigation }) {
                             <Image source={require('../assets/icons/forward.png')} style={styles.innerBoxImage} />
                           </View>
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
+                      <TouchableOpacity onPress={() => navigation.navigate('Policy')}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
                             <Image source={require('../assets/icons/lock.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
                             <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.03, color: 'white', marginLeft: windowWidth * 0.005, }]}>Privacy and Policy</Text>

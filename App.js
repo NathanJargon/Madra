@@ -23,6 +23,7 @@ import LoadingScreen from './screens/LoadingScreen';
 import Splash from './screens/Splash';
 import Profile from './screens/Profile';
 import EducationalHubInterface from './screens/EducationalHubInterface';
+import Policy from './screens/PolicyScreen';
 
 // Features
 import HazardMapping from './screens/HazardMapping';
@@ -290,6 +291,11 @@ function MainStackScreen() {
         component={EarthquakeUpdates}
         options={{ headerShown: false }}
         />
+      <MainStack.Screen
+        name="Policy"
+        component={Policy}
+        options={{ headerShown: false }}
+      />
     </MainStack.Navigator>
   );
 }
