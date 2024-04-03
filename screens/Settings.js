@@ -206,19 +206,30 @@ export default function Settings({ navigation }) {
     };
 
 
-  const countries = [
-    { code: 'PH', name: 'Philippines' },
-    { code: 'US', name: 'United States' },
-    { code: 'IN', name: 'India' },
-    { code: 'BR', name: 'Brazil' },
-    { code: 'RU', name: 'Russia' },
-    { code: 'DE', name: 'Germany' },
-    { code: 'JP', name: 'Japan' },
-    { code: 'UK', name: 'United Kingdom' },
-    { code: 'FR', name: 'France' },
-    { code: 'ZA', name: 'South Africa' },
-    { code: 'CN', name: 'China' },
-  ];
+    const countries = [
+      { code: 'PH', name: 'Philippines' },
+      { code: 'US', name: 'United States' },
+      { code: 'IN', name: 'India' },
+      { code: 'BR', name: 'Brazil' },
+      { code: 'RU', name: 'Russia' },
+      { code: 'DE', name: 'Germany' },
+      { code: 'JP', name: 'Japan' },
+      { code: 'UK', name: 'United Kingdom' },
+      { code: 'FR', name: 'France' },
+      { code: 'ZA', name: 'South Africa' },
+      { code: 'CN', name: 'China' },
+      { code: 'CA', name: 'Canada' },
+      { code: 'AU', name: 'Australia' },
+      { code: 'IT', name: 'Italy' },
+      { code: 'ES', name: 'Spain' },
+      { code: 'MX', name: 'Mexico' },
+      { code: 'NZ', name: 'New Zealand' },
+      { code: 'AR', name: 'Argentina' },
+      { code: 'KE', name: 'Kenya' },
+      { code: 'EG', name: 'Egypt' },
+      { code: 'SG', name: 'Singapore' },
+      { code: 'TW', name: 'Taiwan' },
+    ];
 
   const selectedCountryObject = countries.find(country => country.name === selectedCountry);
   
