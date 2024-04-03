@@ -126,10 +126,12 @@ const styles = StyleSheet.create({
     fontSize: windowWidth * 0.065, // Adjust as needed
     fontFamily: 'glacial-indifference-bold',
     textAlign: 'center',
+  color: '#0C6B5F',
     marginVertical: 10, // Adjust as needed
   },
   subtext: {
     fontSize: windowWidth * 0.035, // Adjust as needed
+          color: '#0C6B5F',
     textAlign: 'center',
     marginBottom: 20, // Adjust as needed
     fontFamily: 'glacial-indifference-regular',

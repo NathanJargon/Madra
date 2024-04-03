@@ -121,14 +121,18 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: windowWidth * 0.065, // Adjust as needed
-    fontWeight: 'bold', // Adjust as needed
+    fontFamily: 'glacial-indifference-bold',
     textAlign: 'center',
+  color: '#0C6B5F',
     marginVertical: 10, // Adjust as needed
   },
   subtext: {
     fontSize: windowWidth * 0.035, // Adjust as needed
+          color: '#0C6B5F',
     textAlign: 'center',
+    width: '90%',
     marginBottom: 20, // Adjust as needed
+    fontFamily: 'glacial-indifference-regular',
   },
   button1: {
     backgroundColor: '#318E99', // Change the color as needed

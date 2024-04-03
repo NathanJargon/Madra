@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
-
+import { View, Text, StyleSheet, Image, Dimensions, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -33,11 +31,16 @@ export default function OtherGeologicalHazards({ navigation }) {
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
-        <ImageViewer imageUrls={images} />
+        <ScrollView>
+          {images.map((image, index) => (
+            <Image key={index} source={{ uri: image.url }} style={styles.image} />
+          ))}
+        </ScrollView>
       </ImageBackground>
     </View>
   );
 }
+
 
 
 
@@ -48,6 +51,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
+      image: {
+        width: windowWidth,
+        height: windowHeight * 0.7,
+        resizeMode: 'contain',
+      },
 boxContainer: {
   flex: 1,
   justifyContent: 'center',

@@ -24,7 +24,7 @@ export default function Features({ navigation }) {
     };
 
   const handleMadramaniaPress = () => {
-    setShowMadramania(true);
+    navigation.navigate('Madramania2');
   };
 
   const handleEarthquakeUpdatesPress = () => {
@@ -83,6 +83,7 @@ export default function Features({ navigation }) {
     boxTitle: {
       fontSize: windowWidth * 0.03,
       textAlign: 'center',
+      color: '#0C6B5F',
         fontFamily: 'glacial-indifference-bold',
       margin: 20,
     },
@@ -130,7 +131,7 @@ export default function Features({ navigation }) {
     },
     headerText: {
       fontSize: windowWidth * 0.035,
-      color: '#000',
+      color: '#0C6B5F',
     fontFamily: 'glacial-indifference-regular',
     },
     bottomContainer: {

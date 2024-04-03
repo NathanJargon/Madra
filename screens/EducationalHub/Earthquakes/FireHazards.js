@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
-
+import { View, Text, StyleSheet, Image, Dimensions, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -18,6 +16,7 @@ export default function FireHazards({ navigation }) {
     }
   };
 
+
   const images = [
     { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/FireHazards-1.png?alt=media&token=95f5ee99-b43a-43e4-b0ae-ef875013d3be' },
     { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/FireHazards-2.png?alt=media&token=aa2c1434-b3aa-46bb-a2b9-6c390fd3ef07' },
@@ -30,12 +29,15 @@ export default function FireHazards({ navigation }) {
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
-        <ImageViewer imageUrls={images} />
+        <ScrollView>
+          {images.map((image, index) => (
+            <Image key={index} source={{ uri: image.url }} style={styles.image} />
+          ))}
+        </ScrollView>
       </ImageBackground>
     </View>
   );
 }
-
 
 
 
@@ -45,6 +47,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
+      image: {
+        width: windowWidth,
+        height: windowHeight * 0.7,
+        resizeMode: 'contain',
+      },
 boxContainer: {
   flex: 1,
   justifyContent: 'center',

@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   },
   boxText: {
     fontSize: windowWidth * 0.03, // Adjust the size as needed
-    color: 'black', // Change the color as needed
+    color: '#FFFFFF',
   },
   forwardImage: {
     width: 20, // Adjust the size as needed

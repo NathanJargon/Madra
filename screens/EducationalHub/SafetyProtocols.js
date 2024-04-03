@@ -1,27 +1,35 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function SafetyProtocols() {
+export default function SafetyProtocols({ navigation }) {
+  const [selectedLesson, setSelectedLesson] = useState(null);
+
+  const handleBackPress = () => {
+    if (selectedLesson === null) {
+      navigation.navigate('Student Centered Info');
+    } else {
+      setSelectedLesson(null);
+      navigation.navigate('EarthquakeHazards');
+    }
+  };
+
+  const images = [
+    { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/MADRA-SAFETY-PROTOCOLS-1.png?alt=media&token=7e15386c-b349-4cf9-82be-47e719d22af3' },
+    { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/MADRA-SAFETY-PROTOCOLS-2.png?alt=media&token=6cdaca53-a837-420a-9129-ae35d61479e3' },
+    { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/MADRA-SAFETY-PROTOCOLS-3.png?alt=media&token=879d3f81-cb66-45f9-afde-8502790854e6' },
+  ];
+
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
-        <View style={styles.boxContainer}>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: FIRST AID</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: DO’S AND DONT’S</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: SAFETY PROTOCOLS</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: STUDY OF EARTHQUAKE</Text>
-          </View>
-        </View>
+        <ScrollView>
+          {images.map((image, index) => (
+            <Image key={index} source={{ uri: image.url }} style={styles.image} />
+          ))}
+        </ScrollView>
       </ImageBackground>
     </View>
   );
@@ -33,6 +41,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
+    image: {
+      width: windowWidth,
+      height: windowHeight * 0.7,
+      resizeMode: 'contain',
+    },
 boxContainer: {
   flex: 1,
   justifyContent: 'center',
@@ -119,12 +132,10 @@ boxContainer: {
     height: '100%', // Adjust the height as needed
   },
     rectangleBox: {
-      borderWidth: 1,
-      backgroundColor: "#318E99",
-      borderColor: 'white',
-      padding: 10,
-      borderRadius: 5,
-      marginBottom: 10,
-      width: windowWidth * 0.75, // Set the width to 80% of the window width
     },
-});
+    boxContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  });

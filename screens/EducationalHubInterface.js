@@ -17,7 +17,7 @@ export default function EducationalHubInterface({ navigation }) {
     const [showHelpCenter, setShowHelpCenter] = useState(false);
 
     const handleGenInfoPress = () => {
-      setShowGenInfo(true);
+      navigation.navigate('Gen Info');
     };
 
     const handleStudentCenteredInfoPress = () => {
@@ -29,7 +29,7 @@ export default function EducationalHubInterface({ navigation }) {
     };
 
     const handleHelpCenterPress = () => {
-     setShowHelpCenter(true);
+      navigation.navigate('Help Center');
     };
 
   const handleBackPress = () => {
@@ -84,6 +84,7 @@ export default function EducationalHubInterface({ navigation }) {
     boxTitle: {
       fontSize: windowWidth * 0.03,
       textAlign: 'center',
+    color: '#0C6B5F',
     fontFamily: 'glacial-indifference-bold',
       margin: 20,
     },
@@ -131,7 +132,7 @@ export default function EducationalHubInterface({ navigation }) {
     },
     headerText: {
       fontSize: windowWidth * 0.035,
-      color: '#000',
+      color: '#0C6B5F',
         fontFamily: 'glacial-indifference-regular',
     },
     bottomContainer: {
@@ -184,16 +185,6 @@ export default function EducationalHubInterface({ navigation }) {
             </View>
             <View style={styles.boxRow}>
               <View style={styles.boxWrapper}>
-                <View style={styles.box}>
-                  <Image source={require('../assets/ed1.jpg')} style={styles.boxImage} />
-                  <Text style={styles.boxTitle}>DONATIONS</Text>
-                  <TouchableOpacity
-                    style={styles.proceedButton}
-                    onPress={handleHazardsPress}
-                  >
-                    <Text style={styles.proceedButtonText}>PROCEED</Text>
-                  </TouchableOpacity>
-                </View>
                 <View style={styles.box}>
                   <Image source={require('../assets/ed4.jpg')} style={styles.boxImage} />
                   <Text style={styles.boxTitle}>HOTLINE CENTER</Text>

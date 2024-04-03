@@ -201,7 +201,7 @@ export default function Profile({ navigation }) {
             <View style={styles.modalView}>
                 <Text style={styles.modalText}>{selectedField ? selectedField.toUpperCase() : 'Empty'}</Text>
               <TextInput
-                style={{ height: windowHeight * 0.05, borderColor: 'gray', borderWidth: 2, borderRadius: 10, width: '80%', textAlign: 'center'}}
+                style={{ height: windowHeight * 0.05, borderColor: '#0C6B5F', borderWidth: 2, borderRadius: 10, width: '80%', textAlign: 'center'}}
                 onChangeText={text => setInputValue(text)}
                 value={inputValue}
                 placeholder={currentValue ? currentValue : 'EMPTY'}
@@ -350,9 +350,11 @@ const styles = StyleSheet.create({
     marginTop: '10%',
     fontSize: windowWidth * 0.065, // Adjust as needed
     textAlign: 'center',
+    color: '#0C6B5F',
     fontFamily: 'glacial-indifference-bold',
   },
   emailText: {
+    color: '#0C6B5F',
     fontSize: windowWidth * 0.03, // Adjust as needed
     textAlign: 'center',
     marginBottom: windowHeight * 0.015,
@@ -377,6 +379,7 @@ const styles = StyleSheet.create({
   centerText: {
     fontSize: windowWidth * 0.04, // Adjust as needed
     textAlign: 'center',
+    color: '#0C6B5F',
     fontFamily: 'glacial-indifference-bold',
   },
     centeredView: {
@@ -386,7 +389,7 @@ const styles = StyleSheet.create({
       marginTop: 22
     },
   openButton: {
-    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    backgroundColor: "#0C6B5F",
     borderRadius: 20,
     elevation: 2,
     width: '50%', // Adjust as needed
@@ -395,7 +398,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   textStyle: {
-    color: "black",
+    color: "white",
     fontWeight: "bold",
     textAlign: "center",
     fontSize: windowWidth * 0.045, // Adjust as needed
@@ -419,6 +422,7 @@ const styles = StyleSheet.create({
   modalText: {
     fontWeight: 'bold',
     textAlign: "center",
+    color: '#0C6B5F',
     fontSize: windowWidth * 0.045, // Adjust as needed
   },
 });

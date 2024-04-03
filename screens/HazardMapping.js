@@ -231,10 +231,10 @@ export default function HazardMapping({ navigation }) {
                   </>
                 )}
                 {earthquakes.map((earthquake, index) => (
-                  <TouchableOpacity key={index} onPress={() => handleEarthquakeClick(earthquake, index)}>
-                    <Text>{earthquake.properties.title}</Text>
-                    <Text></Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity key={index} onPress={() => handleEarthquakeClick(earthquake, index)}>
+                      <Text style={styles.infoText}>{earthquake.properties.title}</Text>
+                      <Text></Text>
+                    </TouchableOpacity>
                 ))}
               </ScrollView>
             </ImageBackground>
@@ -257,6 +257,10 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 2,
+  },
+  infoText: {
+    color: 'white',
+    fontFamily: 'glacial-indifference-regular',
   },
   loadingImage: {
     width: 100,

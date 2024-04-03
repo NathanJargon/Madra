@@ -1,46 +1,39 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
-import MadramaniaQuiz from './MadramaniaQuiz';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Madramania() {
-  const [selectedLesson, setSelectedLesson] = useState(null);
-
+export default function Madramania({ navigation }) {
   const handlePress = (lesson) => {
-    setSelectedLesson(lesson);
+    navigation.navigate('MadramaniaQuiz', { lesson });
   };
 
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../assets/bottomcontainer.png')} style={styles.bottomContainer}>
         <View style={styles.boxContainer}>
-          {selectedLesson === null && (
-            <>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('FirstAid')}>
-                <Text style={styles.boxTitle}>LESSON: FIRST AID</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('DosAndDonts')}>
-                <Text style={styles.boxTitle}>LESSON: DO’S AND DONT’S</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('SafetyProtocols')}>
-                <Text style={styles.boxTitle}>LESSON: SAFETY PROTOCOLS</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('StudyOfEarthquake')}>
-                <Text style={styles.boxTitle}>LESSON: EARTHQUAKE</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('StudyOfEarthquake')}>
-                <Text style={styles.boxTitle}>LESSON: DISASTER RISK REDUCTION MANAGEMENT (DRRM)</Text>
-              </TouchableOpacity>
-            </>
-          )}
-          {selectedLesson !== null && <MadramaniaQuiz lesson={selectedLesson} />}
+          <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('Hydrometeorological')}>
+            <Text style={styles.boxTitle}>LESSON: HYDROMETEOROLOGICAL HAZARDS</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('Other Geological')}>
+            <Text style={styles.boxTitle}>LESSON: OTHER GEOLOGICAL HAZARDS</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('Volcanic')}>
+            <Text style={styles.boxTitle}>LESSON: VOLCANIC HAZARDS</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('Earthquake')}>
+            <Text style={styles.boxTitle}>LESSON: EARTHQUAKE HAZARDS</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.rectangleBox} onPress={() => handlePress('Fire')}>
+            <Text style={styles.boxTitle}>LESSON: FIRE HAZARDS</Text>
+          </TouchableOpacity>
         </View>
       </ImageBackground>
     </View>
   );
 }
+
 
 
 const styles = StyleSheet.create({

@@ -1,26 +1,66 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
 
+// EducationalHub
+import DosAndDonts from './DosAndDonts';
+import SafetyProtocols from './SafetyProtocols';
+import FirstAid from './FirstAid';
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function GenInfo() {
+export default function GenInfo({ navigation }) {
+  const [selectedLesson, setSelectedLesson] = useState(null);
+
+const handleBackPress = () => {
+  if (selectedLesson === null) {
+    navigation.navigate('EducationalHubInterface');
+  } else {
+    setSelectedLesson(null);
+    navigation.navigate('Gen Info');
+  }
+};
+
+  const handlePress = (lesson) => {
+    setSelectedLesson(lesson);
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
+        <View style={styles.headerBox}>
+          <View style={styles.headerContent}>
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={handleBackPress}>
+              <Image
+                source={require('../../assets/icons/back.png')}
+                style={styles.backArrow}
+              />
+                <Text style={styles.headerText}>
+                  {selectedLesson ? selectedLesson.replace(/([A-Z])/g, ' $1').toUpperCase() : 'GEN INFO'}
+                </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
         <View style={styles.boxContainer}>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: FIRST AID</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: DO’S AND DONT’S</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: SAFETY PROTOCOLS</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: STUDY OF EARTHQUAKE</Text>
-          </View>
+          {selectedLesson === null && (
+            <>
+              <TouchableOpacity style={styles.rectangleBox} onPress={() => navigation.navigate('DosAndDonts')}>
+                  <Image source={require('../../assets/icons/round-logo.png')} style={ styles.image } />
+                  <Text style={styles.boxTitle}>STUDY GUIDE: DOS AND DONT'S</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.rectangleBox} onPress={() => navigation.navigate('SafetyProtocols')}>
+                <Image source={require('../../assets/icons/round-logo.png')} style={ styles.image } />
+                <Text style={styles.boxTitle}>STUDY GUIDE: SAFETY PROTOCOLS</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.rectangleBox} onPress={() => navigation.navigate('FirstAid')}>
+                <Image source={require('../../assets/icons/round-logo.png')} style={ styles.image } />
+                <Text style={styles.boxTitle}>STUDY GUIDE: FIRST AID</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          {selectedLesson === 'DosAndDonts' && <DosAndDonts />}
+          {selectedLesson === 'SafetyProtocols' && <SafetyProtocols />}
+          {selectedLesson === 'FirstAid' && <FirstAid />}
         </View>
       </ImageBackground>
     </View>
@@ -60,7 +100,8 @@ boxContainer: {
     padding: 10,
   },
   boxTitle: {
-    color: 'white',
+    color: '#318E99',
+    width: '70%',
     fontSize: windowWidth * 0.035,
     margin: windowWidth * 0.01,
     marginLeft: windowWidth * 0.05,
@@ -119,12 +160,20 @@ boxContainer: {
     height: '100%', // Adjust the height as needed
   },
     rectangleBox: {
-      borderWidth: 1,
-      backgroundColor: "#318E99",
-      borderColor: 'white',
+      height: '15%',
+      width: '85%',
+      backgroundColor: "rgba(255, 255, 255, 0.5)",
       padding: 10,
-      borderRadius: 5,
-      marginBottom: 10,
-      width: windowWidth * 0.75, // Set the width to 80% of the window width
+      borderRadius: 50,
+      marginBottom: windowHeight * 0.025,
+      flexDirection: 'row', // Keep this
+      justifyContent: 'flex-start', // Change this
+      alignItems: 'center', // Keep this
+    },
+    image: { // Add this style
+      width: windowWidth / 15, // Adjust as needed
+      height: windowHeight / 15, // Adjust as needed
+      resizeMode: 'contain',
+      marginLeft: windowWidth * 0.05, // Adjust as needed
     },
 });

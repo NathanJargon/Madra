@@ -508,6 +508,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     padding: 5,
     fontSize: windowWidth * 0.03,
+          color: '#0C6B5F',
     fontFamily: 'montserrat-light',
   },
   fixedImage: {
@@ -521,14 +522,14 @@ const styles = StyleSheet.create({
     marginLeft: windowWidth * 0.07,
     width: windowWidth * 0.5,
     fontSize: windowWidth * 0.055, // Adjust as needed
-    color: '#000', // Adjust as needed
+      color: '#0C6B5F',
     textAlign: 'center',
     fontFamily: 'montserrat-bold',
   },
   rightSmallText: {
     fontSize: windowWidth * 0.025, // Adjust as needed
     marginLeft: windowWidth * 0.12,
-    color: '#000', // Adjust as needed
+      color: '#0C6B5F',
   },
   bottomContainer: {
     position: 'absolute', // Position it absolutely

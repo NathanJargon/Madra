@@ -42,6 +42,11 @@ import HydrometeorologicalHazards from './screens/EducationalHub/Earthquakes/Hyd
 import FireHazards from './screens/EducationalHub/Earthquakes/FireHazards';
 import OtherGeologicalHazards from './screens/EducationalHub/Earthquakes/OtherGeologicalHazards';
 import VolcanicHazards from './screens/EducationalHub/Earthquakes/VolcanicHazards';
+import DosAndDonts from './screens/EducationalHub/DosAndDonts';
+import SafetyProtocols from './screens/EducationalHub/SafetyProtocols';
+import FirstAid from './screens/EducationalHub/FirstAid';
+import About from './screens/About';
+import MadramaniaQuiz from './screens/MadramaniaQuiz';
 
 // Create the stack navigators
 const AuthStack = createStackNavigator();
@@ -294,6 +299,36 @@ function MainStackScreen() {
       <MainStack.Screen
         name="Policy"
         component={Policy}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="DosAndDonts"
+        component={DosAndDonts}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="SafetyProtocols"
+        component={SafetyProtocols}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="FirstAid"
+        component={FirstAid}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="About"
+        component={About}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="Madramania2"
+        component={Madramania}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="MadramaniaQuiz"
+        component={MadramaniaQuiz}
         options={{ headerShown: false }}
       />
     </MainStack.Navigator>

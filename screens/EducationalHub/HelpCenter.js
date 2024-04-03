@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ImageBackground, Dimensions } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -8,123 +8,71 @@ export default function HelpCenter() {
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
-        <View style={styles.boxContainer}>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: FIRST AID</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: DO’S AND DONT’S</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: SAFETY PROTOCOLS</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: STUDY OF EARTHQUAKE</Text>
-          </View>
+        <View style={styles.transparentBox}>
+          <Text style={styles.boldText}>
+            911 is the National Emergency Hotline
+          </Text>
+          <Text style={styles.boldText}>
+            RED CROSS
+          </Text>
+          <Text style={styles.infoText}>
+            Emergency Response Unit: 134 (Staff), 132 (Manager), 133 (Radio Room)
+            (02) 8790-2300 local 604
+          </Text>
+          <Text style={styles.boldText}>
+            Philippine National Police (PNP)
+          </Text>
+          <Text style={styles.infoText}>
+            Emergency Hotline: 117
+            (02) 8722-0650
+            Text hotline: 0917-847-5757
+          </Text>
+          <Text style={styles.boldText}>
+            Bureau of Fire Protection (BFP)
+          </Text>
+          <Text style={styles.infoText}>
+            Direct line: (02) 8426-0219, (02) 8426-0246
+          </Text>
         </View>
       </ImageBackground>
     </View>
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
   },
-boxContainer: {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-  boxRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 10,
-  },
-  boxWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '85%', // Adjust the width as needed
-  },
-  box: {
-    width: windowWidth * 0.8, // Adjust the width as needed
-    height: windowHeight * 0.4, // Adjust the height as needed
-    backgroundColor: 'white', // Change the color as needed
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-  },
-  boxTitle: {
-    color: 'white',
-    fontSize: windowWidth * 0.035,
-    margin: windowWidth * 0.01,
-    marginLeft: windowWidth * 0.05,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    textAlign: 'left',
-  },
-  proceedButton: {
-    width: '80%',
-    height: '20%',
-    backgroundColor: '#318E99',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  proceedButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  backgroundImage: {
-    flex: 1,
-    width: windowWidth,
-    height: windowHeight,
-  },
-  headerBox: {
-    width: '100%', // Full width
-    height: windowHeight * 0.175, // Adjust the height as needed
-    backgroundColor: 'white', // Change the color as needed
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
-    overflow: 'hidden',
-    borderColor: '#318E99',
-    borderBottomWidth: 15,
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-  },
-    headerContent: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      flex: 1,
-      padding: 30,
-    },
-  backArrow: {
-    width: windowWidth * 0.05,
-    height: windowHeight * 0.05,
-    resizeMode: 'contain',
-    marginRight: windowWidth * 0.02,
-  },
-  headerText: {
-    fontSize: windowWidth * 0.035,
-    color: '#000',
-  },
   bottomContainer: {
-    width: windowWidth, // Full width
-    height: '100%', // Adjust the height as needed
+    width: windowWidth,
+    height: '100%',
+    justifyContent: 'center', // Add this to center the content vertically
+    alignItems: 'center', // Add this to center the content horizontally
   },
-    rectangleBox: {
-      borderWidth: 1,
-      backgroundColor: "#318E99",
-      borderColor: 'white',
-      padding: 10,
-      borderRadius: 5,
-      marginBottom: 10,
-      width: windowWidth * 0.75, // Set the width to 80% of the window width
-    },
+  infoText: {
+    color: '#127B6E',
+    fontSize: 16,
+    marginVertical: 20, // Increase this to add more space
+    alignSelf: 'center',
+    width: '90%',
+    textAlign: 'center',
+    fontFamily: 'glacial-indifference-regular',
+  },
+  boldText: {
+    color: '#0C6B5F',
+    fontSize: 20, // Adjust the size as needed
+    fontFamily: 'media-sans-bold', // Replace with your preferred font
+    marginVertical: 20, // Increase this to add more space
+    textAlign: 'center',
+  },
+  transparentBox: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    width: '100%',
+    height: '100%',
+    padding: 20,
+    borderRadius: 10,
+    justifyContent: 'center', // Add this to center the content vertically
+    alignItems: 'center', // Add this to center the content horizontally
+  },
 });

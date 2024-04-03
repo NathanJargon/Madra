@@ -1,27 +1,38 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function DosAndDonts() {
+export default function DosAndDonts({ navigation }) {
+  const [selectedLesson, setSelectedLesson] = useState(null);
+
+  const handleBackPress = () => {
+    if (selectedLesson === null) {
+      navigation.navigate('Student Centered Info');
+    } else {
+      setSelectedLesson(null);
+      navigation.navigate('EarthquakeHazards');
+    }
+  };
+
+  const images = [
+    { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/EARTHQUAKE-DOS-AND-DONTS-1.png?alt=media&token=f45783ad-a4e0-45b9-9419-17f362c49d8c' },
+    { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/EARTHQUAKE-DOS-AND-DONTS-2.png?alt=media&token=36a7e078-895b-4063-8bed-101ced52a65c' },
+    { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/EARTHQUAKE-DOS-AND-DONTS-3.png?alt=media&token=ea62a547-5db3-44b0-9472-b60e4678c5df' },
+    { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/EARTHQUAKE-DOS-AND-DONTS-4.png?alt=media&token=56be0aa2-4f4b-4e5b-9340-6abd05d43362' },
+    { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/EARTHQUAKE-DOS-AND-DONTS-5.png?alt=media&token=ace60ca5-4e92-4864-b1b1-c136b077bd24' },
+    { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/EARTHQUAKE-DOS-AND-DONTS-6.png?alt=media&token=b4c140ea-2912-4139-b450-3ac94e07243b' },
+  ];
+
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
-        <View style={styles.boxContainer}>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: FIRST AID</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: DO’S AND DONT’S</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: SAFETY PROTOCOLS</Text>
-          </View>
-          <View style={styles.rectangleBox}>
-            <Text style={styles.boxTitle}>LESSON: STUDY OF EARTHQUAKE</Text>
-          </View>
-        </View>
+        <ScrollView>
+          {images.map((image, index) => (
+            <Image key={index} source={{ uri: image.url }} style={styles.image} />
+          ))}
+        </ScrollView>
       </ImageBackground>
     </View>
   );
@@ -33,6 +44,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
+    image: {
+      width: windowWidth,
+      height: windowHeight * 0.7,
+      resizeMode: 'contain',
+    },
 boxContainer: {
   flex: 1,
   justifyContent: 'center',
@@ -119,12 +135,10 @@ boxContainer: {
     height: '100%', // Adjust the height as needed
   },
     rectangleBox: {
-      borderWidth: 1,
-      backgroundColor: "#318E99",
-      borderColor: 'white',
-      padding: 10,
-      borderRadius: 5,
-      marginBottom: 10,
-      width: windowWidth * 0.75, // Set the width to 80% of the window width
     },
-});
+    boxContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  });

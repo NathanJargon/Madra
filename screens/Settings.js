@@ -381,8 +381,8 @@ export default function Settings({ navigation }) {
       >
         <View style={styles.centeredView}>
           <ImageBackground source={require('../assets/bg1.png')} style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
-            <Text style={{color: 'black', fontSize: windowWidth * 0.075, textAlign: 'center' }}>Choose a country</Text>
-            <Text style={{color: 'black', fontSize: windowWidth * 0.03, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>This will set which country to fetch earthquakes!</Text>
+            <Text style={{color: '#B6E6CF', fontSize: windowWidth * 0.075, textAlign: 'center' }}>Choose a country</Text>
+            <Text style={{color: '#B6E6CF', fontSize: windowWidth * 0.03, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>This will set which country to fetch earthquakes!</Text>
             <ScrollView style={{ height: windowHeight * 0.3 }}>
               {countries.map((country, index) => (
                 <View key={index} style={{ height: windowHeight * 0.09 }}>
@@ -400,7 +400,7 @@ export default function Settings({ navigation }) {
               ))}
             </ScrollView>
             <TouchableOpacity
-              style={{ ...styles.openButton, backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+              style={{ ...styles.openButton, backgroundColor: "#127B6E" }}
               onPress={() => {
                 setModalVisible(!modalVisible);
               }}
@@ -421,7 +421,7 @@ export default function Settings({ navigation }) {
       >
         <View style={styles.centeredView}>
           <ImageBackground source={require('../assets/bg1.png')} style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
-            <Text style={{color: 'black', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Choose a language</Text>
+            <Text style={{color: '#B6E6CF', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Choose a language</Text>
             <ScrollView style={{ height: windowHeight * 0.3 }}>
               {languages.map((language, index) => (
                 <View key={index} style={{ height: windowHeight * 0.09 }}>
@@ -439,7 +439,7 @@ export default function Settings({ navigation }) {
               ))}
             </ScrollView>
             <TouchableOpacity
-              style={{ ...styles.openButton, backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+              style={{ ...styles.openButton, backgroundColor: "#127B6E" }}
               onPress={() => {
                 setModalVisibleLang(!modalVisibleLang);
               }}
@@ -461,32 +461,32 @@ export default function Settings({ navigation }) {
         >
           <View style={styles.centeredView}>
           <ImageBackground source={require('../assets/bg1.png')} style={[styles.modalView, { justifyContent: 'center', alignItems: 'center' }]}>
-              <Text style={{color: 'black', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Customize Alerts</Text>
+              <Text style={{color: '#B6E6CF', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Customize Alerts</Text>
 
-              <Text style={{color: 'black', fontWeight: 'bold',  fontSize: windowWidth * 0.05, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Alert Type</Text>
+              <Text style={{color: '#B6E6CF', fontWeight: 'bold',  fontSize: windowWidth * 0.05, marginBottom: windowHeight * 0.025, textAlign: 'center', }}>Alert Type</Text>
               <TouchableOpacity onPress={toggleEmailAlerts}>
-                <Text style={[styles.alertText, {backgroundColor: (emailAlerts) ? 'white' : 'transparent'}]}>Email Alerts: {emailAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, {backgroundColor: (emailAlerts) ? '#0C6B5F' : 'transparent'}]}>Email Alerts: {emailAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={togglePushAlerts}>
-                <Text style={[styles.alertText, {backgroundColor: (pushAlerts) ? 'white' : 'transparent'}]}>Push Notifications: {pushAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, {backgroundColor: (pushAlerts) ? '#0C6B5F' : 'transparent'}]}>Push Notifications: {pushAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleSMSAlerts}>
-                <Text style={[styles.alertText, {backgroundColor: (smsAlerts) ? 'white' : 'transparent'}]}>SMS Alerts: {smsAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, {backgroundColor: (smsAlerts) ? '#0C6B5F' : 'transparent'}]}>SMS Alerts: {smsAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
 
-              <Text style={{color: 'black', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Alert Frequency</Text>
+              <Text style={{color: '#B6E6CF', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Alert Frequency</Text>
               <TouchableOpacity onPress={toggleDailyAlerts}>
-                <Text style={[styles.alertText, {backgroundColor: (dailyAlerts) ? 'white' : 'transparent'}]}>Daily Alerts: {dailyAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, {backgroundColor: (dailyAlerts) ? '#0C6B5F' : 'transparent'}]}>Daily Alerts: {dailyAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleWeeklyAlerts}>
-                <Text style={[styles.alertText, {backgroundColor: (weeklyAlerts) ? 'white' : 'transparent'}]}>Weekly Alerts: {weeklyAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, {backgroundColor: (weeklyAlerts) ? '#0C6B5F' : 'transparent'}]}>Weekly Alerts: {weeklyAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleMonthlyAlerts}>
-                <Text style={[styles.alertText, { marginBottom: windowHeight * 0.02, backgroundColor: (monthlyAlerts) ? 'white' : 'transparent'}]}>Monthly Alerts: {monthlyAlerts ? 'On' : 'Off'}</Text>
+                <Text style={[styles.alertText, { marginBottom: windowHeight * 0.02, backgroundColor: (monthlyAlerts) ? '#0C6B5F' : 'transparent'}]}>Monthly Alerts: {monthlyAlerts ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={{ ...styles.openButton, backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+                style={{ ...styles.openButton, backgroundColor: "#127B6E" }}
                 onPress={() => {
                   setModalVisibleAlerts(!modalVisibleAlerts);
                 }}
@@ -508,42 +508,42 @@ export default function Settings({ navigation }) {
     >
       <View style={styles.centeredView}>
           <ImageBackground source={require('../assets/bg1.png')} style={[styles.modalView, { justifyContent: 'center', alignItems: 'center', width: windowWidth * .85, }]}>
-          <Text style={{color: 'black', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.01, textAlign: 'center', }}>Customize Earthquake Details</Text>
+          <Text style={{color: '#B6E6CF', fontSize: windowWidth * 0.075, marginBottom: windowHeight * 0.01, textAlign: 'center', }}>Customize Earthquake Details</Text>
 
-          <Text style={{color: 'black', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Minimum Magnitude</Text>
+          <Text style={{color: '#B6E6CF', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Minimum Magnitude</Text>
 
             <TouchableOpacity
               onPress={() => updateMinMagnitude('4.0')}
             >
-              <Text style={[styles.alertText, {backgroundColor: (minMagnitude === '4.0') ? 'white' : 'transparent'}]}>Set to 4.0</Text>
+              <Text style={[styles.alertText, {backgroundColor: (minMagnitude === '4.0') ? '#0C6B5F' : 'transparent'}]}>Set to 4.0</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => updateMinMagnitude('5.0')}
             >
-              <Text style={[styles.alertText, {backgroundColor: (minMagnitude === '5.0') ? 'white' : 'transparent'}]}>Set to 5.0</Text>
+              <Text style={[styles.alertText, {backgroundColor: (minMagnitude === '5.0') ? '#0C6B5F' : 'transparent'}]}>Set to 5.0</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => updateMinMagnitude('6.0')}
             >
-              <Text style={[styles.alertText, {backgroundColor: (minMagnitude === '6.0') ? 'white' : 'transparent'}]}>Set to 6.0</Text>
+              <Text style={[styles.alertText, {backgroundColor: (minMagnitude === '6.0') ? '#0C6B5F' : 'transparent'}]}>Set to 6.0</Text>
             </TouchableOpacity>
 
-          <Text style={{color: 'black', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Time Period</Text>
+          <Text style={{color: '#B6E6CF', fontWeight: 'bold', fontSize: windowWidth * 0.05, margin: windowHeight * 0.025, textAlign: 'center', }}>Time Period</Text>
           <TouchableOpacity onPress={() => updateTimePeriod('all_day')}>
-            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_day') ? 'white' : 'transparent'}]}>Daily Period</Text>
+            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_day') ? '#0C6B5F' : 'transparent'}]}>Daily Period</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => updateTimePeriod('all_week')}>
-            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_week') ? 'white' : 'transparent'}]}>Weekly Period</Text>
+            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_week') ? '#0C6B5F' : 'transparent'}]}>Weekly Period</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => updateTimePeriod('all_month')}>
-            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_month') ? 'white' : 'transparent'}]}>Monthly period</Text>
+            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_month') ? '#0C6B5F' : 'transparent'}]}>Monthly period</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => updateTimePeriod('all_year')}>
-            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_year') ? 'white' : 'transparent', marginBottom: windowHeight * 0.02}]}>Yearly Period</Text>
+            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_year') ? '#0C6B5F' : 'transparent', marginBottom: windowHeight * 0.02}]}>Yearly Period</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={{ ...styles.openButton, backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            style={{ ...styles.openButton, backgroundColor: "#127B6E" }}
             onPress={() => {
               setModalVisibleDetails(!modalVisibleDetails);
             }}
@@ -624,7 +624,7 @@ export default function Settings({ navigation }) {
                     </View>
                     <View style={styles.innerBox3}>
                       <Text style={styles.innerBoxHeader}>GENERAL</Text>
-                      <TouchableOpacity onPress={() => setModalVisibleLang(true)}>
+                      <TouchableOpacity onPress={() => navigation.navigate('About')}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
                             <Image source={require('../assets/icons/information-button.png')} style={{ width: windowWidth * 0.05, height: windowHeight * 0.035, marginLeft: windowWidth * 0.05, resizeMode: 'contain'   }} />
                             <Text style={[styles.innerBoxSmallText, { fontFamily: 'glacial-indifference-bold', fontSize: windowWidth * 0.03, color: 'white', marginRight: windowWidth * 0.25, }]}>About</Text>
@@ -703,18 +703,18 @@ const styles = StyleSheet.create({
   boxText1: {
     fontSize: windowWidth * 0.05, // Adjust as needed
     width: windowWidth * 0.5,
-    color: '#000', // Adjust as needed
+    color: '#FFFFFF', // Adjust as needed
     marginTop: windowHeight * 0.01, // Adjust as needed
     fontFamily: 'glacial-indifference-bold',
   },
   boxText2: {
     fontSize: windowWidth * 0.025, // Adjust as needed
-    color: '#000', // Adjust as needed
+    color: '#FFFFFF', // Adjust as needed
     fontFamily: 'glacial-indifference-bold',
   },
   boxText3: {
     fontSize: windowWidth * 0.025, // Adjust as needed
-    color: '#000', // Adjust as needed
+    color: '#FFFFFF', // Adjust as needed
     fontFamily: 'glacial-indifference-bold',
   },
     box2: {
@@ -841,19 +841,20 @@ const styles = StyleSheet.create({
     elevation: 2
   },
   textStyle: {
-    color: "black",
+    color: "white",
     width: windowWidth * 0.15,
     fontWeight: "bold",
     textAlign: "center",
   },
   modalText: {
     textAlign: "center",
+    color: 'white',
     fontWeight: "bold",
     fontSize: windowWidth * 0.055,
    },
   countryBox: { // Add this style
     borderWidth: 1,
-    borderColor: '#000',
+    borderColor: 'white',
     borderRadius: 5,
     padding: 10,
     margin: 5,
@@ -862,10 +863,10 @@ const styles = StyleSheet.create({
   },
   alertText: {
     fontSize: windowWidth * 0.04,
-    color: '#000',
+    color: 'white',
     fontWeight: 'bold',
-    borderWidth: 2,
-    borderColor: 'black',
+    borderWidth: 1.5,
+    borderColor: 'white',
     borderRadius: 20,
     padding: 10,
     margin: 2,

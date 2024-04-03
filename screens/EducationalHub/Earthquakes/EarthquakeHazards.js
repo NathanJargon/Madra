@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
-
+import { View, Text, StyleSheet, Image, Dimensions, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -24,21 +22,20 @@ export default function EarthquakeHazards0({ navigation }) {
     { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/EarthquakeHazards-3.png?alt=media&token=0afe8b72-c7be-45dd-babf-ee098de36805' },
     { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/EarthquakeHazards-4.png?alt=media&token=003ca48c-4c1e-4d7a-819a-dc6d1d020bba' },
     { url: 'https://firebasestorage.googleapis.com/v0/b/madra-7a862.appspot.com/o/EarthquakeHazards-5.png?alt=media&token=e0589160-cd37-45dc-b40a-698107a42b02' },
-
   ];
-  
 
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
-        <ImageViewer imageUrls={images} />
+        <ScrollView>
+          {images.map((image, index) => (
+            <Image key={index} source={{ uri: image.url }} style={styles.image} />
+          ))}
+        </ScrollView>
       </ImageBackground>
     </View>
   );
 }
-
-
-
 
 
 const styles = StyleSheet.create({
@@ -46,6 +43,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
+    image: {
+      width: windowWidth,
+      height: windowHeight * 0.7,
+      resizeMode: 'contain',
+    },
 boxContainer: {
   flex: 1,
   justifyContent: 'center',
