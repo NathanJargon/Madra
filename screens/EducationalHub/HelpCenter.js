@@ -1,10 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Dimensions, Linking, TouchableOpacity } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function HelpCenter() {
+  const dialNumber = (number) => {
+    const url = `tel:${number}`;
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          console.log(`Can't handle url: ${url}`);
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error('An error occurred', err));
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../../assets/bottomcontainer.png')} style={styles.bottomContainer}>
@@ -15,24 +28,39 @@ export default function HelpCenter() {
           <Text style={styles.boldText}>
             RED CROSS
           </Text>
-          <Text style={styles.infoText}>
-            Emergency Response Unit: 134 (Staff), 132 (Manager), 133 (Radio Room)
-            (02) 8790-2300 local 604
-          </Text>
+          <TouchableOpacity onPress={() => dialNumber('87902300')}>
+            <Text style={styles.infoText}>
+              Emergency Response Unit: 134 (Staff), 132 (Manager), 133 (Radio Room)
+              (02) 8790-2300 local 604
+            </Text>
+          </TouchableOpacity>
           <Text style={styles.boldText}>
             Philippine National Police (PNP)
           </Text>
-          <Text style={styles.infoText}>
-            Emergency Hotline: 117
-            (02) 8722-0650
-            Text hotline: 0917-847-5757
-          </Text>
+          <TouchableOpacity onPress={() => dialNumber('87220650')}>
+            <Text style={styles.infoText}>
+              Emergency Hotline: 117
+              (02) 8722-0650
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => dialNumber('09178475757')}>
+            <Text style={styles.infoText}>
+              Text hotline: 0917-847-5757
+            </Text>
+          </TouchableOpacity>
           <Text style={styles.boldText}>
             Bureau of Fire Protection (BFP)
           </Text>
-          <Text style={styles.infoText}>
-            Direct line: (02) 8426-0219, (02) 8426-0246
-          </Text>
+          <TouchableOpacity onPress={() => dialNumber('84260219')}>
+            <Text style={styles.infoText}>
+              Direct line: (02) 8426-0219
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => dialNumber('84260246')}>
+            <Text style={styles.infoText}>
+              Direct line: (02) 8426-0246
+            </Text>
+          </TouchableOpacity>
         </View>
       </ImageBackground>
     </View>
@@ -55,12 +83,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 20, // Increase this to add more space
     alignSelf: 'center',
-    width: '90%',
+    maxWidth: '90%',
     textAlign: 'center',
     fontFamily: 'glacial-indifference-regular',
   },
   boldText: {
     color: '#0C6B5F',
+    maxWidth: '100%',
     fontSize: 20, // Adjust the size as needed
     fontFamily: 'media-sans-bold', // Replace with your preferred font
     marginVertical: 20, // Increase this to add more space

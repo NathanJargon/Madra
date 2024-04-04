@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ImageBackground, Linking, Animated } from 'react-native';
 import MapView, { Circle, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -64,6 +64,9 @@ export default function HazardMapping({ navigation }) {
     });
   };
 
+  const filteredEarthquakes = useMemo(() => {
+    return earthquakes.filter(earthquake => earthquake.properties.place.includes(userCountry));
+  }, [earthquakes, userCountry]);
 
   let mapType = "satellite"; // your mapType value
 
@@ -72,10 +75,20 @@ export default function HazardMapping({ navigation }) {
     mapType = "standard";
   }
 
-  const fetchData = () => {
+  const fetchData = async () => {
     if (userCountry) {
       setIsLoading(true); // Set loading to true when starting to fetch data
-      fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson')
+      const userEmail = await AsyncStorage.getItem('email'); // Fetch the userEmail
+      const doc = await firebase.firestore().collection('users').doc(userEmail).get();
+      let timePeriod = doc.data().timePeriod;
+      timePeriod = timePeriod && timePeriod.trim();
+      console.log(`Time period: '${timePeriod}'`);
+      if (!timePeriod) {
+        timePeriod = 'all_week'; // Default value if timePeriod is null or empty
+      }
+      let url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${timePeriod}.geojson`;
+      console.log(url);
+      fetch(url)
         .then(response => response.json())
         .then(data => {
           const filteredEarthquakes = data.features.filter(earthquake => earthquake.properties.place.includes(userCountry));

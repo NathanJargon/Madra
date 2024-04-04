@@ -28,7 +28,7 @@ export default function Features({ navigation }) {
   };
 
   const handleEarthquakeUpdatesPress = () => {
-    setShowEarthquakeUpdates(true);
+    navigation.navigate('EarthquakeUpdates');
   };
 
   const handleBackPress = () => {

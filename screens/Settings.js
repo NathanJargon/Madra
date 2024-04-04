@@ -549,10 +549,7 @@ export default function Settings({ navigation }) {
           <TouchableOpacity onPress={() => updateTimePeriod('all_month')}>
             <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_month') ? '#0C6B5F' : 'transparent'}]}>Monthly period</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => updateTimePeriod('all_year')}>
-            <Text style={[styles.alertText, {backgroundColor: (timePeriod === 'all_year') ? '#0C6B5F' : 'transparent', marginBottom: windowHeight * 0.02}]}>Yearly Period</Text>
-          </TouchableOpacity>
-
+          
           <TouchableOpacity
             style={{ ...styles.openButton, backgroundColor: "#127B6E" }}
             onPress={() => {

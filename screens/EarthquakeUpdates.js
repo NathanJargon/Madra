@@ -5,6 +5,7 @@ import * as SQLite from 'expo-sqlite';
 import { firebase } from './FirebaseConfig';
 import { setupDatabase } from './Database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Location from 'expo-location';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -15,7 +16,21 @@ export default function EarthquakeUpdates({ navigation }) {
   const [initialLoad, setInitialLoad] = useState(true);
   const [userLocation, setUserLocation] = useState('Philippines');
   const mapRef = useRef();
+
     let mapType = "satellite"; // your mapType value
+
+    useEffect(() => {
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.error('Permission to access location was denied');
+          return;
+        }
+  
+        let location = await Location.getCurrentPositionAsync({});
+        setUserLocation(location);
+      })();
+    }, []);
 
     useEffect(() => {
       const backAction = () => {
@@ -37,7 +52,17 @@ export default function EarthquakeUpdates({ navigation }) {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson');
+        const userEmail = await AsyncStorage.getItem('email'); // Fetch the userEmail
+        const doc = await firebase.firestore().collection('users').doc(userEmail).get();
+        let timePeriod = doc.data().timePeriod;
+        timePeriod = timePeriod && timePeriod.trim();
+        console.log(`Time period: '${timePeriod}'`);
+        if (!timePeriod) {
+          timePeriod = 'all_month'; // Default value if timePeriod is null or empty
+        }
+        const url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${timePeriod}.geojson`;
+        console.log(url);
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -99,6 +124,7 @@ return (
               latitudeDelta: 20, // adjust as needed
               longitudeDelta: 20, // adjust as needed
             }}
+            showsUserLocation={true} 
           >
           </MapView>
         </View>
@@ -119,6 +145,7 @@ return (
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
               }}
+              showsUserLocation={true} 
             >
           {earthquakes.map((earthquake, index) => (
             <Marker

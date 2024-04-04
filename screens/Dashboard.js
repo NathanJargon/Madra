@@ -237,7 +237,7 @@ export default function Dashboard() {
       <ImageBackground source={require('../assets/head.png')} style={styles.imageTextContainer}>
         <Image source={imageUri ? { uri: imageUri } : require('../assets/icons/profilelogo.png')} style={styles.profileLogo} />
         <View style={styles.textContainer}>
-          <Text style={styles.rightText}>HI {fullName}!</Text>
+          <Text style={styles.rightText}>HI {username}!</Text>
           <Text style={styles.rightSmallText}>MADRA: YOUR PARTNER FOR LIFE</Text>
         </View>
       </ImageBackground>
@@ -342,12 +342,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start', // Align children at the start of the container's main axis
   },
+  rightText: {
+    marginLeft: windowWidth * 0.07,
+    width: windowWidth * 0.5,
+    fontSize: windowWidth * 0.055, // Adjust as needed
+      color: '#0C6B5F',
+    textAlign: 'center',
+    fontFamily: 'montserrat-bold',
+  },
+  rightSmallText: {
+    fontSize: windowWidth * 0.025, // Adjust as needed
+    marginLeft: windowWidth * 0.12,
+      color: '#0C6B5F',
+  },
   imageTextContainer: {
     flex: 0.2,
     flexDirection: 'row',
-    alignItems: 'flex-start', // Align children at the start of the container's cross axis
-    justifyContent: 'center', // Center children along the main axis of the container
-    padding: 10,
+    alignItems: 'center', // Align children at the start of the container's cross axis
+    justifyContent: 'space-between', // Create equal spacing between children
+    padding: 15,
   },
   profileLogo: {
     width: windowWidth / 4,
@@ -355,7 +368,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     overflow: 'hidden',
     borderRadius: 50,
-    marginRight: 10,
+    marginLeft: 10,
+    marginTop: -windowHeight * 0.05,
   },
   textContainer: {
     flexDirection: 'column',
@@ -516,20 +530,6 @@ const styles = StyleSheet.create({
     width: windowWidth / 14, // Adjust as needed
     height: windowHeight / 14, // Adjust as needed
     resizeMode: 'contain',
-  },
-  rightText: {
-    marginTop: windowHeight * 0.07,
-    marginLeft: windowWidth * 0.07,
-    width: windowWidth * 0.5,
-    fontSize: windowWidth * 0.055, // Adjust as needed
-      color: '#0C6B5F',
-    textAlign: 'center',
-    fontFamily: 'montserrat-bold',
-  },
-  rightSmallText: {
-    fontSize: windowWidth * 0.025, // Adjust as needed
-    marginLeft: windowWidth * 0.12,
-      color: '#0C6B5F',
   },
   bottomContainer: {
     position: 'absolute', // Position it absolutely
