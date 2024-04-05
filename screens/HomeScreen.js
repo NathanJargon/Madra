@@ -96,6 +96,34 @@ function HomeScreen({ navigation }) {
 
     const handleSignUp = async (gender, fullName, username, email, password, birthday, phoneNumber) => {
       try {
+        if (!email) {
+          alert('Email cannot be null or undefined.');
+          return;
+        }
+    
+        // Remove trailing spaces
+        email = email.trim();
+    
+        // Check if email contains non-ASCII characters
+        const asciiRegex = /^[\x00-\x7F]*$/;
+        if (!asciiRegex.test(email)) {
+          alert('Email cannot contain non-ASCII characters.');
+          return;
+        }
+    
+        // Check if email is too long
+        if (email.length > 254) {
+          alert('Email cannot be more than 254 characters.');
+          return;
+        }
+    
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          alert('The email address is badly formatted.');
+          return;
+        }    
+
         const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
 

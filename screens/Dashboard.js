@@ -18,6 +18,7 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: false,
     shouldSetBadge: false,
+    shouldUseLongVibrationPattern: false,
   }),
 });
 
@@ -26,12 +27,12 @@ Notifications.setNotificationHandler({
 
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [],
+        lightColor: '#FF231F7C',
     });
-  }
+}
 
   if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -134,6 +135,7 @@ export default function Dashboard() {
         title: 'New Earthquake Alert!',
         body: `A magnitude ${earthquakeData.properties.mag} earthquake has occurred at ${earthquakeData.properties.place}.`,
         data: { data: earthquakeData },
+        sound: "notification_message.wav",
       };
 
       await Notifications.scheduleNotificationAsync({ content, trigger });
