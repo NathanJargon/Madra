@@ -717,7 +717,7 @@ useEffect(() => {
                 mapType={mapType}
                 ref={mapRef}
                 onLayout={() => setMapReady(true)}
-                style={{ width: '100%', height: '85%', }}
+                style={{ flex: 1, width: '100%', height: '100%', }}
                 initialRegion={{
                   latitude: 12.8797,
                   longitude: 121.7740,
