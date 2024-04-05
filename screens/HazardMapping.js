@@ -725,7 +725,6 @@ useEffect(() => {
                   longitudeDelta: 20, // adjust as needed
                 }}
                 showsUserLocation={true} 
-                liteMode={true} 
               >
                 {showSeismic && Object.entries(earthquakeCounts).map(([key, count], index) => {
                   const [lat, lon] = key.split(',').map(Number);
